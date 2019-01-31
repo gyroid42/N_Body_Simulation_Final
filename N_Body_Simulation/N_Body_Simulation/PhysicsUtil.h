@@ -11,6 +11,7 @@ public:
 	PhysicsUtil();
 	~PhysicsUtil();
 
+	static float DistanceTo(const sf::Vector3f& pos1, const sf::Vector3f& pos2);
 	static float DistanceToSqr(const sf::Vector3f& pos1, const sf::Vector3f& pos2);
 	static float VectorLengthSqr(const sf::Vector3f& vector);
 	static sf::Vector3f VectorBetween(const sf::Vector3f& pos1, const sf::Vector3f& pos2);

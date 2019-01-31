@@ -55,6 +55,8 @@ public:
 
 	//void AddForce(Body* b);
 	void AddForce(sf::Vector3f newForce);
+	void AddForce(Body* body);
+	void AddForce(sf::Vector3f bodyPos, float bodyMass);
 	void ResetForce();
 	void Integrate_SemiImplicitEuler(float dt);
 	State InterpolateState(float alpha);
@@ -65,6 +67,7 @@ public:
 	void SetColour(sf::Vector3f rgb);
 
 	inline float Mass() { return mass_; }
+	inline sf::Vector3f Position() { return currentState_.position_; }
 	inline float ModelRadius() { return modelRadius_; }
 	inline State CurrentState() { return currentState_; }
 

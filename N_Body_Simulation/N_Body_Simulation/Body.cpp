@@ -60,6 +60,29 @@ void Body::AddForce(sf::Vector3f newForce) {
 }
 
 
+void Body::AddForce(Body* body) {
+
+	sf::Vector3f distanceVector = PhysicsUtil::VectorBetween(CurrentState().position_, body->CurrentState().position_);
+	float distance = PhysicsUtil::Normalise(distanceVector);
+	distance += PhysicsUtil::dampeningFactor;
+
+	sf::Vector3f force = (PhysicsUtil::G * Mass() * body->Mass() / (distance * distance * distance)) * distanceVector;
+
+	AddForce(force);
+}
+
+void Body::AddForce(sf::Vector3f bodyPos, float bodyMass) {
+
+	sf::Vector3f distanceVector = PhysicsUtil::VectorBetween(CurrentState().position_, bodyPos);
+	float distance = PhysicsUtil::Normalise(distanceVector);
+	distance += PhysicsUtil::dampeningFactor;
+
+	sf::Vector3f force = (PhysicsUtil::G * Mass() * bodyMass / (distance * distance * distance)) * distanceVector;
+
+	AddForce(force);
+}
+
+
 void Body::ResetForce() {
 
 	force_.x = 0.0f;
@@ -106,6 +129,6 @@ void Body::SetMass(float newMass) {
 
 	mass_ = newMass;
 
-	modelRadius_ = std::cbrtf(3.0f * mass_ / (4.0f * PhysicsUtil::pi));
+	modelRadius_ = 20.0f;// std::cbrtf(3.0f * mass_ / (4.0f * PhysicsUtil::pi));
 
 }

@@ -14,6 +14,11 @@ PhysicsUtil::~PhysicsUtil()
 }
 
 
+float PhysicsUtil::DistanceTo(const sf::Vector3f& pos1, const sf::Vector3f& pos2) {
+
+	return sqrtf(DistanceToSqr(pos1, pos2));
+}
+
 float PhysicsUtil::DistanceToSqr(const sf::Vector3f& pos1, const sf::Vector3f& pos2) {
 
 	float dX = pos1.x - pos2.x;
@@ -31,7 +36,7 @@ float PhysicsUtil::VectorLengthSqr(const sf::Vector3f& vector) {
 
 sf::Vector3f PhysicsUtil::VectorBetween(const sf::Vector3f& pos1, const sf::Vector3f& pos2) {
 
-	return pos1 - pos2;
+	return pos2 - pos1;
 }
 
 float PhysicsUtil::Normalise(sf::Vector3f& vector) {
@@ -53,7 +58,7 @@ void PhysicsUtil::AddForcesBetween(Body* body1, Body* body2) {
 
 	sf::Vector3f force = (PhysicsUtil::G * body1->Mass() * body2->Mass() / (distance * distance * distance)) * distanceVector;
 
-	body1->AddForce(-force);
+	body1->AddForce(force);
 	//body2->AddForce(force);
 }
 
