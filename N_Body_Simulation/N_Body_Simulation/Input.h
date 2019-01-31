@@ -39,3 +39,4 @@ private:
 	Mouse mouse_;
 };
 
+#endif

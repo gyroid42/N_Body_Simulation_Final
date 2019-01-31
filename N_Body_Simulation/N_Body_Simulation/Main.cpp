@@ -201,7 +201,9 @@ int main(int argc, char *argv[])
 
 
 
+	input = new Input();
 	app = new Application();
+	app->Init(input);
 
 	glutMainLoop();
 

@@ -1,5 +1,5 @@
 #include "Application.h"
-
+#include "Input.h"
 
 
 Application::Application()
@@ -15,9 +15,21 @@ Application::~Application()
 
 
 
-void Application::Init() {
+void Application::Init(Input* newInput) {
+
+	input_ = newInput;
+
+	// OpenGL setttings
+	glShadeModel(GL_SMOOTH);
+	glClearColor(0.39f, 0.58f, 93.0f, 1.0f);
+	glClearDepth(1.0f);
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LEQUAL);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	// create camera
+	camera_.Init(input_);
+
 	// create renderer
 	// create simulation poop
 	// start threads
@@ -34,6 +46,7 @@ void Application::CleanUp() {
 bool Application::Update(float frameTime) {
 
 	// check events
+	camera_.Update(frameTime);
 	// check inputs
 	// update camera
 
@@ -54,10 +67,14 @@ bool Application::Render(float alpha) {
 	// draw all the things
 
 
-	glColor3f(0.0f, 0.0f, 0.0f);
+	glColor3f(1.0f, 0.0f, 0.0f);
 	
+	glLoadIdentity();
 
-	glutSolidSphere(0.11, 20, 20);
+	camera_.SetGluLookAt();
+
+
+	glutSolidSphere(3, 20, 20);
 
 	//glBegin(GL_TRIANGLES);
 	//	glVertex3f(-2, -2, -5.0f);

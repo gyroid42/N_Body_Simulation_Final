@@ -4,6 +4,10 @@
 #include <GL\GL.h>
 #include <GL\GLU.h>
 
+#include "Camera.h"
+
+class Input;
+
 class Application
 {
 public:
@@ -11,7 +15,7 @@ public:
 	~Application();
 
 
-	void Init();
+	void Init(Input* newInput);
 	void CleanUp();
 
 
@@ -28,6 +32,9 @@ protected:
 
 	int width_, height_;
 	float fov_, nearPlane_, farPlane_;
+
+	Camera camera_;
+	Input* input_;
 
 };
 
