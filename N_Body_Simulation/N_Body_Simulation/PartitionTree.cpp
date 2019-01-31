@@ -18,6 +18,7 @@ PartitionTree::PartitionTree(Partition newPartition)
 PartitionTree::~PartitionTree()
 {
 
+	// loop for each child node and delete it
 	for (int i = 0; i < 8; i++) {
 
 		if (children_[i]) {
@@ -66,7 +67,7 @@ void PartitionTree::Insert(Body* body) {
 				// Insert body into octant found
 				children_[i]->Insert(body);
 
-				// exit loop
+				// exit the loop since we've found the octant the body belongs in
 				break;
 			}
 		}
@@ -75,27 +76,36 @@ void PartitionTree::Insert(Body* body) {
 	// If node is external then put the body in this current node into a child node
 	else if (isExternal_) {
 
+		// create a body from current nodes' total mass and center of mass
 		Body* oldBody = new Body();
 		oldBody->Init(centerOfMass_, sf::Vector3f(0.0f, 0.0f, 0.0f), totalMass_);
 
+		// find which octant the body belongs in
 		for (int i = 0; i < 8; i++) {
 
 			Partition newPartition = partition_.GetSubDivision(i);
 
 			if (newPartition.Contains(oldBody->Position())) {
 
+
+				// if node doesn't exist yet create one
 				if (children_[i] == nullptr) {
 
 					children_[i] = new PartitionTree(newPartition);
 				}
 
+				// add body to the new node
 				children_[i]->Insert(oldBody);
+
+				// this node is no longer external
 				isExternal_ = false;
 
+				// exit the loop since we've found the octant the body belongs in
 				break;
 			}
 		}
 
+		// re-insert the body into this node
 		Insert(body);
 	}
 }
@@ -104,14 +114,19 @@ void PartitionTree::Insert(Body* body) {
 
 void PartitionTree::UpdateForceOnBody(Body* body) {
 
+	// If this node is external then add force due to this node since no more child nodes to check
 	if (isExternal_) {
 
 		body->AddForce(centerOfMass_, totalMass_);
 	}
+
+	// check if distance and length is appropriate to use this node
 	else if (partition_.Length() / PhysicsUtil::DistanceTo(centerOfMass_, body->Position()) < 2.0f) {
 
 		body->AddForce(centerOfMass_, totalMass_);
 	}
+
+	// node wasn't external or appropriate to use so check the children of this node
 	else {
 
 		for (int i = 0; i < 8; i++) {
