@@ -1,5 +1,7 @@
 #include "Application.h"
 #include "Input.h"
+#include "Simulation.h"
+#include "BruteForce.h"
 
 
 Application::Application()
@@ -34,6 +36,9 @@ void Application::Init(Input* newInput) {
 	// create simulation poop
 	// start threads
 
+	simulation_ = new BruteForce();
+	simulation_->Init();
+	simulation_->Reset();
 }
 
 
@@ -45,6 +50,8 @@ void Application::CleanUp() {
 
 bool Application::Update(float frameTime) {
 
+
+	CheckInput(frameTime);
 	// check events
 	camera_.Update(frameTime);
 	// check inputs
@@ -53,9 +60,24 @@ bool Application::Update(float frameTime) {
 	return true;
 }
 
+void Application::CheckInput(float frameTime) {
+
+	if (input_->IsKeyDown('r')) {
+
+		simulation_->Reset();
+		input_->SetKeyUp('r');
+	}
+
+	if (input_->IsKeyDown(VK_ESCAPE)) {
+		exit(0);
+	}
+}
+
 bool Application::SimulationStep(float t, float dt) {
 
 	// do a time step
+
+	simulation_->TimeStep(dt);
 
 	return true;
 }
@@ -66,15 +88,15 @@ bool Application::Render(float alpha) {
 	// render the poops
 	// draw all the things
 
-
-	glColor3f(1.0f, 0.0f, 0.0f);
 	
 	glLoadIdentity();
 
 	camera_.SetGluLookAt();
 
 
-	glutSolidSphere(3, 20, 20);
+	//glutSolidSphere(3, 20, 20);
+
+	simulation_->Render(alpha);
 
 	//glBegin(GL_TRIANGLES);
 	//	glVertex3f(-2, -2, -5.0f);
@@ -97,7 +119,7 @@ void Application::Resize(int w, int h) {
 	float ratio = (float)w / (float)h;
 	fov_ = 45.0f;
 	nearPlane_ = 0.1f;
-	farPlane_ = 100.0f;
+	farPlane_ = 10000.0f;
 
 	glMatrixMode(GL_PROJECTION);
 

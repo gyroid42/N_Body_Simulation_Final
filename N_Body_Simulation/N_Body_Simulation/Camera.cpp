@@ -20,11 +20,11 @@ void Camera::Init(Input* newInput) {
 
 	input_ = newInput;
 
-	pos_ = sf::Vector3f(0.0f, 0.0f, 6.0f);
+	pos_ = sf::Vector3f(1000.0f, 0.0f, 0.0f);
 	lookAt_ = sf::Vector3f(0.0f, 0.0f, 0.0f);
 	up_ = sf::Vector3f(0.0f, 1.0f, 0.0f);
 	
-	rotation_ = sf::Vector3f(0.0f, 0.0f, 0.0f);
+	rotation_ = sf::Vector3f(270.0f, 0.0f, 0.0f);
 
 	speed_ = 20.0f;
 	rotSpeed_ = 60.0f;

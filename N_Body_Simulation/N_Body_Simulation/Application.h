@@ -6,6 +6,8 @@
 
 #include "Camera.h"
 
+class Simulation;
+
 class Input;
 
 class Application
@@ -29,6 +31,7 @@ public:
 protected:
 
 
+	void CheckInput(float frameTime);
 
 	int width_, height_;
 	float fov_, nearPlane_, farPlane_;
@@ -36,5 +39,7 @@ protected:
 	Camera camera_;
 	Input* input_;
 
+
+	Simulation* simulation_;
 };
 

@@ -29,7 +29,7 @@ public:
 
 	virtual void TimeStep(float dt);
 
-	virtual void Render(Renderer* renderer, float alpha);
+	virtual void Render(float alpha);
 
 
 

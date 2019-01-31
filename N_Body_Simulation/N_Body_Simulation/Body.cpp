@@ -1,6 +1,9 @@
 #include "Body.h"
 
 #include "PhysicsUtil.h"
+#include <GL\glut.h>
+#include <GL\GL.h>
+#include <GL\GLU.h>
 //#include "Renderer.h"
 
 
@@ -25,8 +28,10 @@ Body::~Body()
 
 void Body::Init(sf::Vector3f newPos, sf::Vector3f newVel, float newMass) {
 
+
+	SetColour(sf::Vector3f(0.0f, 0.0f, 0.0f));
 	
-	mass_ = newMass;
+	SetMass(newMass);
 	ResetForce();
 
 	currentState_.position_ = newPos;
@@ -42,10 +47,10 @@ void Body::Init(sf::Vector3f newPos, sf::Vector3f newVel, float newMass) {
 }
 
 
-//void Body::SetColour(sf::Color newColor) {
+void Body::SetColour(sf::Vector3f rgb) {
 
-//	sprite_->setFillColor(newColor);
-//}
+	colour_ = rgb;
+}
 
 
 
@@ -59,6 +64,7 @@ void Body::ResetForce() {
 
 	force_.x = 0.0f;
 	force_.y = 0.0f;
+	force_.z = 0.0f;
 }
 
 
@@ -77,11 +83,29 @@ State Body::InterpolateState(float alpha) {
 }
 
 
-void Body::Draw(Renderer* renderer, float alpha) {
+void Body::Draw(float alpha) {
 
-	State spriteState = InterpolateState(alpha);
+	State bodyState = InterpolateState(alpha);
+
+	glPushMatrix();
+	
+		glColor3f(colour_.x, colour_.y, colour_.z);
+		glTranslatef(bodyState.position_.x, bodyState.position_.y, bodyState.position_.z);
+		glutSolidSphere(20, 20, 20);
+
+	glPopMatrix();
+
 	//sprite_->setPosition(spriteState.position_);
 
 	//renderer->Draw(*sprite_);
 }
 
+
+
+void Body::SetMass(float newMass) {
+
+	mass_ = newMass;
+
+	modelRadius_ = std::cbrtf(3.0f * mass_ / (4.0f * PhysicsUtil::pi));
+
+}

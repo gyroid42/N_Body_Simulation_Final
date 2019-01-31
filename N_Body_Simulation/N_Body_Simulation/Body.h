@@ -58,14 +58,18 @@ public:
 	void ResetForce();
 	void Integrate_SemiImplicitEuler(float dt);
 	State InterpolateState(float alpha);
-	void Draw(Renderer* renderer, float alpha);
+	void Draw(float alpha);
 	//void Integrate_Rk4(float t, float dt);
 	//void Integrate_Verlet();
 
-	//void SetColour(sf::Color newColor);
+	void SetColour(sf::Vector3f rgb);
 
 	inline float Mass() { return mass_; }
+	inline float ModelRadius() { return modelRadius_; }
 	inline State CurrentState() { return currentState_; }
+
+
+	void SetMass(float newMass);
 	//inline sf::CircleShape* Sprite() { return sprite_; }
 
 private:
@@ -77,6 +81,7 @@ private:
 	float mass_;
 
 	float modelRadius_;
+	sf::Vector3f colour_;
 
 	//sf::CircleShape* sprite_;
 

@@ -72,7 +72,7 @@ void Render() {
 
 		app->SimulationStep(t, dt * SIMULATION_SPEED);
 		accumulator -= dt;
-		t += dt;
+		t += dt * SIMULATION_SPEED;
 	}
 
 	app->Update(frameTime);
@@ -194,8 +194,8 @@ int main(int argc, char *argv[])
 
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
-	glutInitWindowSize(800, 600);
-	glutCreateWindow("Hellow World");
+	glutInitWindowSize(WINDOW_SIZE_X, WINDOW_SIZE_Y);
+	glutCreateWindow("N body boiz");
 
 	Setup();
 
