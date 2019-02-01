@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML\System\Vector3.hpp>
 #include "Partition.h"
+#include "Body.h"
 
 class Body;
 
@@ -23,6 +24,8 @@ private:
 
 	PartitionTree* children_[8];
 
+
+	Body* body_;
 
 	bool isExternal_;
 

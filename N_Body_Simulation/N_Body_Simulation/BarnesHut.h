@@ -2,6 +2,7 @@
 #include "Simulation.h"
 #include <SFML\System\Vector3.hpp>
 #include <vector>
+#include "Partition.h"
 class BarnesHut :
 	public Simulation
 {
@@ -19,6 +20,6 @@ protected:
 	void PartitionSpace();
 	void CalculateForceOnBody(Body* body);
 
-	Partition nodeOrigin_;
+	Partition origin_;
 };
 

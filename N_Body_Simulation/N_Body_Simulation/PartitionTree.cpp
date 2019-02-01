@@ -1,9 +1,11 @@
 #include "PartitionTree.h"
 #include "Body.h"
 #include "PhysicsUtil.h"
+#include <iostream>
 
 
-PartitionTree::PartitionTree(Partition newPartition)
+PartitionTree::PartitionTree(Partition newPartition) :
+	body_(nullptr)
 {
 	for (int i = 0; i < 8; i++) {
 
@@ -12,6 +14,8 @@ PartitionTree::PartitionTree(Partition newPartition)
 
 	partition_ = newPartition;
 	isExternal_ = true;
+	totalMass_ = 0.0f;
+	centerOfMass_ = sf::Vector3f(0.0f, 0.0f, 0.0f);
 }
 
 
@@ -38,6 +42,7 @@ void PartitionTree::Insert(Body* body) {
 
 		totalMass_ = body->Mass();
 		centerOfMass_ = body->Position();
+		body_ = body;
 	}
 
 	// if body is present and this isn't an external node
@@ -46,8 +51,15 @@ void PartitionTree::Insert(Body* body) {
 	else if (!isExternal_) {
 
 		// calculate center of mass and new total mass
-		centerOfMass_ = (totalMass_ * centerOfMass_ + body->Mass() * body->Position()) / (totalMass_ + body->Mass());
+		//centerOfMass_ = (totalMass_ * centerOfMass_ + body->Mass() * body->Position()) / (totalMass_ + body->Mass());
+
+		sf::Vector3f totalTimesCenter = totalMass_ * centerOfMass_;
+		sf::Vector3f bodyMassTimesPosition = body->Mass() * body->Position();
 		totalMass_ += body->Mass();
+		centerOfMass_ = totalTimesCenter + bodyMassTimesPosition;
+		centerOfMass_ /= totalMass_;
+
+		//totalMass_ += body->Mass();
 
 		// loop for each octant in partition
 		for (int i = 0; i < 8; i++) {
@@ -77,15 +89,15 @@ void PartitionTree::Insert(Body* body) {
 	else if (isExternal_) {
 
 		// create a body from current nodes' total mass and center of mass
-		Body* oldBody = new Body();
-		oldBody->Init(centerOfMass_, sf::Vector3f(0.0f, 0.0f, 0.0f), totalMass_);
+		//Body* oldBody = new Body();
+		//oldBody->Init(centerOfMass_, sf::Vector3f(0.0f, 0.0f, 0.0f), totalMass_);
 
 		// find which octant the body belongs in
 		for (int i = 0; i < 8; i++) {
 
 			Partition newPartition = partition_.GetSubDivision(i);
 
-			if (newPartition.Contains(oldBody->Position())) {
+			if (newPartition.Contains(body_->Position())) {
 
 
 				// if node doesn't exist yet create one
@@ -95,7 +107,7 @@ void PartitionTree::Insert(Body* body) {
 				}
 
 				// add body to the new node
-				children_[i]->Insert(oldBody);
+				children_[i]->Insert(body_);
 
 				// this node is no longer external
 				isExternal_ = false;
@@ -117,7 +129,10 @@ void PartitionTree::UpdateForceOnBody(Body* body) {
 	// If this node is external then add force due to this node since no more child nodes to check
 	if (isExternal_) {
 
-		body->AddForce(centerOfMass_, totalMass_);
+		if (body != body_) {
+
+			body->AddForce(centerOfMass_, totalMass_);
+		}
 	}
 
 	// check if distance and length is appropriate to use this node
