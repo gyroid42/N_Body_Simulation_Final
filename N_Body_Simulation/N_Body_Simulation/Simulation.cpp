@@ -4,6 +4,10 @@
 #include <ctime>
 //#include "Renderer.h"
 
+#include <GL\glut.h>
+#include <GL\GL.h>
+#include <GL\GLU.h>
+
 
 Simulation::Simulation() :
 	bodyCount_(0)
@@ -156,8 +160,10 @@ void Simulation::Render(float alpha) {
 
 		body->Draw(alpha);
 		//renderer->Draw(*body->Sprite());
-
+		
 	}
+
+	//glutSolidSphere(20, 20, 20);
 
 }
 

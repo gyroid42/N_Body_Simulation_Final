@@ -2,6 +2,7 @@
 #include "Input.h"
 #include "Simulation.h"
 #include "BruteForce.h"
+#include "BarnesHutCPU.h"
 
 
 Application::Application()
@@ -36,7 +37,7 @@ void Application::Init(Input* newInput) {
 	// create simulation poop
 	// start threads
 
-	simulation_ = new BruteForce();
+	simulation_ = new BarnesHutCPU();
 	simulation_->Init();
 	simulation_->Reset();
 }

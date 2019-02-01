@@ -1,6 +1,8 @@
 #include "BarnesHutCPU.h"
 
 #include "Body.h"
+#include "PartitionTree.h"
+#include <iostream>
 
 
 BarnesHutCPU::BarnesHutCPU()
@@ -15,10 +17,11 @@ BarnesHutCPU::~BarnesHutCPU()
 
 void BarnesHutCPU::Init() {
 
+	Simulation::Init();
 
-	origin_ = Partition(sf::Vector3f(0.0f, 0.0f, 0.0f), 1.0E12f);
+	origin_ = Partition(sf::Vector3f(0.0f, 0.0f, 0.0f), 10000.0f);
 
-
+	
 }
 
 void BarnesHutCPU::CleanUp() {
@@ -35,6 +38,7 @@ void BarnesHutCPU::TimeStep(float dt) {
 
 	for (auto body : bodies_) {
 
+		
 		tree.Insert(body);
 	}
 

@@ -92,12 +92,12 @@ void Camera::UpdateView() {
 	float sinR, sinP, sinY;
 
 	//calculate sin/cos values from rotation
-	cosY = cosf(rotation_.x*3.1415 / 180);
-	cosP = cosf(rotation_.y*3.1415 / 180);
-	cosR = cosf(rotation_.z*3.1415 / 180);
-	sinY = sinf(rotation_.x*3.1415 / 180);
-	sinP = sinf(rotation_.y*3.1415 / 180);
-	sinR = sinf(rotation_.z*3.1415 / 180);
+	cosY = cosf(rotation_.x*3.1415f / 180.0f);
+	cosP = cosf(rotation_.y*3.1415f / 180.0f);
+	cosR = cosf(rotation_.z*3.1415f / 180.0f);
+	sinY = sinf(rotation_.x*3.1415f / 180.0f);
+	sinP = sinf(rotation_.y*3.1415f / 180.0f);
+	sinR = sinf(rotation_.z*3.1415f / 180.0f);
 
 	//calculate forward vector
 	forward_.x = sinY * cosP;
