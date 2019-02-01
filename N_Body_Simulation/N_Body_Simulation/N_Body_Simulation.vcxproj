@@ -134,7 +134,10 @@
     <ClCompile Include="Partition.cpp" />
     <ClCompile Include="PartitionTree.cpp" />
     <ClCompile Include="PhysicsUtil.cpp" />
+    <ClCompile Include="Semaphore.cpp" />
     <ClCompile Include="Simulation.cpp" />
+    <ClCompile Include="Task.cpp" />
+    <ClCompile Include="ThreadFarm.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -147,8 +150,11 @@
     <ClInclude Include="Partition.h" />
     <ClInclude Include="PartitionTree.h" />
     <ClInclude Include="PhysicsUtil.h" />
+    <ClInclude Include="Semaphore.h" />
     <ClInclude Include="SETTINGS.h" />
     <ClInclude Include="Simulation.h" />
+    <ClInclude Include="Task.h" />
+    <ClInclude Include="ThreadFarm.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

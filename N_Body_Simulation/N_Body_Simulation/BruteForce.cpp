@@ -45,9 +45,9 @@ void BruteForce::TimeStep(float dt) {
 	}
 
 
-	for (auto i = bodies_.begin(); i != bodies_.end(); i++) {
+	for (auto body : bodies_) {
 
-		(*i)->Integrate_SemiImplicitEuler(dt);
+		body->Integrate_SemiImplicitEuler(dt);
 	}
 
 }
