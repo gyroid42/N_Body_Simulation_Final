@@ -14,5 +14,6 @@ public:
 
 	void TimeStep(float dt);
 
+	void CalculateForceOnBody(Body* body);
 };
 
