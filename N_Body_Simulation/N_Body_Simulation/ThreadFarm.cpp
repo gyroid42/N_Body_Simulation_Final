@@ -87,6 +87,19 @@ void ThreadFarm::End() {
 		thread->join();
 	}
 
+	for (auto thread : threads_) {
+
+		delete thread;
+		thread = nullptr;
+	}
+
+	while (!tasks_.empty()) {
+
+		delete tasks_.front();
+		tasks_.front() = nullptr;
+		tasks_.pop();
+	}
+
 }
 
 

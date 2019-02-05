@@ -30,7 +30,7 @@ void Simulation::Init() {
 
 void Simulation::CleanUp() {
 
-
+	CleanUpBodies();
 }
 
 void Simulation::CleanUpBodies() {
@@ -42,6 +42,7 @@ void Simulation::CleanUpBodies() {
 	}
 
 	bodies_.clear();
+
 
 	return;
 }

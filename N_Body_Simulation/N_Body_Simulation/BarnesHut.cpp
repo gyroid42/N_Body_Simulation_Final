@@ -1,3 +1,5 @@
+
+// include class header
 #include "BarnesHut.h"
 
 
@@ -14,10 +16,12 @@ BarnesHut::~BarnesHut()
 
 void BarnesHut::Init() {
 
+	Simulation::Init();
 }
 
 void BarnesHut::CleanUp() {
 
+	Simulation::CleanUp();
 }
 
 

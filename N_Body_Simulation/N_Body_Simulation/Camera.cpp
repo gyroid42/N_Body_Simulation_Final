@@ -1,9 +1,16 @@
+
+// class header include
 #include "Camera.h"
+
+// standard library includes
 #include <math.h>
+
+// glut includes
+#include <GL\glut.h>
+
+// my class includes
 #include "Input.h"
 #include "PhysicsUtil.h"
-
-#include <GL\glut.h>
 
 
 Camera::Camera()
@@ -18,8 +25,10 @@ Camera::~Camera()
 
 void Camera::Init(Input* newInput) {
 
+	// get reference to user input
 	input_ = newInput;
 
+	// set default values
 	pos_ = sf::Vector3f(1000.0f, 0.0f, 0.0f);
 	lookAt_ = sf::Vector3f(0.0f, 0.0f, 0.0f);
 	up_ = sf::Vector3f(0.0f, 1.0f, 0.0f);
@@ -29,6 +38,7 @@ void Camera::Init(Input* newInput) {
 	speed_ = 20.0f;
 	rotSpeed_ = 60.0f;
 
+	// Update the view vectors
 	UpdateView();
 }
 
@@ -123,6 +133,7 @@ void Camera::UpdateView() {
 
 void Camera::Move(MOVE_DIRECTION direction, float frameTime) {
 
+	// translate position in direction
 	switch (direction) {
 	case FORWARD:
 		pos_ += forward_ * speed_ * frameTime;
@@ -144,12 +155,16 @@ void Camera::Move(MOVE_DIRECTION direction, float frameTime) {
 		break;
 	}
 
+	// update lookat
 	lookAt_ = pos_ + forward_;
 }
 
 void Camera::Rotate(sf::Vector3f direction, float frameTime) {
 
+	// update rotation vector
 	rotation_ += direction * frameTime * rotSpeed_;
+
+	// update view vectors
 	UpdateView();
 
 }

@@ -33,6 +33,6 @@ protected:
 	virtual void CalculateForceOnBody(Body* body);
 
 	// Root of partition space tree
-	Partition origin_;
+	Partition root_;
 };
 

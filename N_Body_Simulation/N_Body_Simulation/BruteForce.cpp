@@ -1,4 +1,9 @@
+
+// include class header
 #include "BruteForce.h"
+
+
+// my class includes
 #include "TaskBruteForceCPU.h"
 #include "TaskIntegrateBody.h"
 #include "Body.h"
@@ -21,6 +26,8 @@ void BruteForce::Init() {
 	Simulation::Init();
 
 
+	// If Multithreading then start the thread farm
+	// and set the TimeStep function to the multithreaded implementation
 	if (MULTITHREADING) {
 
 		farm_ = new ThreadFarm();
@@ -29,6 +36,8 @@ void BruteForce::Init() {
 
 		timeStepFunc_ = &BruteForce::TimeStepMulti;
 	}
+
+	// else just set the TimeStep functio nto the singlethreaded implementation
 	else {
 
 		timeStepFunc_ = &BruteForce::TimeStepSingle;
@@ -40,6 +49,7 @@ void BruteForce::CleanUp() {
 
 	Simulation::CleanUp();
 
+	// If multithreading then clean up the farm
 	if (MULTITHREADING) {
 
 		if (farm_) {
@@ -54,31 +64,20 @@ void BruteForce::CleanUp() {
 
 void BruteForce::TimeStep(float dt) {
 
-
-	// Evaluate each body against each other body
-	/*for (auto i = bodies_.begin(); i != bodies_.end(); i++) {
-
-		(*i)->ResetForce();
-		for (auto j = bodies_.begin(); j != bodies_.end(); j++) {
-
-			if (i != j) {
-
-				PhysicsUtil::AddForcesBetween(*i, *j);
-				//(*i)->AddForce(*j);
-			}
-		}
-
-	}*/
-
+	// Call the TimeStep method being used
 	(this->*timeStepFunc_)(dt);
 
 }
 
 void BruteForce::TimeStepSingle(float dt) {
 
+	// Loop for each body
 	for (auto body1 : bodies_) {
 
+		// Reset the force on the body
 		body1->ResetForce();
+
+		// Calculate and add the forces scting on the body due to every other body
 		for (auto body2 : bodies_) {
 
 			if (body1 != body2) {
@@ -88,7 +87,7 @@ void BruteForce::TimeStepSingle(float dt) {
 		}
 	}
 
-
+	// Loop for each body and integrate it
 	for (auto body : bodies_) {
 
 		body->Integrate_SemiImplicitEuler(dt);
@@ -98,6 +97,7 @@ void BruteForce::TimeStepSingle(float dt) {
 
 void BruteForce::TimeStepMulti(float dt) {
 
+	// Add a BruteForceCPU task for each body to the thread farm
 	for (auto body : bodies_) {
 
 		TaskBruteForceCPU* newTask = new TaskBruteForceCPU();
@@ -105,8 +105,10 @@ void BruteForce::TimeStepMulti(float dt) {
 		farm_->AddTask(newTask);
 	}
 	
+	// Wait until all the forces on each body has been calculated
 	farm_->WaitUntilTasksFinished();
 
+	// Add an integration task for each body to the thread farm
 	for (auto body : bodies_) {
 
 		TaskIntegrateBody* newTask = new TaskIntegrateBody();
@@ -114,16 +116,17 @@ void BruteForce::TimeStepMulti(float dt) {
 		farm_->AddTask(newTask);
 	}
 	
+	// Wait until all the bodies have been integrated
 	farm_->WaitUntilTasksFinished();
-
-	int meh = 0;
 }
 
 
 void BruteForce::CalculateForceOnBody(Body* body1) {
 
-
+	// Reset the force on the body
 	body1->ResetForce();
+
+	// Loop for all the other bodies and the force due to them
 	for (auto body2 : bodies_) {
 
 		if (body1 != body2) {

@@ -1,4 +1,8 @@
+
+// include class header
 #include "Application.h"
+
+// my class includes
 #include "Input.h"
 #include "Simulation.h"
 #include "BruteForce.h"
@@ -12,6 +16,19 @@ Application::Application()
 
 Application::~Application()
 {
+
+	// cleanup resources
+	if (input_) {
+		delete input_;
+		input_ = nullptr;
+	}
+
+	if (simulation_) {
+
+		simulation_->CleanUp();
+		delete simulation_;
+		simulation_ = nullptr;
+	}
 }
 
 
@@ -20,9 +37,10 @@ Application::~Application()
 
 void Application::Init(Input* newInput) {
 
+	// get reference to input
 	input_ = newInput;
 
-	// OpenGL setttings
+	// OpenGL settings
 	glShadeModel(GL_SMOOTH);
 	glClearColor(0.39f, 0.58f, 93.0f, 1.0f);
 	glClearDepth(1.0f);
@@ -33,51 +51,44 @@ void Application::Init(Input* newInput) {
 	// create camera
 	camera_.Init(input_);
 
-	// create renderer
-	// create simulation poop
-	// start threads
-
-	simulation_ = new BruteForce();
+	// Create and start simulation
+	simulation_ = new BarnesHutCPU();
 	simulation_->Init();
 	simulation_->Reset();
-}
-
-
-void Application::CleanUp() {
-
-	// delete resources
 }
 
 
 bool Application::Update(float frameTime) {
 
 
+	// Check user input
 	CheckInput(frameTime);
-	// check events
+
+	// Update the camera
 	camera_.Update(frameTime);
-	// check inputs
-	// update camera
 
 	return true;
 }
 
 void Application::CheckInput(float frameTime) {
 
+	// Reset the simulation when 'r' is pressed
 	if (input_->IsKeyDown('r')) {
 
 		simulation_->Reset();
 		input_->SetKeyUp('r');
 	}
 
+	// exit the application if escape is pressed
 	if (input_->IsKeyDown(VK_ESCAPE)) {
+
 		exit(0);
 	}
 }
 
 bool Application::SimulationStep(float t, float dt) {
 
-	// do a time step
-
+	// do a time step in the simulation
 	simulation_->TimeStep(dt);
 
 	return true;
@@ -89,21 +100,14 @@ bool Application::Render(float alpha) {
 	// render the poops
 	// draw all the things
 
-	
+	// Load the identity matrix
 	glLoadIdentity();
 
+	// Update glut lookat using camera
 	camera_.SetGluLookAt();
 
-
-	//glutSolidSphere(3, 20, 20);
-
+	// Render the simulation
 	simulation_->Render(alpha);
-
-	//glBegin(GL_TRIANGLES);
-	//	glVertex3f(-2, -2, -5.0f);
-	//	glVertex3f(-2, 0.0, -5.0f);
-	//	glVertex3f(0.0, 2, -5.0f);
-	//glEnd();
 
 	return true;
 }

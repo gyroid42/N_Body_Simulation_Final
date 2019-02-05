@@ -81,7 +81,7 @@ public:
 	inline State CurrentState() { return currentState_; }
 
 	// Setters
-	void SetColour(sf::Vector3f rgb);
+	inline void SetColour(sf::Vector3f rgb) { colour_ = rgb; }
 	void SetMass(float newMass);
 
 private:

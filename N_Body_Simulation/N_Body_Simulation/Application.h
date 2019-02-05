@@ -23,7 +23,6 @@ public:
 	~Application();
 
 	void Init(Input* newInput);
-	void CleanUp();
 
 
 	// Update called each frame
