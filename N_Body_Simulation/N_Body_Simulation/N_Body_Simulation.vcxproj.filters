@@ -1,123 +1,131 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
     <Filter Include="Resource Files">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Simulation">
+      <UniqueIdentifier>{11502d00-dc60-495e-b9e0-6d397bbca343}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Simulation\BarnesHut">
+      <UniqueIdentifier>{e48ac6fc-79a3-4e1d-a8f7-a0b6a9fc1be5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Simulation\BruteForce">
+      <UniqueIdentifier>{85929b1e-83b9-4695-976c-5c702eab8e5b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Multi-threading">
+      <UniqueIdentifier>{84e34f49-7f78-4742-99ae-d323286e3247}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Main.cpp">
+    <ClCompile Include="Application.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Application.cpp">
+    <ClCompile Include="BarnesHut.cpp">
+      <Filter>Source Files\Simulation\BarnesHut</Filter>
+    </ClCompile>
+    <ClCompile Include="BarnesHutCPU.cpp">
+      <Filter>Source Files\Simulation\BarnesHut</Filter>
+    </ClCompile>
+    <ClCompile Include="PartitionTree.cpp">
+      <Filter>Source Files\Simulation\BarnesHut</Filter>
+    </ClCompile>
+    <ClCompile Include="Partition.cpp">
+      <Filter>Source Files\Simulation\BarnesHut</Filter>
+    </ClCompile>
+    <ClCompile Include="BruteForce.cpp">
+      <Filter>Source Files\Simulation\BruteForce</Filter>
+    </ClCompile>
+    <ClCompile Include="TaskBruteForceCPU.cpp">
+      <Filter>Source Files\Simulation\BruteForce</Filter>
+    </ClCompile>
+    <ClCompile Include="Body.cpp">
+      <Filter>Source Files\Simulation</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsUtil.cpp">
+      <Filter>Source Files\Simulation</Filter>
+    </ClCompile>
+    <ClCompile Include="Simulation.cpp">
+      <Filter>Source Files\Simulation</Filter>
+    </ClCompile>
+    <ClCompile Include="TaskIntegrateBody.cpp">
+      <Filter>Source Files\Simulation</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Input.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PhysicsUtil.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Body.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="BruteForce.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simulation.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="BarnesHut.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="BarnesHutCPU.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Partition.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PartitionTree.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ThreadFarm.cpp">
+    <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Semaphore.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Multi-threading</Filter>
     </ClCompile>
     <ClCompile Include="Task.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Multi-threading</Filter>
     </ClCompile>
-    <ClCompile Include="TaskBruteForceCPU.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TaskIntegrateBody.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="ThreadFarm.cpp">
+      <Filter>Source Files\Multi-threading</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="SETTINGS.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="Input.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PhysicsUtil.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Body.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BruteForce.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simulation.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="BarnesHut.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files\Simulation\BarnesHut</Filter>
     </ClInclude>
     <ClInclude Include="BarnesHutCPU.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files\Simulation\BarnesHut</Filter>
     </ClInclude>
-    <ClInclude Include="Partition.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PartitionTree.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ThreadFarm.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Semaphore.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Task.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="BruteForce.h">
+      <Filter>Source Files\Simulation\BruteForce</Filter>
     </ClInclude>
     <ClInclude Include="TaskBruteForceCPU.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files\Simulation\BruteForce</Filter>
+    </ClInclude>
+    <ClInclude Include="Semaphore.h">
+      <Filter>Source Files\Multi-threading</Filter>
+    </ClInclude>
+    <ClInclude Include="Task.h">
+      <Filter>Source Files\Multi-threading</Filter>
+    </ClInclude>
+    <ClInclude Include="ThreadFarm.h">
+      <Filter>Source Files\Multi-threading</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsUtil.h">
+      <Filter>Source Files\Simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation.h">
+      <Filter>Source Files\Simulation</Filter>
     </ClInclude>
     <ClInclude Include="TaskIntegrateBody.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files\Simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="Partition.h">
+      <Filter>Source Files\Simulation\BarnesHut</Filter>
+    </ClInclude>
+    <ClInclude Include="PartitionTree.h">
+      <Filter>Source Files\Simulation\BarnesHut</Filter>
+    </ClInclude>
+    <ClInclude Include="Body.h">
+      <Filter>Source Files\Simulation</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
