@@ -54,6 +54,10 @@ void PartitionTree::Insert(Body* body) {
 	//								 //
 	//	MAKE THIS METHOD THREAD SAFE //
 	//								 //
+	//	isExternal not safe			 //
+	//	total mass and CoM not safe	 //
+	//	children_[i] not safe		 //
+	//								 //
 	///////////////////////////////////
 
 	// if no body here add new body
