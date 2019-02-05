@@ -50,6 +50,12 @@ PartitionTree::~PartitionTree()
 
 void PartitionTree::Insert(Body* body) {
 
+	////////////// TO DO //////////////
+	//								 //
+	//	MAKE THIS METHOD THREAD SAFE //
+	//								 //
+	///////////////////////////////////
+
 	// if no body here add new body
 	if (totalMass_ == 0.0f) {
 
