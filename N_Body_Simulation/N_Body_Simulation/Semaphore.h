@@ -15,6 +15,7 @@ public:
 	~Semaphore();
 
 	inline void SetCounter(int newCount) { counter_ = newCount; }
+	inline void ReduceCounter(int amount = 1) { counter_ -= amount; }
 
 	void Wait();
 	void Signal(int n = 1);

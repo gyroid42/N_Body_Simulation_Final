@@ -23,3 +23,8 @@ constexpr auto SIMULATION_SPEED = 1.0f;
 
 constexpr auto INTERPOLATE_BETWEEN_FRAMES = true;
 
+
+
+#define MULTITHREADING		true
+#define NUM_OF_THREADS		8
+

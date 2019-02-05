@@ -1,5 +1,6 @@
 #include "BruteForce.h"
-
+#include "TaskBruteForceCPU.h"
+#include "TaskIntegrateBody.h"
 
 
 BruteForce::BruteForce()
@@ -11,6 +12,39 @@ BruteForce::~BruteForce()
 {
 }
 
+
+void BruteForce::Init() {
+
+	Simulation::Init();
+
+
+	if (MULTITHREADING) {
+
+		farm_ = new ThreadFarm();
+		farm_->SetThreadCount(NUM_OF_THREADS);
+		farm_->Run();
+
+		timeStepFunc_ = &BruteForce::TimeStepMulti;
+	}
+	else {
+
+		timeStepFunc_ = &BruteForce::TimeStepSingle;
+	}
+
+}
+
+void BruteForce::CleanUp() {
+
+	Simulation::CleanUp();
+
+	if (MULTITHREADING) {
+
+		if (farm_) {
+
+			farm_->End();
+		}
+	}
+}
 
 
 void BruteForce::TimeStep(float dt) {
@@ -31,6 +65,11 @@ void BruteForce::TimeStep(float dt) {
 
 	}*/
 
+	(this->*timeStepFunc_)(dt);
+
+}
+
+void BruteForce::TimeStepSingle(float dt) {
 
 	for (auto body1 : bodies_) {
 
@@ -49,7 +88,30 @@ void BruteForce::TimeStep(float dt) {
 
 		body->Integrate_SemiImplicitEuler(dt);
 	}
+}
 
+
+void BruteForce::TimeStepMulti(float dt) {
+
+	for (auto body : bodies_) {
+
+		TaskBruteForceCPU* newTask = new TaskBruteForceCPU();
+		newTask->Init(body, this);
+		farm_->AddTask(newTask);
+	}
+	
+	farm_->WaitUntilTasksFinished();
+
+	for (auto body : bodies_) {
+
+		TaskIntegrateBody* newTask = new TaskIntegrateBody();
+		newTask->Init(body, dt);
+		farm_->AddTask(newTask);
+	}
+	
+	farm_->WaitUntilTasksFinished();
+
+	int meh = 0;
 }
 
 

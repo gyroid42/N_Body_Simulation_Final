@@ -138,6 +138,7 @@
     <ClCompile Include="Simulation.cpp" />
     <ClCompile Include="Task.cpp" />
     <ClCompile Include="TaskBruteForceCPU.cpp" />
+    <ClCompile Include="TaskIntegrateBody.cpp" />
     <ClCompile Include="ThreadFarm.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -156,6 +157,7 @@
     <ClInclude Include="Simulation.h" />
     <ClInclude Include="Task.h" />
     <ClInclude Include="TaskBruteForceCPU.h" />
+    <ClInclude Include="TaskIntegrateBody.h" />
     <ClInclude Include="ThreadFarm.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

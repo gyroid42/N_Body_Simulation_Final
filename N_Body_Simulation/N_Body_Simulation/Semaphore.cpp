@@ -37,12 +37,21 @@ void Semaphore::Wait() {
 
 void Semaphore::Signal(int n) {
 
+
+	int notifyCount = 0;
+
 	{
 		unique_lock<mutex> lck(counterMutex_);
+		if (counter_ < 0) {
+			notifyCount = counter_ + n;
+		}
+		else {
+			notifyCount = n;
+		}
 		counter_ += n;
 	}
 
-	for (int i = 0; i < n; i++) {
+	for (int i = 0; i < notifyCount; i++) {
 
 		lock_.notify_one();
 	}

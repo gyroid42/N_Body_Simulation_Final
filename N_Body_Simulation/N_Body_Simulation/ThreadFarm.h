@@ -14,13 +14,17 @@ public:
 	~ThreadFarm();
 
 
-	inline void SetThreadCount(unsigned int newCount) { threadCount_ = newCount; }
 
 	void AddTask(Task* newTask);
 
 
 	void Run();
 	void End();
+
+
+	inline void SetThreadCount(unsigned int newCount) { threadCount_ = newCount; }
+	
+	void WaitUntilTasksFinished();
 
 private:
 
@@ -34,6 +38,10 @@ private:
 
 	Semaphore task_semaphore_;
 	std::mutex task_mutex_;
+
+	std::mutex allTasksFinishedMutex_;
+	std::condition_variable tasksFinishedLock_;
+	int tasksRunning_;
 
 	bool running_;
 };

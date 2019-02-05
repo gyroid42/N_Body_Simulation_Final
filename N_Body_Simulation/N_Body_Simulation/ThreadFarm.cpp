@@ -6,6 +6,7 @@ ThreadFarm::ThreadFarm()
 {
 	threadCount_ = 0;
 	running_ = false;
+	tasksRunning_ = 0;
 }
 
 
@@ -56,10 +57,20 @@ void ThreadFarm::Worker() {
 
 			task = tasks_.front();
 			tasks_.pop();
+			tasksRunning_++;
 		}
 
-		task->run();
+		task->Run();
 		delete task;
+
+		{
+			unique_lock<mutex> lock(task_mutex_);
+			tasksRunning_--;
+			if (tasksRunning_ == 0 && tasks_.size() == 0) {
+
+				tasksFinishedLock_.notify_all();
+			}
+		}
 	}
 }
 
@@ -74,5 +85,16 @@ void ThreadFarm::End() {
 	for (auto thread : threads_) {
 
 		thread->join();
+	}
+
+}
+
+
+void ThreadFarm::WaitUntilTasksFinished() {
+
+	if (tasks_.size() > 0) {
+
+		unique_lock<mutex> lck(allTasksFinishedMutex_);
+		tasksFinishedLock_.wait(lck);
 	}
 }

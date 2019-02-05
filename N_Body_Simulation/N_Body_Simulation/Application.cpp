@@ -37,7 +37,7 @@ void Application::Init(Input* newInput) {
 	// create simulation poop
 	// start threads
 
-	simulation_ = new BarnesHutCPU();
+	simulation_ = new BruteForce();
 	simulation_->Init();
 	simulation_->Reset();
 }

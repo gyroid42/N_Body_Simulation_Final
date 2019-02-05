@@ -63,6 +63,9 @@
     <ClCompile Include="TaskBruteForceCPU.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TaskIntegrateBody.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -111,6 +114,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TaskBruteForceCPU.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TaskIntegrateBody.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -3,9 +3,9 @@ class Task
 {
 public:
 	Task();
-	virtual ~Task() = 0;
+	virtual ~Task();
 
 
-	virtual void Run() = 0;
+	virtual void Run();
 };
 
