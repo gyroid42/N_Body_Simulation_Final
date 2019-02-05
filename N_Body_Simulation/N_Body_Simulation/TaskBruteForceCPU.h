@@ -1,8 +1,12 @@
 #pragma once
+
+// include parent class
 #include "Task.h"
 
+// forward declarations
 class BruteForce;
 class Body;
+
 
 class TaskBruteForceCPU :
 	public Task
@@ -17,6 +21,7 @@ public:
 
 private:
 
+	// references to body and simulation
 	Body* body_;
 	BruteForce* simulation_;
 };

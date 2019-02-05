@@ -52,7 +52,7 @@ float PhysicsUtil::Normalise(sf::Vector3f& vector) {
 void PhysicsUtil::AddForcesBetween(Body* body1, Body* body2) {
 
 
-	sf::Vector3f distanceVector = PhysicsUtil::VectorBetween(body1->CurrentState().position_, body2->CurrentState().position_);
+	sf::Vector3f distanceVector = PhysicsUtil::VectorBetween(body1->Position(), body2->Position());
 	float distance = PhysicsUtil::Normalise(distanceVector);
 	distance += dampeningFactor;
 

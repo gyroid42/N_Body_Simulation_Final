@@ -1,9 +1,12 @@
 #include "BruteForce.h"
 #include "TaskBruteForceCPU.h"
 #include "TaskIntegrateBody.h"
+#include "Body.h"
+#include "PhysicsUtil.h"
 
 
-BruteForce::BruteForce()
+BruteForce::BruteForce() :
+	farm_(nullptr)
 {
 }
 
@@ -42,6 +45,8 @@ void BruteForce::CleanUp() {
 		if (farm_) {
 
 			farm_->End();
+			delete farm_;
+			farm_ = nullptr;
 		}
 	}
 }

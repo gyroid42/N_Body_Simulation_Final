@@ -1,7 +1,8 @@
 #pragma once
 
-
+// include parent class
 #include <mutex>
+
 
 using std::condition_variable;
 using std::mutex;
@@ -14,13 +15,14 @@ public:
 	Semaphore(int count = 0);
 	~Semaphore();
 
-	inline void SetCounter(int newCount) { counter_ = newCount; }
-	inline void ReduceCounter(int amount = 1) { counter_ -= amount; }
-
 	void Wait();
 	void Signal(int n = 1);
 
 	void SignalAll();
+
+
+	inline void SetCounter(int newCount) { counter_ = newCount; }
+	inline void ReduceCounter(int amount = 1) { counter_ -= amount; }
 
 private:
 
