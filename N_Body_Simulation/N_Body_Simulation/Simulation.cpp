@@ -23,54 +23,64 @@ Simulation::~Simulation()
 
 void Simulation::Init() {
 
+	// get seed for random number generator
 	srand(time(NULL));
 
+	// set body count to number of random bodies
 	bodyCount_ = NUM_RAND_BODIES;
 }
 
 void Simulation::CleanUp() {
 
+	// delete all the bodies in teh simulation
 	CleanUpBodies();
 }
 
 void Simulation::CleanUpBodies() {
 
+	// loop for each body and delete it
 	for (auto body : bodies_) {
 
 		delete body;
 		body = nullptr;
 	}
 
+	// clear the body list
 	bodies_.clear();
-
-
-	return;
 }
 
 
 bool Simulation::GenerateAsteroids(int numAsteroids) {
 
-	
+	// If adding random bodies
 	if (ADD_RANDOM_BODIES) {
+
+		
 		float lower_bound = 0.0;
 		float upper_bound = 700.0;
 		std::uniform_real_distribution<float> unif(lower_bound, upper_bound);
 		std::default_random_engine re;
 
 
-		for (int i = 0; i < numAsteroids; i++) {
+		for (int i = 0; i < NUM_RAND_BODIES; i++) {
 
+			// create new body
 			Body* newAsteroid = new Body();
 
+			// generate random position
 			sf::Vector3f asteroidPos(
 				static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / RANDOM_BODY_MAX_X)),
 				static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / RANDOM_BODY_MAX_Y)),
 				static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / RANDOM_BODY_MAX_Z))
 			);
 
+			// Initialise the new body
 			newAsteroid->Init(asteroidPos, sf::Vector3f(0.0f, 0.0f, 0.0f), RANDOM_BODY_MASS);
-			//newAsteroid->Init(sf::Vector2<float>(unif(re), unif(re)), sf::Vector2<float>(0.0, 0.0), 10.0f);
+
+			// Set default colour
 			newAsteroid->SetColour(sf::Vector3f(0.0f, 0.0f, 1.0f));
+
+			// Add to bodies list
 			bodies_.push_back(newAsteroid);
 		}
 
@@ -106,18 +116,6 @@ bool Simulation::GenerateAsteroids(int numAsteroids) {
 		bodies_.push_back(satelite4);
 
 	}
-	//bodyCount_ = 2;
-
-	/*
-	Body* asteroid1 = new Body();
-	asteroid1->Init(sf::Vector2f(100.0f, 100.0f), sf::Vector2f(0.0f, 0.0f), 20.0f);
-	bodies_.push_back(asteroid1);
-
-	Body* asteroid2 = new Body();
-	asteroid2->Init(sf::Vector2f(1000.0f, 100.0f), sf::Vector2f(0.0f, 0.0f), 20.0f);
-	bodies_.push_back(asteroid2);
-
-	*/
 
 	return true;
 }
@@ -127,16 +125,18 @@ void Simulation::AddBody(Body* newBody) {
 
 	//newBody->SetColour(sf::Color::Green);
 
+	// add new body to body list
 	bodies_.push_back(newBody);
 }
 
 
 bool Simulation::Reset() {
 
-
+	// delete all teh bodies in the simulation
 	CleanUpBodies();
 
 
+	// generate a new simulation
 	if (!GenerateAsteroids(bodyCount_)) {
 
 		return false;
@@ -147,25 +147,22 @@ bool Simulation::Reset() {
 }
 
 
+// Virtual method
 void Simulation::TimeStep(float dt) {
 
 
-
+	
 }
 
 
 void Simulation::Render(float alpha) {
 
-
+	// loop for each body and draw it
 	for (auto body : bodies_) {
 
 		body->Draw(alpha);
-		//renderer->Draw(*body->Sprite());
 		
 	}
-
-	//glutSolidSphere(20, 20, 20);
-
 }
 
 

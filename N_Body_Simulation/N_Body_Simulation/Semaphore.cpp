@@ -1,3 +1,5 @@
+
+// class header include
 #include "Semaphore.h"
 
 
@@ -17,6 +19,7 @@ void Semaphore::Wait() {
 
 	while (true) {
 
+		// if counter <= 0 thread cannot continue
 		if (counter_ <= 0) {
 
 			unique_lock<mutex> lck(*this);
@@ -25,10 +28,12 @@ void Semaphore::Wait() {
 
 		unique_lock<mutex> lck(counterMutex_);
 
+		// if counter is <= 0 loop back to start
 		if (counter_ <= 0) {
 			continue;
 		}
 
+		// reduce counter by 1 and leave loop
 		counter_--;
 		break;
 	}

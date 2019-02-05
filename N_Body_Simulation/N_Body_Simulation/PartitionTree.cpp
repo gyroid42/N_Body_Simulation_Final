@@ -1,19 +1,32 @@
+
+// class header include
 #include "PartitionTree.h"
+
+// standard library include
+#include <iostream>
+
+// my class includes
 #include "Body.h"
 #include "PhysicsUtil.h"
-#include <iostream>
 
 
 PartitionTree::PartitionTree(Partition newPartition) :
 	body_(nullptr)
 {
+
+	// set all children to null
 	for (int i = 0; i < 8; i++) {
 
 		children_[i] = nullptr;
 	}
 
+	// set partition
 	partition_ = newPartition;
+
+	// tree just created therefore it is external
 	isExternal_ = true;
+
+	// set default total mass and center of mass
 	totalMass_ = 0.0f;
 	centerOfMass_ = sf::Vector3f(0.0f, 0.0f, 0.0f);
 }

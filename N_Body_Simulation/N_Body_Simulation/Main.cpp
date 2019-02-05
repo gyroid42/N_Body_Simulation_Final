@@ -1,7 +1,5 @@
 
 
-
-
 #ifndef WIN32 // if using windows then do windows specific stuff.
 #define WIN32_LEAN_AND_MEAN // remove MFC overhead from windows.h which can cause slowness
 #define WIN32_EXTRA_LEAN
@@ -10,13 +8,13 @@
 #endif
 
 
-
+// glut includes
 #include <GL\glut.h>
 #include <GL\GL.h>
 #include <GL\GLU.h>
 
 
-
+// my class includes
 #include "Application.h"
 #include "Input.h"
 #include "SETTINGS.h"
@@ -26,18 +24,23 @@ Application* app;
 Input* input;
 
 
-
+// define target frameTime and maximum frame time
 const float kTargetFrameTime = 1.0f / 60.0f;
 const float kTooLargeFrameTime = 1.0f / 10.0f;
 
 
+// total time since start of simulation
 float t = 0.0f;
+
+// delta time each physics step
 const float dt = 1.0f / STEPS_PER_SECOND;
 
 
+// accumulator used to determine when a physics step is calculated
 float accumulator = 0.0f;
 
 
+// time of clock last frame
 UINT64 clock_last_frame;
 
 
@@ -59,42 +62,57 @@ float GetFrameTime() {
 
 void Render() {
 
-
+	// Get time this frame
 	float frameTime = GetFrameTime();
 
+	// If frame time is above the maximum then set it to the target
 	if (frameTime > kTooLargeFrameTime) {
 		frameTime = kTargetFrameTime;
 	}
 
+	// add frametime to accumulator
 	accumulator += frameTime;
 
+	// while the accumulator is larger than delta time a physics step needs to be calculated
 	while (accumulator >= dt) {
 
+		// perform a physics step
 		app->SimulationStep(t, dt * SIMULATION_SPEED);
+
+		// reduce the accumulator by delta time and increase the total time
 		accumulator -= dt;
 		t += dt * SIMULATION_SPEED;
 	}
 
+	// Update the application
 	app->Update(frameTime);
 
 
+	// clear the render target
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
+	// If application is interpolating between frames
 	if (INTERPOLATE_BETWEEN_FRAMES) {
 
+		// calculate how close current time is to next physics step
 		const float alpha = accumulator / dt;
+
+		// render application using alpha calculated
 		app->Render(alpha);
 	}
 	else {
 		
+		// not interpolating therefore use alpha = 1 which will draw the most current position
 		app->Render(1.0f);
 	}
 
 
+	// draw to screen
 	glutSwapBuffers();
 }
 
+// Method to resize window
 void Resize(int w, int h) {
 
 	if (app) {
@@ -167,9 +185,10 @@ void ProcessMouseButtons(int button, int state, int x, int y) {
 
 void Setup() {
 
+	// set buffer clear colour
 	glClearColor(0.0f, 1.0f, 1.0f, 1.0f);
 
-
+	// setup glut functions
 	glutDisplayFunc(Render);
 	glutReshapeFunc(Resize);
 	glutIdleFunc(Render);
@@ -192,19 +211,21 @@ void Setup() {
 int main(int argc, char *argv[])
 {
 
+	// Initialise glut and create window
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
 	glutInitWindowSize(WINDOW_SIZE_X, WINDOW_SIZE_Y);
 	glutCreateWindow("N body boiz");
 
+	// setup glut functions
 	Setup();
 
-
-
+	// create Input and application
 	input = new Input();
 	app = new Application();
 	app->Init(input);
 
+	// enter main loop
 	glutMainLoop();
 
 
