@@ -74,6 +74,12 @@
     <ClCompile Include="ThreadFarm.cpp">
       <Filter>Source Files\Multi-threading</Filter>
     </ClCompile>
+    <ClCompile Include="TaskUpdateForces.cpp">
+      <Filter>Source Files\Simulation\BarnesHut</Filter>
+    </ClCompile>
+    <ClCompile Include="TaskInsertBody.cpp">
+      <Filter>Source Files\Simulation\BarnesHut</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -126,6 +132,12 @@
     </ClInclude>
     <ClInclude Include="Body.h">
       <Filter>Source Files\Simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="TaskUpdateForces.h">
+      <Filter>Source Files\Simulation\BarnesHut</Filter>
+    </ClInclude>
+    <ClInclude Include="TaskInsertBody.h">
+      <Filter>Source Files\Simulation\BarnesHut</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

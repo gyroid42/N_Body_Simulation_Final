@@ -21,7 +21,7 @@ public:
 
 private:
 
-	// references to body and simulation
+	// references to body and partition tree
 	Body* body_;
 	PartitionTree* root_;
 

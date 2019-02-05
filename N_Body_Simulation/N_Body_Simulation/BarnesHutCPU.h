@@ -3,6 +3,9 @@
 // include parent class
 #include "BarnesHut.h"
 
+// my class includes
+#include "ThreadFarm.h"
+
 class BarnesHutCPU :
 	public BarnesHut
 {
@@ -22,5 +25,15 @@ protected:
 	// override PartitionSpace and CalculateForceOnBody from BarnesHut
 	void PartitionSpace();
 	void CalculateForceOnBody(Body* body);
+
+	// TimeStep methods depending on whether mult-threading is being used
+	void TimeStepMulti(float dt);
+	void TimeStepSingle(float dt);
+
+	// farm for managing threads and providing tasks
+	ThreadFarm* farm_;
+
+	// function pointer to which time step is being used
+	void (BarnesHutCPU::*timeStepFunc_)(float);
 };
 
