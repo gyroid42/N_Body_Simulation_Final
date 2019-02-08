@@ -67,6 +67,8 @@ bool Application::Update(float frameTime) {
 	// Update the camera
 	camera_.Update(frameTime);
 
+	sprintf_s(fps_, "FPS: %4.2f", 1.0f / frameTime);
+
 	return true;
 }
 
@@ -109,6 +111,8 @@ bool Application::Render(float alpha) {
 	// Render the simulation
 	simulation_->Render(alpha);
 
+	DisplayText(-1.f, 0.96f, 1.f, 0.f, 0.f, fps_);
+
 	return true;
 }
 
@@ -136,4 +140,41 @@ void Application::Resize(int w, int h) {
 
 	glMatrixMode(GL_MODELVIEW);
 }
+
+
+
+
+
+void Application::DisplayText(float x, float y, float r, float g, float b, char* string) {
+
+	// Get Lenth of string
+	int j = strlen(string);
+
+	// Swap to 2D rendering
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(-1.0, 1.0, -1.0, 1.0, 5, 100);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	// Orthographic lookAt (along the z-axis).
+	gluLookAt(0.0f, 0.0f, 10.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+
+	// Set text colour and position.
+	glColor3f(r, g, b);
+	glRasterPos2f(x, y);
+	// Render text.
+	for (int i = 0; i < j; i++) {
+		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, string[i]);
+	}
+	// Reset colour to white.
+	glColor3f(1.f, 1.f, 1.f);
+
+	// Swap back to 3D rendering.
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluPerspective(fov_, ((float)width_ / (float)height_), nearPlane_, farPlane_);
+	glMatrixMode(GL_MODELVIEW);
+}
+
+
 

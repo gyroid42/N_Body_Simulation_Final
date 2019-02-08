@@ -10,6 +10,13 @@
 #include "PhysicsUtil.h"
 
 
+// testing
+#include <chrono>
+#include <iostream>
+
+typedef std::chrono::steady_clock the_clock;
+
+
 BruteForce::BruteForce() :
 	farm_(nullptr)
 {
@@ -64,12 +71,23 @@ void BruteForce::CleanUp() {
 
 void BruteForce::TimeStep(float dt) {
 
+	the_clock::time_point start = the_clock::now();
+
 	// Call the TimeStep method being used
 	(this->*timeStepFunc_)(dt);
 
+	the_clock::time_point end = the_clock::now();
+
+	//std::cout << "total time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
+
+	
 }
 
 void BruteForce::TimeStepSingle(float dt) {
+
+
+	the_clock::time_point start = the_clock::now();
+
 
 	// Loop for each body
 	for (auto body1 : bodies_) {
@@ -87,15 +105,33 @@ void BruteForce::TimeStepSingle(float dt) {
 		}
 	}
 
+	the_clock::time_point end = the_clock::now();
+
+	std::cout << "force time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
+
+	start = the_clock::now();
+
+
 	// Loop for each body and integrate it
 	for (auto body : bodies_) {
 
 		body->Integrate_SemiImplicitEuler(dt);
 	}
+
+	end = the_clock::now();
+
+
+	std::cout << "integrate time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
+
 }
 
 
 void BruteForce::TimeStepMulti(float dt) {
+
+
+	the_clock::time_point start = the_clock::now();
+
+
 
 	// Add a BruteForceCPU task for each body to the thread farm
 	for (auto body : bodies_) {
@@ -108,16 +144,32 @@ void BruteForce::TimeStepMulti(float dt) {
 	// Wait until all the forces on each body has been calculated
 	farm_->WaitUntilTasksFinished();
 
+
+
+	the_clock::time_point end = the_clock::now();
+
+	std::cout << "force time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
+
+	start = the_clock::now();
+
 	// Add an integration task for each body to the thread farm
 	for (auto body : bodies_) {
 
-		TaskIntegrateBody* newTask = new TaskIntegrateBody();
-		newTask->Init(body, dt);
-		farm_->AddTask(newTask);
+		body->Integrate_SemiImplicitEuler(dt);
+
+
+		//TaskIntegrateBody* newTask = new TaskIntegrateBody();
+		//newTask->Init(body, dt);
+		//farm_->AddTask(newTask);
 	}
 	
 	// Wait until all the bodies have been integrated
-	farm_->WaitUntilTasksFinished();
+	//farm_->WaitUntilTasksFinished();
+
+	end = the_clock::now();
+
+
+	std::cout << "integrate time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
 }
 
 

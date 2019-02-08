@@ -44,6 +44,8 @@ protected:
 	void CheckInput(float frameTime);
 
 
+	void DisplayText(float x, float y, float r, float g, float b, char* string);
+
 	// variables to construct projection matrix
 	int width_, height_;
 	float fov_, nearPlane_, farPlane_;
@@ -56,5 +58,8 @@ protected:
 
 	// Simulation is the object which controls the whole n bodies simulation
 	Simulation* simulation_;
+
+
+	char fps_[40];
 };
 

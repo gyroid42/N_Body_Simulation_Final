@@ -13,6 +13,12 @@
 #include "TaskUpdateForces.h"
 
 
+// testing
+#include <chrono>
+
+typedef std::chrono::steady_clock the_clock;
+
+
 BarnesHutCPU::BarnesHutCPU() :
 	farm_(nullptr)
 {
@@ -29,7 +35,7 @@ void BarnesHutCPU::Init() {
 	BarnesHut::Init();
 
 	// Create the partition tree root
-	root_ = Partition(sf::Vector3f(0.0f, 0.0f, 0.0f), 10000.0f);
+	root_ = Partition(sf::Vector3f(0.0f, 0.0f, 0.0f), 100000.0f);
 
 	// If Multi-threading then start the thread farm
 	// and set the TimeStep function to the multi-threaded impelmentation
@@ -68,8 +74,17 @@ void BarnesHutCPU::CleanUp() {
 
 void BarnesHutCPU::TimeStep(float dt) {
 
+	the_clock::time_point start = the_clock::now();
+
+
 	// Call the TimeStep method being used
 	(this->*timeStepFunc_)(dt);
+
+
+	the_clock::time_point end = the_clock::now();
+
+
+	//std::cout << "total time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl << std::endl;
 }
 
 void BarnesHutCPU::TimeStepSingle(float dt) {
@@ -79,11 +94,20 @@ void BarnesHutCPU::TimeStepSingle(float dt) {
 	// create intial tree using partition root
 	PartitionTree tree(root_);
 
+	the_clock::time_point start = the_clock::now();
+
 	// insert each body into the partition tree
 	for (auto body : bodies_) {
 
 		tree.Insert(body);
 	}
+
+	the_clock::time_point end = the_clock::now();
+
+
+	std::cout << "insert time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
+
+	start = the_clock::now();
 
 
 	// Calculate for acting on each body
@@ -97,12 +121,25 @@ void BarnesHutCPU::TimeStepSingle(float dt) {
 		tree.UpdateForceOnBody(body);
 	}
 
+	end = the_clock::now();
+
+
+	std::cout << "force time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
+
+	start = the_clock::now();
+
 	// loop for each body and integrate
 
 	for (auto body : bodies_) {
 
 		body->Integrate_SemiImplicitEuler(dt);
 	}
+
+
+	end = the_clock::now();
+
+
+	std::cout << "integrate time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
 }
 
 
@@ -113,8 +150,12 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 	// create intial tree using partition root
 	PartitionTree tree(root_);
 
+	the_clock::time_point start = the_clock::now();
+
 	// Add an Insert task for each body to farm
 	for (auto body : bodies_) {
+
+		//tree.Insert(body);
 
 		TaskInsertBody* newTask = new TaskInsertBody();
 		newTask->Init(body, &tree);
@@ -124,8 +165,19 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 	// Wait until all bodies are added
 	farm_->WaitUntilTasksFinished();
 
+	the_clock::time_point end = the_clock::now();
+
+
+	std::cout << "insert time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
+
+	start = the_clock::now();
 	// Add an UpdateForces task for each body
 	for (auto body : bodies_) {
+
+		// reset body force before applying forces
+		//body->ResetForce();
+
+		//tree.UpdateForceOnBody(body);
 
 		TaskUpdateForces* newTask = new TaskUpdateForces();
 		newTask->Init(body, &tree);
@@ -135,16 +187,29 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 	// Wait until all bodies are added
 	farm_->WaitUntilTasksFinished();
 
+	end = the_clock::now();
+
+	std::cout << "force time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
+
+	start = the_clock::now();
+
 	// Add an integration task for each body
 	for (auto body : bodies_) {
 
-		TaskIntegrateBody* newTask = new TaskIntegrateBody();
-		newTask->Init(body, dt);
-		farm_->AddTask(newTask);
+		body->Integrate_SemiImplicitEuler(dt);
+
+		//TaskIntegrateBody* newTask = new TaskIntegrateBody();
+		//newTask->Init(body, dt);
+		//farm_->AddTask(newTask);
 	}
 
 	// Wait until all bodies are integrated
-	farm_->WaitUntilTasksFinished();
+	//farm_->WaitUntilTasksFinished();
+
+	end = the_clock::now();
+
+	std::cout << "integrate time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
+
 }
 
 

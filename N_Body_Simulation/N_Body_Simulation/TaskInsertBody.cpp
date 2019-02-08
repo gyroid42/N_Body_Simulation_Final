@@ -26,5 +26,5 @@ void TaskInsertBody::Init(Body* newBody, PartitionTree* newRoot) {
 void TaskInsertBody::Run() {
 
 	// run method for adding body into partition tree
-	root_->Insert(body_);
+	root_->InsertMulti(body_);
 }
