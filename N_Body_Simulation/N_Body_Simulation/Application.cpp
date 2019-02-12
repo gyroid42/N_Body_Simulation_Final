@@ -41,12 +41,12 @@ void Application::Init(Input* newInput) {
 	input_ = newInput;
 
 	// OpenGL settings
-	glShadeModel(GL_SMOOTH);
-	glClearColor(0.39f, 0.58f, 93.0f, 1.0f);
-	glClearDepth(1.0f);
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LEQUAL);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	//glShadeModel(GL_SMOOTH);
+	//glClearColor(0.39f, 0.58f, 93.0f, 1.0f);
+	//glClearDepth(1.0f);
+	//glEnable(GL_DEPTH_TEST);
+	//glDepthFunc(GL_LEQUAL);
+	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	// create camera
 	camera_.Init(input_);
@@ -82,10 +82,10 @@ void Application::CheckInput(float frameTime) {
 	}
 
 	// exit the application if escape is pressed
-	if (input_->IsKeyDown(VK_ESCAPE)) {
+	//if (input_->IsKeyDown(VK_ESCAPE)) {
 
-		exit(0);
-	}
+	//	exit(0);
+	//}
 }
 
 bool Application::SimulationStep(float t, float dt) {
@@ -103,7 +103,7 @@ bool Application::Render(float alpha) {
 	// draw all the things
 
 	// Load the identity matrix
-	glLoadIdentity();
+	//glLoadIdentity();
 
 	// Update glut lookat using camera
 	camera_.SetGluLookAt();
@@ -130,15 +130,15 @@ void Application::Resize(int w, int h) {
 	nearPlane_ = 0.1f;
 	farPlane_ = 10000.0f;
 
-	glMatrixMode(GL_PROJECTION);
+	//glMatrixMode(GL_PROJECTION);
 
-	glLoadIdentity();
+	//glLoadIdentity();
 
-	glViewport(0, 0, w, h);
+	//glViewport(0, 0, w, h);
 
-	gluPerspective(fov_, ratio, nearPlane_, farPlane_);
+	//gluPerspective(fov_, ratio, nearPlane_, farPlane_);
 
-	glMatrixMode(GL_MODELVIEW);
+	//glMatrixMode(GL_MODELVIEW);
 }
 
 
@@ -151,29 +151,29 @@ void Application::DisplayText(float x, float y, float r, float g, float b, char*
 	int j = strlen(string);
 
 	// Swap to 2D rendering
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glOrtho(-1.0, 1.0, -1.0, 1.0, 5, 100);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
+	//glMatrixMode(GL_PROJECTION);
+	//glLoadIdentity();
+	//glOrtho(-1.0, 1.0, -1.0, 1.0, 5, 100);
+	//glMatrixMode(GL_MODELVIEW);
+	//glLoadIdentity();
 	// Orthographic lookAt (along the z-axis).
-	gluLookAt(0.0f, 0.0f, 10.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+	//gluLookAt(0.0f, 0.0f, 10.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
 
 	// Set text colour and position.
-	glColor3f(r, g, b);
-	glRasterPos2f(x, y);
+	//glColor3f(r, g, b);
+	//glRasterPos2f(x, y);
 	// Render text.
 	for (int i = 0; i < j; i++) {
-		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, string[i]);
+	//	glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, string[i]);
 	}
 	// Reset colour to white.
-	glColor3f(1.f, 1.f, 1.f);
+	//glColor3f(1.f, 1.f, 1.f);
 
 	// Swap back to 3D rendering.
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	gluPerspective(fov_, ((float)width_ / (float)height_), nearPlane_, farPlane_);
-	glMatrixMode(GL_MODELVIEW);
+	//glMatrixMode(GL_PROJECTION);
+	//glLoadIdentity();
+	//gluPerspective(fov_, ((float)width_ / (float)height_), nearPlane_, farPlane_);
+	//glMatrixMode(GL_MODELVIEW);
 }
 
 

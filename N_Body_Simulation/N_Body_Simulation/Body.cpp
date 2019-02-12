@@ -3,9 +3,7 @@
 #include "Body.h"
 
 // glut includes
-#include <GL\glut.h>
-#include <GL\GL.h>
-#include <GL\GLU.h>
+
 
 
 // my class includes
@@ -117,13 +115,13 @@ void Body::Draw(float alpha) {
 	State bodyState = InterpolateState(alpha);
 
 	// translate to new position and draw body
-	glPushMatrix();
+	//glPushMatrix();
 	
-		glColor3f(colour_.x, colour_.y, colour_.z);
-		glTranslatef(bodyState.position_.x, bodyState.position_.y, bodyState.position_.z);
-		glutSolidSphere(20, 20, 20);
+	//	glColor3f(colour_.x, colour_.y, colour_.z);
+	//	glTranslatef(bodyState.position_.x, bodyState.position_.y, bodyState.position_.z);
+	//	glutSolidSphere(20, 20, 20);
 
-	glPopMatrix();
+	//glPopMatrix();
 }
 
 

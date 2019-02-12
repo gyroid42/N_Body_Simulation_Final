@@ -9,9 +9,9 @@
 
 
 // glut includes
-#include <GL\glut.h>
-#include <GL\GL.h>
-#include <GL\GLU.h>
+//#include <GL\glut.h>
+//#include <GL\GL.h>
+//#include <GL\GLU.h>
 
 
 // my class includes
@@ -89,7 +89,7 @@ void Render() {
 
 
 	// clear the render target
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
 	// If application is interpolating between frames
@@ -109,7 +109,7 @@ void Render() {
 
 
 	// draw to screen
-	glutSwapBuffers();
+	//glutSwapBuffers();
 }
 
 // Method to resize window
@@ -131,7 +131,7 @@ void ProcessNormalKeys(unsigned char key, int x, int y) {
 
 	// If the ESCAPE key was pressed, exit application
 	if (key == VK_ESCAPE) {
-		exit(0);
+		//exit(0);
 	}
 
 	input->SetKeyDown(key);
@@ -157,27 +157,27 @@ void ProcessPassiveMouseMove(int x, int y) {
 
 void ProcessMouseButtons(int button, int state, int x, int y) {
 
-	if (button == GLUT_LEFT_BUTTON) {
+	//if (button == GLUT_LEFT_BUTTON) {
 
-		button = 0;
-	}
-	else if (button == GLUT_RIGHT_BUTTON) {
+	//	button = 0;
+	//}
+	//else if (button == GLUT_RIGHT_BUTTON) {
 
-		button = 1;
-	}
-	else {
+	//	button = 1;
+	//}
+	//else {
 
-		button = 0;
-	}
+	//	button = 0;
+	//}
 
-	if (state == GLUT_DOWN) {
+	//if (state == GLUT_DOWN) {
 
-		input->SetMouseButton(button, true);
-	}
-	else {
+	//	input->SetMouseButton(button, true);
+	//}
+	//else {
 
-		input->SetMouseButton(button, false);
-	}
+	//	input->SetMouseButton(button, false);
+	//}
 
 }
 
@@ -186,36 +186,36 @@ void ProcessMouseButtons(int button, int state, int x, int y) {
 void Setup() {
 
 	// set buffer clear colour
-	glClearColor(0.0f, 1.0f, 1.0f, 1.0f);
+	//glClearColor(0.0f, 1.0f, 1.0f, 1.0f);
 
 	// setup glut functions
-	glutDisplayFunc(Render);
-	glutReshapeFunc(Resize);
-	glutIdleFunc(Render);
+	//glutDisplayFunc(Render);
+	//glutReshapeFunc(Resize);
+	//glutIdleFunc(Render);
 
 
 	// input callback functions
-	glutKeyboardFunc(ProcessNormalKeys);
-	glutKeyboardUpFunc(ProcessNormalKeysUp);
+	//glutKeyboardFunc(ProcessNormalKeys);
+	//glutKeyboardUpFunc(ProcessNormalKeysUp);
 
 
 	// mouse callbacks
-	glutMotionFunc(ProcessActiveMouseMove);
-	glutPassiveMotionFunc(ProcessPassiveMouseMove);
-	glutMouseFunc(ProcessMouseButtons);
+	//glutMotionFunc(ProcessActiveMouseMove);
+	//glutPassiveMotionFunc(ProcessPassiveMouseMove);
+	//glutMouseFunc(ProcessMouseButtons);
 	
 
 }
 
 
-int main(int argc, char *argv[])
+int mainf(int argc, char *argv[])
 {
 
 	// Initialise glut and create window
-	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
-	glutInitWindowSize(WINDOW_SIZE_X, WINDOW_SIZE_Y);
-	glutCreateWindow("N body boiz");
+	//glutInit(&argc, argv);
+	//glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
+	//glutInitWindowSize(WINDOW_SIZE_X, WINDOW_SIZE_Y);
+	//glutCreateWindow("N body boiz");
 
 	// setup glut functions
 	Setup();
@@ -226,7 +226,7 @@ int main(int argc, char *argv[])
 	app->Init(input);
 
 	// enter main loop
-	glutMainLoop();
+	//glutMainLoop();
 
 
 	return 0;

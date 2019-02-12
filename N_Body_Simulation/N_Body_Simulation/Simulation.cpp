@@ -4,9 +4,9 @@
 #include <ctime>
 //#include "Renderer.h"
 
-#include <GL\glut.h>
-#include <GL\GL.h>
-#include <GL\GLU.h>
+//#include <GL\glut.h>
+//#include <GL\GL.h>
+//#include <GL\GLU.h>
 
 
 Simulation::Simulation() :

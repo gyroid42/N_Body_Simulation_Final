@@ -6,7 +6,7 @@
 #include <math.h>
 
 // glut includes
-#include <GL\glut.h>
+//#include <GL\glut.h>
 
 // my class includes
 #include "Input.h"
@@ -173,7 +173,7 @@ void Camera::Rotate(sf::Vector3f direction, float frameTime) {
 
 void Camera::SetGluLookAt() {
 
-	gluLookAt(pos_.x, pos_.y, pos_.z,
-		lookAt_.x, lookAt_.y, lookAt_.z,
-		up_.x, up_.y, up_.z);
+	//gluLookAt(pos_.x, pos_.y, pos_.z,
+	//	lookAt_.x, lookAt_.y, lookAt_.z,
+	//	up_.x, up_.y, up_.z);
 }

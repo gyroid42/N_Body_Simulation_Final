@@ -80,6 +80,12 @@
     <ClCompile Include="TaskInsertBody.cpp">
       <Filter>Source Files\Simulation\BarnesHut</Filter>
     </ClCompile>
+    <ClCompile Include="MainGLFW.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="glad.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
