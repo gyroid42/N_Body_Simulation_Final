@@ -52,7 +52,17 @@ void Application::Init(Input* newInput) {
 	camera_.Init(input_);
 
 	// Create and start simulation
-	simulation_ = new BarnesHutCPU();
+	switch (SIMULATION_METHOD) {
+	case 0:
+		simulation_ = new BruteForce();
+		break;
+	case 1:
+		simulation_ = new BarnesHutCPU();
+		break;
+	default:
+		simulation_ = new BruteForce();
+		break;
+	}
 	simulation_->Init();
 	simulation_->Reset();
 }

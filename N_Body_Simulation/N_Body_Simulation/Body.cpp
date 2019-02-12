@@ -61,7 +61,7 @@ void Body::AddForce(Body* body) {
 
 	// use F = G*m1*m2 / (d^3) to calculate the force
 	// use the normalised distance vector to get the direction
-	sf::Vector3f force = (PhysicsUtil::G * Mass() * body->Mass() / (distance * distance * distance)) * distanceVector;
+	sf::Vector3f force = (PhysicsUtil::G * Mass() * body->Mass() / (distance * distance)) * distanceVector;
 
 	// Apply force calculated to body
 	AddForce(force);
@@ -74,11 +74,12 @@ void Body::AddForce(sf::Vector3f bodyPos, float bodyMass) {
 	// get the distance between the 2 bodies
 	sf::Vector3f distanceVector = PhysicsUtil::VectorBetween(CurrentState().position_, bodyPos);
 	float distance = PhysicsUtil::Normalise(distanceVector);
+	//float distance = PhysicsUtil::VectorLength(distanceVector);
 	distance += PhysicsUtil::dampeningFactor;
 
 	// use F = G*m1*m2 / (d^3) to calculate the force
 	// use the normalised distance vector to get the direction
-	sf::Vector3f force = (PhysicsUtil::G * Mass() * bodyMass / (distance * distance * distance)) * distanceVector;
+	sf::Vector3f force = (PhysicsUtil::G * Mass() * bodyMass / (distance * distance)) * distanceVector;
 
 	// Apply force calculated to body
 	AddForce(force);

@@ -71,23 +71,34 @@ void BruteForce::CleanUp() {
 
 void BruteForce::TimeStep(float dt) {
 
+
+#if TIMING_STEPS
+
 	the_clock::time_point start = the_clock::now();
+
+#endif
 
 	// Call the TimeStep method being used
 	(this->*timeStepFunc_)(dt);
+
+
+#if TIMING_STEPS
 
 	the_clock::time_point end = the_clock::now();
 
 	//std::cout << "total time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
 
 	
+#endif
 }
 
 void BruteForce::TimeStepSingle(float dt) {
 
+#if TIMING_STEPS
 
 	the_clock::time_point start = the_clock::now();
 
+#endif
 
 	// Loop for each body
 	for (auto body1 : bodies_) {
@@ -105,12 +116,15 @@ void BruteForce::TimeStepSingle(float dt) {
 		}
 	}
 
+#if TIMING_STEPS
+
 	the_clock::time_point end = the_clock::now();
 
 	std::cout << "force time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
 
 	start = the_clock::now();
 
+#endif
 
 	// Loop for each body and integrate it
 	for (auto body : bodies_) {
@@ -118,20 +132,24 @@ void BruteForce::TimeStepSingle(float dt) {
 		body->Integrate_SemiImplicitEuler(dt);
 	}
 
+#if TIMING_STEPS
+
 	end = the_clock::now();
 
 
 	std::cout << "integrate time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
-
+#endif
 }
 
 
 void BruteForce::TimeStepMulti(float dt) {
 
 
+#if TIMING_STEPS
+
 	the_clock::time_point start = the_clock::now();
 
-
+#endif
 
 	// Add a BruteForceCPU task for each body to the thread farm
 	for (auto body : bodies_) {
@@ -145,12 +163,16 @@ void BruteForce::TimeStepMulti(float dt) {
 	farm_->WaitUntilTasksFinished();
 
 
+#if TIMING_STEPS
+
 
 	the_clock::time_point end = the_clock::now();
 
 	std::cout << "force time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
 
 	start = the_clock::now();
+
+#endif
 
 	// Add an integration task for each body to the thread farm
 	for (auto body : bodies_) {
@@ -166,10 +188,15 @@ void BruteForce::TimeStepMulti(float dt) {
 	// Wait until all the bodies have been integrated
 	//farm_->WaitUntilTasksFinished();
 
+
+#if TIMING_STEPS
+
 	end = the_clock::now();
 
 
 	std::cout << "integrate time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
+
+#endif
 }
 
 

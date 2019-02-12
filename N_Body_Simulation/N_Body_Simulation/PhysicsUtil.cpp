@@ -31,6 +31,11 @@ float PhysicsUtil::DistanceToSqr(const sf::Vector3f& pos1, const sf::Vector3f& p
 	return dX*dX + dY*dY + dZ*dZ;
 }
 
+float PhysicsUtil::VectorLength(const sf::Vector3f& vector) {
+
+	return sqrtf(VectorLengthSqr(vector));
+}
+
 float PhysicsUtil::VectorLengthSqr(const sf::Vector3f& vector) {
 
 	return vector.x*vector.x + vector.y*vector.y + vector.z*vector.z;
@@ -59,7 +64,7 @@ void PhysicsUtil::AddForcesBetween(Body* body1, Body* body2) {
 	float distance = PhysicsUtil::Normalise(distanceVector);
 	distance += dampeningFactor;
 
-	sf::Vector3f force = (PhysicsUtil::G * body1->Mass() * body2->Mass() / (distance * distance * distance)) * distanceVector;
+	sf::Vector3f force = (PhysicsUtil::G * body1->Mass() * body2->Mass() / (distance * distance)) * distanceVector;
 
 	body1->AddForce(force);
 	//body2->AddForce(force);

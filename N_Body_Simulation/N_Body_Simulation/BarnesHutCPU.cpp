@@ -74,16 +74,20 @@ void BarnesHutCPU::CleanUp() {
 
 void BarnesHutCPU::TimeStep(float dt) {
 
+
+#if TIMING_STEPS
+
 	the_clock::time_point start = the_clock::now();
 
+#endif
 
 	// Call the TimeStep method being used
 	(this->*timeStepFunc_)(dt);
 
-
+#if TIMING_STEPS
 	the_clock::time_point end = the_clock::now();
 
-
+#endif
 	//std::cout << "total time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl << std::endl;
 }
 
@@ -94,13 +98,19 @@ void BarnesHutCPU::TimeStepSingle(float dt) {
 	// create intial tree using partition root
 	PartitionTree tree(root_);
 
+#if TIMING_STEPS
+
 	the_clock::time_point start = the_clock::now();
+
+#endif
 
 	// insert each body into the partition tree
 	for (auto body : bodies_) {
 
 		tree.Insert(body);
 	}
+
+#if TIMING_STEPS
 
 	the_clock::time_point end = the_clock::now();
 
@@ -109,7 +119,7 @@ void BarnesHutCPU::TimeStepSingle(float dt) {
 
 	start = the_clock::now();
 
-
+#endif
 	// Calculate for acting on each body
 
 	// loop for each body and traverse partition tree
@@ -121,12 +131,16 @@ void BarnesHutCPU::TimeStepSingle(float dt) {
 		tree.UpdateForceOnBody(body);
 	}
 
+#if TIMING_STEPS
+
 	end = the_clock::now();
 
 
 	std::cout << "force time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
 
 	start = the_clock::now();
+
+#endif
 
 	// loop for each body and integrate
 
@@ -135,11 +149,14 @@ void BarnesHutCPU::TimeStepSingle(float dt) {
 		body->Integrate_SemiImplicitEuler(dt);
 	}
 
+#if TIMING_STEPS
 
 	end = the_clock::now();
 
 
 	std::cout << "integrate time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
+
+#endif
 }
 
 
@@ -150,7 +167,11 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 	// create intial tree using partition root
 	PartitionTree tree(root_);
 
+#if TIMING_STEPS
+
 	the_clock::time_point start = the_clock::now();
+
+#endif
 
 	// Add an Insert task for each body to farm
 	for (auto body : bodies_) {
@@ -165,12 +186,17 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 	// Wait until all bodies are added
 	farm_->WaitUntilTasksFinished();
 
+
+#if TIMING_STEPS
+
 	the_clock::time_point end = the_clock::now();
 
 
 	std::cout << "insert time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
 
 	start = the_clock::now();
+
+#endif
 	// Add an UpdateForces task for each body
 	for (auto body : bodies_) {
 
@@ -187,11 +213,16 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 	// Wait until all bodies are added
 	farm_->WaitUntilTasksFinished();
 
+
+#if TIMING_STEPS
+
 	end = the_clock::now();
 
 	std::cout << "force time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
 
 	start = the_clock::now();
+
+#endif
 
 	// Add an integration task for each body
 	for (auto body : bodies_) {
@@ -206,10 +237,14 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 	// Wait until all bodies are integrated
 	//farm_->WaitUntilTasksFinished();
 
+
+#if TIMING_STEPS
+
 	end = the_clock::now();
 
 	std::cout << "integrate time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
 
+#endif
 }
 
 

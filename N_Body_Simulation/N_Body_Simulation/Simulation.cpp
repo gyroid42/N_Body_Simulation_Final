@@ -96,22 +96,22 @@ bool Simulation::GenerateAsteroids(int numAsteroids) {
 		bodies_.push_back(planet);
 
 		Body* satelite = new Body();
-		satelite->Init(sf::Vector3f(0.0f, 0.0f, -100.0f), sf::Vector3f(0.0f, -25.83215f, 0.0f), 10);
+		satelite->Init(sf::Vector3f(0.0f, 0.0f, -100.0f), sf::Vector3f(0.0f, -258.3215f, 0.0f), 100);
 		satelite->SetColour(sf::Vector3f(0.0f, 0.5f, 0.5f));
 		bodies_.push_back(satelite);
 
 		Body* satelite2 = new Body();
-		satelite2->Init(sf::Vector3f(-100.0f, 0.0f, 0.0f), sf::Vector3f(0.0f, -25.83215f, 0.0f), 10);
+		satelite2->Init(sf::Vector3f(-300.0f, 0.0f, 0.0f), sf::Vector3f(0.0f, -149.14199f, 0.0f), 100);
 		satelite2->SetColour(sf::Vector3f(0.0f, 0.5f, 0.5f));
 		bodies_.push_back(satelite2);
 
 		Body* satelite3 = new Body();
-		satelite3->Init(sf::Vector3f(0.0f, 100.0f, 0.0f), sf::Vector3f(-25.83215f, 0.0f, 0.0f), 10);
+		satelite3->Init(sf::Vector3f(0.0f, 500.0f, 0.0f), sf::Vector3f(-115.5249f, 0.0f, 0.0f), 100);
 		satelite3->SetColour(sf::Vector3f(0.0f, 0.5f, 0.5f));
 		bodies_.push_back(satelite3);
 
 		Body* satelite4 = new Body();
-		satelite4->Init(sf::Vector3f(0.0f, -100.0f, 0.0f), sf::Vector3f(25.83215f, 0.0f, 0.0f), 10);
+		satelite4->Init(sf::Vector3f(0.0f, -1000.0f, 0.0f), sf::Vector3f(81.68843f, 0.0f, 0.0f), 100);
 		satelite4->SetColour(sf::Vector3f(0.0f, 0.5f, 0.5f));
 		bodies_.push_back(satelite4);
 
