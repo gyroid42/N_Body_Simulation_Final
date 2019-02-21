@@ -21,6 +21,9 @@
     <Filter Include="Source Files\Multi-threading">
       <UniqueIdentifier>{84e34f49-7f78-4742-99ae-d323286e3247}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Simulation\BarnesHut\Worker Tasks">
+      <UniqueIdentifier>{8c074730-b87e-43da-b813-ca8f5a059bd0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp">
@@ -74,11 +77,20 @@
     <ClCompile Include="ThreadFarm.cpp">
       <Filter>Source Files\Multi-threading</Filter>
     </ClCompile>
-    <ClCompile Include="TaskUpdateForces.cpp">
-      <Filter>Source Files\Simulation\BarnesHut</Filter>
+    <ClCompile Include="Channel.cpp">
+      <Filter>Source Files\Multi-threading</Filter>
     </ClCompile>
     <ClCompile Include="TaskInsertBody.cpp">
-      <Filter>Source Files\Simulation\BarnesHut</Filter>
+      <Filter>Source Files\Simulation\BarnesHut\Worker Tasks</Filter>
+    </ClCompile>
+    <ClCompile Include="TaskInsertManager.cpp">
+      <Filter>Source Files\Simulation\BarnesHut\Worker Tasks</Filter>
+    </ClCompile>
+    <ClCompile Include="TaskUpdateForces.cpp">
+      <Filter>Source Files\Simulation\BarnesHut\Worker Tasks</Filter>
+    </ClCompile>
+    <ClCompile Include="TaskInsertBodyImproved.cpp">
+      <Filter>Source Files\Simulation\BarnesHut\Worker Tasks</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -133,11 +145,23 @@
     <ClInclude Include="Body.h">
       <Filter>Source Files\Simulation</Filter>
     </ClInclude>
-    <ClInclude Include="TaskUpdateForces.h">
-      <Filter>Source Files\Simulation\BarnesHut</Filter>
+    <ClInclude Include="Channel.h">
+      <Filter>Source Files\Multi-threading</Filter>
     </ClInclude>
     <ClInclude Include="TaskInsertBody.h">
-      <Filter>Source Files\Simulation\BarnesHut</Filter>
+      <Filter>Source Files\Simulation\BarnesHut\Worker Tasks</Filter>
+    </ClInclude>
+    <ClInclude Include="TaskInsertManager.h">
+      <Filter>Source Files\Simulation\BarnesHut\Worker Tasks</Filter>
+    </ClInclude>
+    <ClInclude Include="TaskUpdateForces.h">
+      <Filter>Source Files\Simulation\BarnesHut\Worker Tasks</Filter>
+    </ClInclude>
+    <ClInclude Include="BodyChannelData.h">
+      <Filter>Source Files\Simulation\BarnesHut\Worker Tasks</Filter>
+    </ClInclude>
+    <ClInclude Include="TaskInsertBodyImproved.h">
+      <Filter>Source Files\Simulation\BarnesHut\Worker Tasks</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

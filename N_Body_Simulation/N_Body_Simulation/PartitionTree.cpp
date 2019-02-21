@@ -48,6 +48,26 @@ PartitionTree::~PartitionTree()
 
 
 
+void PartitionTree::AddBody(Body* body) {
+
+
+	if (totalMass_ == 0.0f) {
+
+		totalMass_ = body->Mass();
+		centerOfMass_ = body->Position();
+		body_ = body;
+	}
+	else {
+
+		sf::Vector3f totalTimesCenter = totalMass_ * centerOfMass_;
+		sf::Vector3f bodyMassTimesPosition = body->Mass() * body->Position();
+		totalMass_ += body->Mass();
+		centerOfMass_ = totalTimesCenter + bodyMassTimesPosition;
+		centerOfMass_ /= totalMass_;
+	}
+}
+
+
 void PartitionTree::Insert(Body* body) {
 
 	////////////// TO DO //////////////
@@ -261,31 +281,56 @@ void PartitionTree::InsertMulti(Body* body) {
 void PartitionTree::UpdateForceOnBody(Body* body) {
 
 	// If this node is external then add force due to this node since no more child nodes to check
-	if (isExternal_) {
+	if (totalMass_ != 0.0f) {
+		if (isExternal_) {
 
-		if (body != body_) {
+			if (body != body_) {
+
+				body->AddForce(centerOfMass_, totalMass_);
+			}
+		}
+
+		// check if distance and length is appropriate to use this node
+		else if (partition_.Length() / PhysicsUtil::DistanceTo(centerOfMass_, body->Position()) < 1.0f) {
 
 			body->AddForce(centerOfMass_, totalMass_);
 		}
-	}
 
-	// check if distance and length is appropriate to use this node
-	else if (partition_.Length() / PhysicsUtil::DistanceTo(centerOfMass_, body->Position()) < 2.0f) {
+		// node wasn't external or appropriate to use so check the children of this node
+		else {
 
-		body->AddForce(centerOfMass_, totalMass_);
-	}
+			for (int i = 0; i < 8; i++) {
 
-	// node wasn't external or appropriate to use so check the children of this node
-	else {
+				if (children_[i]) {
 
-		for (int i = 0; i < 8; i++) {
-
-			if (children_[i]) {
-
-				children_[i]->UpdateForceOnBody(body);
+					children_[i]->UpdateForceOnBody(body);
+				}
 			}
 		}
 	}
 }
+
+
+void PartitionTree::CreateChildren() {
+
+
+	for (int i = 0; i < 8; i++) {
+
+		if (!children_[i]) {
+
+			children_[i] = new PartitionTree(partition_.GetSubDivision(i));
+		}
+	}
+
+	isExternal_ = false;
+}
+
+
+PartitionTree* PartitionTree::GetChild(int index) {
+
+	return children_[index];
+}
+
+
 
 

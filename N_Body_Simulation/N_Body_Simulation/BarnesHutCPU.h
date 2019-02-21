@@ -5,6 +5,9 @@
 
 // my class includes
 #include "ThreadFarm.h"
+#include "Channel.h"
+#include "Body.h"
+#include "BodyChannelData.h"
 
 class BarnesHutCPU :
 	public BarnesHut
@@ -27,11 +30,18 @@ protected:
 	void CalculateForceOnBody(Body* body);
 
 	// TimeStep methods depending on whether mult-threading is being used
+	void TimeStepMultiImproved(float dt);
 	void TimeStepMulti(float dt);
 	void TimeStepSingle(float dt);
 
 	// farm for managing threads and providing tasks
 	ThreadFarm* farm_;
+
+#if MULTITHREADING
+
+	Channel<BodyChannelData*> bodyChannels_[8];
+
+#endif
 
 	// function pointer to which time step is being used
 	void (BarnesHutCPU::*timeStepFunc_)(float);

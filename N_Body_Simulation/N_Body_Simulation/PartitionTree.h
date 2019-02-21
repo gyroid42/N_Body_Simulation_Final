@@ -27,6 +27,14 @@ public:
 	// Update the force on a given body by traversing the tree
 	void UpdateForceOnBody(Body* body);
 
+
+
+	void AddBody(Body* body);
+
+	void CreateChildren();
+
+	PartitionTree* GetChild(int index);
+
 private:
 
 	// Partitioned space this node contains

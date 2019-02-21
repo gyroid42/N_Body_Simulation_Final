@@ -6,7 +6,7 @@
 
 
 #define ADD_RANDOM_BODIES	true
-#define NUM_RAND_BODIES		600
+#define NUM_RAND_BODIES		1000
 #define RANDOM_BODY_MAX_X	2280.0f
 #define RANDOM_BODY_MAX_Y	2720.0f
 #define RANDOM_BODY_MAX_Z	2720.0f
@@ -31,4 +31,4 @@ constexpr auto INTERPOLATE_BETWEEN_FRAMES = true;
 
 
 
-#define TIMING_STEPS false
+#define TIMING_STEPS true
