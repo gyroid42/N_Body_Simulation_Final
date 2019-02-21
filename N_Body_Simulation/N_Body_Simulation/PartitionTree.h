@@ -57,5 +57,8 @@ private:
 	std::mutex totalMassMutex_;
 	std::mutex isExternalMutex_;
 	std::mutex childrenMutex_[8];
+
+
+	int numBodies_;
 };
 

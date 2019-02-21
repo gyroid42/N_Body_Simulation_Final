@@ -122,8 +122,16 @@ void ThreadFarm::End() {
 
 void ThreadFarm::WaitUntilTasksFinished() {
 
+
+	//bool waiting = false;
+	//{
+	//	unique_lock<mutex> lock(task_mutex_);
+
+	//	waiting = tasks_.size() > 0 || tasksRunning_ > 0;
+	//}
+
 	// if tasks size > 0 then still tasks to complete
-	if (tasks_.size() > 0) {
+	while (tasks_.size() > 0 || tasksRunning_ > 0) {
 
 		unique_lock<mutex> lck(allTasksFinishedMutex_);
 		tasksFinishedLock_.wait(lck);

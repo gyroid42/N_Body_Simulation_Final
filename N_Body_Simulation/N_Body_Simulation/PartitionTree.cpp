@@ -29,6 +29,9 @@ PartitionTree::PartitionTree(Partition newPartition) :
 	// set default total mass and center of mass
 	totalMass_ = 0.0f;
 	centerOfMass_ = sf::Vector3f(0.0f, 0.0f, 0.0f);
+
+
+	numBodies_ = 0;
 }
 
 
@@ -65,6 +68,8 @@ void PartitionTree::AddBody(Body* body) {
 		centerOfMass_ = totalTimesCenter + bodyMassTimesPosition;
 		centerOfMass_ /= totalMass_;
 	}
+
+	numBodies_++;
 }
 
 
@@ -86,6 +91,7 @@ void PartitionTree::Insert(Body* body) {
 		totalMass_ = body->Mass();
 		centerOfMass_ = body->Position();
 		body_ = body;
+		numBodies_++;
 	}
 
 	// if body is present and this isn't an external node
@@ -101,6 +107,7 @@ void PartitionTree::Insert(Body* body) {
 		totalMass_ += body->Mass();
 		centerOfMass_ = totalTimesCenter + bodyMassTimesPosition;
 		centerOfMass_ /= totalMass_;
+		numBodies_++;
 
 		//totalMass_ += body->Mass();
 
@@ -176,6 +183,7 @@ void PartitionTree::InsertMulti(Body* body) {
 		totalMass_ = body->Mass();
 		centerOfMass_ = body->Position();
 		body_ = body;
+		numBodies_++;
 
 		totalMassMutex_.unlock();
 	}
@@ -238,6 +246,7 @@ void PartitionTree::InsertMulti(Body* body) {
 			totalMass_ += body->Mass();
 			centerOfMass_ = totalTimesCenter + bodyMassTimesPosition;
 			centerOfMass_ /= totalMass_;
+			numBodies_++;
 
 
 			totalMassMutex_.unlock();
@@ -282,6 +291,7 @@ void PartitionTree::UpdateForceOnBody(Body* body) {
 
 	// If this node is external then add force due to this node since no more child nodes to check
 	if (totalMass_ != 0.0f) {
+
 		if (isExternal_) {
 
 			if (body != body_) {

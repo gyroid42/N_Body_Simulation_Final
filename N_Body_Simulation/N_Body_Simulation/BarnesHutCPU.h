@@ -37,11 +37,10 @@ protected:
 	// farm for managing threads and providing tasks
 	ThreadFarm* farm_;
 
-#if MULTITHREADING
 
 	Channel<BodyChannelData*> bodyChannels_[8];
 
-#endif
+
 
 	// function pointer to which time step is being used
 	void (BarnesHutCPU::*timeStepFunc_)(float);
