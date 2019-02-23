@@ -29,11 +29,19 @@ public:
 
 
 
+	void Merge(PartitionTree* mergeTree);
+
 	void AddBody(Body* body);
 
 	void CreateChildren();
 
 	PartitionTree* GetChild(int index);
+	inline void SetChild(int index, PartitionTree* newChild) { children_[index] = newChild; }
+
+	inline float Mass() { return totalMass_; }
+	inline sf::Vector3f CenterOfMass() { return centerOfMass_; }
+	inline Body* GetBody() { return body_; }
+	inline bool IsExternal() { return isExternal_; }
 
 private:
 

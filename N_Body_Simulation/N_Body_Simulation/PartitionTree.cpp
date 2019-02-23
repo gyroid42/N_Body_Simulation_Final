@@ -321,6 +321,129 @@ void PartitionTree::UpdateForceOnBody(Body* body) {
 }
 
 
+
+void PartitionTree::Merge(PartitionTree* mergeTree) {
+
+
+	if (totalMass_ == 0.0f) {
+
+		totalMass_ = mergeTree->Mass();
+		centerOfMass_ = mergeTree->CenterOfMass();
+		body_ = mergeTree->GetBody();
+	}
+	else if (!isExternal_ && !mergeTree->IsExternal()) {
+
+		sf::Vector3f totalTimesCenter = totalMass_ * centerOfMass_;
+		sf::Vector3f bodyMassTimesPosition = mergeTree->Mass() * mergeTree->CenterOfMass();
+		totalMass_ += mergeTree->Mass();
+		centerOfMass_ = totalTimesCenter + bodyMassTimesPosition;
+		centerOfMass_ /= totalMass_;
+
+		for (int i = 0; i < 8; i++) {
+
+			PartitionTree* mergeChild = mergeTree->GetChild(i);
+
+			if (mergeChild) {
+				if (!children_[i]) {
+
+					children_[i] = mergeTree->GetChild(i);
+					mergeTree->SetChild(i, nullptr);
+				}
+				else {
+
+					children_[i]->Merge(mergeTree->GetChild(i));
+				}
+			}
+		}
+
+	}
+	else if (isExternal_) {
+
+		// sort out the external poop
+		// merge children
+		sf::Vector3f totalTimesCenter = totalMass_ * centerOfMass_;
+		sf::Vector3f bodyMassTimesPosition = mergeTree->Mass() * mergeTree->CenterOfMass();
+		totalMass_ += mergeTree->Mass();
+		centerOfMass_ = totalTimesCenter + bodyMassTimesPosition;
+		centerOfMass_ /= totalMass_;
+
+		for (int i = 0; i < 8; i++) {
+
+			PartitionTree* mergeChild = mergeTree->GetChild(i);
+
+			if (mergeChild) {
+				if (!children_[i]) {
+
+					children_[i] = mergeTree->GetChild(i);
+					mergeTree->SetChild(i, nullptr);
+				}
+				else {
+
+					children_[i]->Merge(mergeTree->GetChild(i));
+				}
+			}
+			
+			
+		}
+
+
+		for (int i = 0; i < 8; i++) {
+
+			Partition newPartition = partition_.GetSubDivision(i);
+
+			if (newPartition.Contains(body_->Position())) {
+
+				if (!children_[i]) {
+
+					children_[i] = new PartitionTree(newPartition);
+				}
+
+				children_[i]->Insert(body_);
+
+				isExternal_ = false;
+
+				//std::cout << i << std::endl;
+
+				break;
+			}
+		}
+
+
+	}
+	else {
+
+
+		sf::Vector3f totalTimesCenter = totalMass_ * centerOfMass_;
+		sf::Vector3f bodyMassTimesPosition = mergeTree->Mass() * mergeTree->CenterOfMass();
+		totalMass_ += mergeTree->Mass();
+		centerOfMass_ = totalTimesCenter + bodyMassTimesPosition;
+		centerOfMass_ /= totalMass_;
+
+		for (int i = 0; i < 8; i++) {
+
+			Partition newPartition = partition_.GetSubDivision(i);
+
+			if (newPartition.Contains(body_->Position())) {
+
+				if (!children_[i]) {
+
+					children_[i] = new PartitionTree(newPartition);
+				}
+
+				children_[i]->Insert(mergeTree->GetBody());
+
+				break;
+			}
+		}
+		 
+	}
+
+	
+
+
+}
+
+
 void PartitionTree::CreateChildren() {
 
 

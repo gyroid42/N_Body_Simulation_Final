@@ -308,15 +308,18 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 		farm_->AddTask(newTask);
 	}
 
-	for (int i = 0; i < NUM_OF_THREADS; i++) {
+	int limit = (bodies_.size() < NUM_OF_THREADS) ? bodies_.size() : NUM_OF_THREADS;
+
+	for (int i = 0; i < limit; i++) {
 
 		PartitionTree* mergeTree = mergeTreeChannel_.read();
 
 		// merge the tree;
+		tree.Merge(mergeTree);
+
+		delete mergeTree;
 	}
 
-
-	int meh = 0;
 
 
 #if TIMING_STEPS
