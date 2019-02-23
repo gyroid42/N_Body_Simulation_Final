@@ -31,6 +31,11 @@ void TaskInsertBody::Run() {
 		root_->Insert(body);
 	}
 
+	if (bodyArray_) {
+
+		delete bodyArray_;
+		bodyArray_ = nullptr;
+	}
 
 	outputChannel_->write(root_);
 }

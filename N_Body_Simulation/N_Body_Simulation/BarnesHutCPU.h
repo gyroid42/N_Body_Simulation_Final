@@ -9,6 +9,8 @@
 #include "Body.h"
 #include "BodyChannelData.h"
 
+class PartitionTree;
+
 class BarnesHutCPU :
 	public BarnesHut
 {
@@ -37,6 +39,8 @@ protected:
 	// farm for managing threads and providing tasks
 	ThreadFarm* farm_;
 
+
+	Channel<PartitionTree*> mergeTreeChannel_;
 
 	Channel<BodyChannelData*> bodyChannels_[8];
 
