@@ -34,6 +34,9 @@ public:
 	inline void SetThreadCount(unsigned int newCount) { threadCount_ = newCount; }
 	
 
+	// Getters
+	inline int NumWorkers() { return threads_.size(); }
+
 private:
 
 	// worker method

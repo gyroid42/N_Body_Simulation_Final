@@ -16,15 +16,21 @@ TaskInsertBody::~TaskInsertBody()
 {
 }
 
-void TaskInsertBody::Init(Body* newBody, PartitionTree* newRoot) {
+void TaskInsertBody::Init(Channel<PartitionTree*>* newChannel, Partition newPartition, std::vector<Body*>* newBodyArray) {
 
 	// set references to body and partition tree
-	body_ = newBody;
-	root_ = newRoot;
+	bodyArray_ = newBodyArray;
+	outputChannel_ = newChannel;
+	root_ = new PartitionTree(newPartition);
 }
 
 void TaskInsertBody::Run() {
 
-	// run method for adding body into partition tree
-	root_->InsertMulti(body_);
+	for (auto body : *bodyArray_) {
+
+		root_->Insert(body);
+	}
+
+
+	outputChannel_->write(root_);
 }

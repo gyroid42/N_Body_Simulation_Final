@@ -83,13 +83,7 @@
     <ClCompile Include="TaskInsertBody.cpp">
       <Filter>Source Files\Simulation\BarnesHut\Worker Tasks</Filter>
     </ClCompile>
-    <ClCompile Include="TaskInsertManager.cpp">
-      <Filter>Source Files\Simulation\BarnesHut\Worker Tasks</Filter>
-    </ClCompile>
     <ClCompile Include="TaskUpdateForces.cpp">
-      <Filter>Source Files\Simulation\BarnesHut\Worker Tasks</Filter>
-    </ClCompile>
-    <ClCompile Include="TaskInsertBodyImproved.cpp">
       <Filter>Source Files\Simulation\BarnesHut\Worker Tasks</Filter>
     </ClCompile>
   </ItemGroup>
@@ -151,16 +145,10 @@
     <ClInclude Include="TaskInsertBody.h">
       <Filter>Source Files\Simulation\BarnesHut\Worker Tasks</Filter>
     </ClInclude>
-    <ClInclude Include="TaskInsertManager.h">
-      <Filter>Source Files\Simulation\BarnesHut\Worker Tasks</Filter>
-    </ClInclude>
     <ClInclude Include="TaskUpdateForces.h">
       <Filter>Source Files\Simulation\BarnesHut\Worker Tasks</Filter>
     </ClInclude>
     <ClInclude Include="BodyChannelData.h">
-      <Filter>Source Files\Simulation\BarnesHut\Worker Tasks</Filter>
-    </ClInclude>
-    <ClInclude Include="TaskInsertBodyImproved.h">
       <Filter>Source Files\Simulation\BarnesHut\Worker Tasks</Filter>
     </ClInclude>
   </ItemGroup>

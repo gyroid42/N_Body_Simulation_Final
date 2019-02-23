@@ -10,7 +10,6 @@
 #include "PartitionTree.h"
 #include "TaskIntegrateBody.h"
 #include "TaskInsertBody.h"
-#include "TaskInsertBodyImproved.h"
 #include "TaskUpdateForces.h"
 #include "BodyChannelData.h"
 
@@ -176,10 +175,10 @@ void BarnesHutCPU::TimeStepMultiImproved(float dt) {
 
 	for (int i = 0; i < 8; i++) {
 
-		TaskInsertBodyImproved* newTask = new TaskInsertBodyImproved();
-		newTask->Init(&bodyChannels_[i], tree.GetChild(i));
+		//TaskInsertBodyImproved* newTask = new TaskInsertBodyImproved();
+		//newTask->Init(&bodyChannels_[i], tree.GetChild(i));
 
-		farm_->AddTask(newTask);
+		//farm_->AddTask(newTask);
 	}
 
 
@@ -287,12 +286,16 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 #endif
 
 	// Add an Insert task for each body to farm
-	for (auto body : bodies_) {
+	for (unsigned int bodyIndex = 0; bodyIndex < bodies_; bodyIndex++) {
 
 		//tree.Insert(body);
 
 		TaskInsertBody* newTask = new TaskInsertBody();
-		newTask->Init(body, &tree);
+
+		size_t pos1 = bodyIndex * bodies_.size() / NUM_OF_THREADS;
+		std::vector<Body*> section
+
+		//newTask->Init(body, &tree);
 		farm_->AddTask(newTask);
 	}
 
