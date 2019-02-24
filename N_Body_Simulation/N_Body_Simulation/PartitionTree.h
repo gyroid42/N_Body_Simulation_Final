@@ -42,6 +42,7 @@ public:
 	inline sf::Vector3f CenterOfMass() { return centerOfMass_; }
 	inline Body* GetBody() { return body_; }
 	inline bool IsExternal() { return isExternal_; }
+	inline int NumBodies() { return numBodies_; }
 
 private:
 
