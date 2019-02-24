@@ -91,6 +91,7 @@ void PartitionTree::Insert(Body* body) {
 		totalMass_ = body->Mass();
 		centerOfMass_ = body->Position();
 		body_ = body;
+		bodyList_.push_back(body);
 		numBodies_++;
 	}
 
@@ -107,6 +108,7 @@ void PartitionTree::Insert(Body* body) {
 		totalMass_ += body->Mass();
 		centerOfMass_ = totalTimesCenter + bodyMassTimesPosition;
 		centerOfMass_ /= totalMass_;
+		bodyList_.push_back(body);
 		numBodies_++;
 
 		//totalMass_ += body->Mass();
@@ -330,7 +332,18 @@ void PartitionTree::Merge(PartitionTree* mergeTree) {
 		totalMass_ = mergeTree->Mass();
 		centerOfMass_ = mergeTree->CenterOfMass();
 		body_ = mergeTree->GetBody();
+		std::vector<Body*> newBodies = mergeTree->GetBodyList();
+		bodyList_ = newBodies;
 		numBodies_ = mergeTree->NumBodies();
+
+		isExternal_ = mergeTree->IsExternal();
+
+		for (int i = 0; i < 8; i++) {
+
+
+			children_[i] = mergeTree->GetChild(i);
+			mergeTree->SetChild(i, nullptr);
+		}
 	}
 	else if (!isExternal_ && !mergeTree->IsExternal()) {
 
@@ -339,6 +352,8 @@ void PartitionTree::Merge(PartitionTree* mergeTree) {
 		totalMass_ += mergeTree->Mass();
 		centerOfMass_ = totalTimesCenter + bodyMassTimesPosition;
 		centerOfMass_ /= totalMass_;
+		std::vector<Body*> newBodies = mergeTree->GetBodyList();
+		bodyList_.insert(std::end(bodyList_), std::begin(newBodies), std::end(newBodies));
 		numBodies_ += mergeTree->NumBodies();
 
 		for (int i = 0; i < 8; i++) {
@@ -366,6 +381,8 @@ void PartitionTree::Merge(PartitionTree* mergeTree) {
 		totalMass_ += mergeTree->Mass();
 		centerOfMass_ = totalTimesCenter + bodyMassTimesPosition;
 		centerOfMass_ /= totalMass_;
+		std::vector<Body*> newBodies = mergeTree->GetBodyList();
+		bodyList_.insert(std::end(bodyList_), std::begin(newBodies), std::end(newBodies));
 		numBodies_ += mergeTree->NumBodies();
 
 		if (isExternal_) {
@@ -439,7 +456,35 @@ void PartitionTree::Merge(PartitionTree* mergeTree) {
 		}
 	}
 
-	
+}
+
+
+void PartitionTree::GetOrderedElementsList(std::vector<Body*>& newList, size_t& sectionLength, size_t& limit) {
+
+	if (limit == 0) {
+
+		limit = sectionLength;
+	}
+
+	if (bodyList_.size() + newList.size() <= limit) {
+
+		newList.insert(std::end(newList), std::begin(bodyList_), std::end(bodyList_));
+
+		if (newList.size() == limit) {
+
+			limit += sectionLength;
+		}
+	}
+	else {
+
+		for (int i = 0; i < 8; i++) {
+
+			if (children_[i]) {
+
+				children_[i]->GetOrderedElementsList(newList, sectionLength, limit);
+			}
+		}
+	}
 
 
 }

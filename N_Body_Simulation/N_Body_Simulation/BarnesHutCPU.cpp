@@ -332,6 +332,21 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 	timeStart = the_clock::now();
 
 #endif
+
+
+
+	size_t limit2 = 0;
+	length = 2;
+
+	// clear bodieslist
+	bodies_.clear();
+
+	// get new list from partition tree
+	tree.GetOrderedElementsList(bodies_, length, limit2);
+
+
+
+
 	// Add an UpdateForces task for each body
 	for (auto body : bodies_) {
 
@@ -380,6 +395,9 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 	std::cout << "integrate time = " << std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() << std::endl;
 
 #endif
+
+
+
 }
 
 

@@ -33,6 +33,7 @@ void TaskInsertBody::Run() {
 
 	if (bodyArray_) {
 
+		bodyArray_->clear();
 		delete bodyArray_;
 		bodyArray_ = nullptr;
 	}

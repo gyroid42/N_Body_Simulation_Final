@@ -5,6 +5,7 @@
 
 // standard library includes
 #include <mutex>
+#include <vector>
 
 
 // my class includes
@@ -30,6 +31,7 @@ public:
 
 
 	void Merge(PartitionTree* mergeTree);
+	void GetOrderedElementsList(std::vector<Body*>& newList_, size_t& sectionLength, size_t& limit);
 
 	void AddBody(Body* body);
 
@@ -43,6 +45,7 @@ public:
 	inline Body* GetBody() { return body_; }
 	inline bool IsExternal() { return isExternal_; }
 	inline int NumBodies() { return numBodies_; }
+	inline std::vector<Body*>& GetBodyList() { return bodyList_; }
 
 private:
 
@@ -58,6 +61,8 @@ private:
 
 	// reference to initial body inserted in this partition
 	Body* body_;
+
+	std::vector<Body*> bodyList_;
 
 	// isExternal is true if this is this partition only contains 1 body
 	bool isExternal_;
