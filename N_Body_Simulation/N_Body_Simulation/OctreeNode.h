@@ -46,13 +46,21 @@ public:
 	inline sf::Vector3f CenterOfMass() { return centerOfMass_; }
 	inline Body* GetBody() { return body_; }
 	inline bool IsExternal() { return isExternal_; }
+	inline bool IsLocalised() { return isLocalised_; }
 	inline int NumBodies() { return numBodies_; }
 	inline std::vector<Body*>& GetBodyList() { return bodyList_; }
 	inline Partition GetPartition() { return partition_; }
 	inline OctreeNode* Root() { return treeRoot_; }
+	void Localise();
+	OctreeNode* GetCopy();
 
 	// Setters
 	inline void SetChild(int index, OctreeNode* newChild) { children_[index] = newChild; }
+	inline void SetExternal(bool newValue) { isExternal_ = newValue; }
+	inline void SetMass(float newMass) { totalMass_ = newMass; }
+	inline void SetCoM(sf::Vector3f newCoM) { centerOfMass_ = newCoM; }
+	inline void SetBody(Body* newBody) { body_ = newBody; }
+	inline void SetLocalised(bool newValue) { isLocalised_ = newValue; }
 
 private:
 
@@ -75,6 +83,8 @@ private:
 
 	// isExternal is true if this is this partition only contains 1 body
 	bool isExternal_;
+
+	bool isLocalised_;
 
 	int numBodies_;
 };

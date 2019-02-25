@@ -26,6 +26,8 @@ OctreeNode::OctreeNode(Partition newPartition) :
 	// tree just created therefore it is external
 	isExternal_ = true;
 
+	isLocalised_ = true;
+
 	// set default total mass and center of mass
 	totalMass_ = 0.0f;
 	centerOfMass_ = sf::Vector3f(0.0f, 0.0f, 0.0f);
@@ -52,6 +54,8 @@ OctreeNode::OctreeNode(Partition newPartition, OctreeNode* newRoot) :
 	// tree just created therefore it is external
 	isExternal_ = true;
 
+	isLocalised_ = true;
+
 	// set default total mass and center of mass
 	totalMass_ = 0.0f;
 	centerOfMass_ = sf::Vector3f(0.0f, 0.0f, 0.0f);
@@ -65,12 +69,15 @@ OctreeNode::~OctreeNode()
 {
 
 	// loop for each child node and delete it
-	for (int i = 0; i < 8; i++) {
+	if (isLocalised_) {
 
-		if (children_[i]) {
+		for (int i = 0; i < 8; i++) {
 
-			delete children_[i];
-			children_[i] = nullptr;
+			if (children_[i]) {
+
+				delete children_[i];
+				children_[i] = nullptr;
+			}
 		}
 	}
 }
@@ -221,6 +228,10 @@ void OctreeNode::UpdateForceOnBody(Body* body) {
 
 				if (children_[i]) {
 
+					if (!children_[i]->IsLocalised()) {
+
+						children_[i]->Localise();
+					}
 					children_[i]->UpdateForceOnBody(body);
 				}
 			}
@@ -429,6 +440,35 @@ OctreeNode* OctreeNode::GetChild(int index) {
 	return children_[index];
 }
 
+OctreeNode* OctreeNode::GetCopy() {
 
+	OctreeNode* localisedCopy = new OctreeNode(partition_);
+
+	localisedCopy->SetLocalised(false);
+	localisedCopy->SetBody(body_);
+	localisedCopy->SetCoM(centerOfMass_);
+	localisedCopy->SetExternal(isExternal_);
+	localisedCopy->SetMass(totalMass_);
+
+	for (int i = 0; i < 8; i++) {
+
+		localisedCopy->SetChild(i, children_[i]);
+	}
+
+	return localisedCopy;
+}
+
+void OctreeNode::Localise() {
+
+	for (int i = 0; i < 8; i++) {
+
+		if (children_[i]) {
+
+			children_[i] = children_[i]->GetCopy();
+		}
+	}
+
+	isLocalised_ = true;
+}
 
 

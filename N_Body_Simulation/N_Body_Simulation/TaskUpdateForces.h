@@ -3,6 +3,8 @@
 // include parent class
 #include "Task.h"
 
+#include <vector>
+
 
 // forward declaration
 class OctreeNode;
@@ -15,15 +17,14 @@ public:
 	TaskUpdateForces();
 	~TaskUpdateForces();
 
-	void Init(Body* newBody, OctreeNode* newRoot);
+	void Init(OctreeNode* globalRoot, std::vector<Body*>* newBodyArray);
 
 	void Run();
 
 private:
 
 	// references to body and partition tree
-	Body* body_;
-	OctreeNode* root_;
-
+	std::vector<Body*>* bodyArray_;
+	OctreeNode* localRoot_;
 };
 

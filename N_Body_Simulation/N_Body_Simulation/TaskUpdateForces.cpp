@@ -17,16 +17,35 @@ TaskUpdateForces::~TaskUpdateForces()
 }
 
 
-void TaskUpdateForces::Init(Body* newBody, OctreeNode* newRoot) {
+void TaskUpdateForces::Init(OctreeNode* globalRoot, std::vector<Body*>* newBodyArray) {
 
 	// set references to body and partition tree
-	body_ = newBody;
-	root_ = newRoot;
+	bodyArray_ = newBodyArray;
+	localRoot_ = globalRoot->GetCopy();
+	localRoot_->Localise();
 }
 
 void TaskUpdateForces::Run() {
 
-	// run method for calculating force on body
-	body_->ResetForce();
-	root_->UpdateForceOnBody(body_);
+	for (auto body : *bodyArray_) {
+
+		// run method for calculating force on body
+		body->ResetForce();
+
+		localRoot_->UpdateForceOnBody(body);
+	}
+
+	// delete body array and local tree
+	//if (bodyArray_) {
+
+		//bodyArray_->clear();
+		//delete bodyArray_;
+		//bodyArray_ = nullptr;
+	//}
+
+	if (localRoot_) {
+
+		delete localRoot_;
+		localRoot_ = nullptr;
+	}
 }
