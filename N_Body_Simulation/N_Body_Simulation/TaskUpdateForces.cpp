@@ -3,7 +3,7 @@
 #include "TaskUpdateForces.h"
 
 // my class includes
-#include "PartitionTree.h"
+#include "OctreeNode.h"
 #include "Body.h"
 
 
@@ -17,7 +17,7 @@ TaskUpdateForces::~TaskUpdateForces()
 }
 
 
-void TaskUpdateForces::Init(Body* newBody, PartitionTree* newRoot) {
+void TaskUpdateForces::Init(Body* newBody, OctreeNode* newRoot) {
 
 	// set references to body and partition tree
 	body_ = newBody;

@@ -9,7 +9,7 @@
 #include "Body.h"
 #include "BodyChannelData.h"
 
-class PartitionTree;
+class OctreeNode;
 
 class BarnesHutCPU :
 	public BarnesHut
@@ -40,7 +40,7 @@ protected:
 	ThreadFarm* farm_;
 
 
-	Channel<PartitionTree*> mergeTreeChannel_;
+	Channel<OctreeNode*> mergeTreeChannel_;
 
 	Channel<BodyChannelData*> bodyChannels_[8];
 
