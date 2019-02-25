@@ -132,6 +132,7 @@
     <ClCompile Include="Channel.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="OctreeCollision.cpp" />
     <ClCompile Include="OctreeNode.cpp" />
     <ClCompile Include="Partition.cpp" />
     <ClCompile Include="PartitionTree.cpp" />
@@ -155,6 +156,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Channel.h" />
     <ClInclude Include="Input.h" />
+    <ClInclude Include="OctreeCollision.h" />
     <ClInclude Include="OctreeNode.h" />
     <ClInclude Include="Partition.h" />
     <ClInclude Include="PartitionTree.h" />

@@ -345,9 +345,6 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 
 #endif
 
-
-
-
 	// Add an UpdateForces task for each body
 	for (int i = 0; i < limit; i++) {
 
@@ -375,14 +372,10 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 
 #endif
 
-	// Add an integration task for each body
+	//integrate each body
 	for (auto body : bodies_) {
 
-		body->Integrate_SemiImplicitEuler(dt);
-
-		//TaskIntegrateBody* newTask = new TaskIntegrateBody();
-		//newTask->Init(body, dt);
-		//farm_->AddTask(newTask);
+		std::invoke(body->Integrate, *body, dt);
 	}
 
 	// Wait until all bodies are integrated

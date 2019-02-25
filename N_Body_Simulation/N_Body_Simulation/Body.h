@@ -62,11 +62,14 @@ public:
 	void ResetForce();
 
 	// Integration Methods
+	void (Body::*Integrate)(float);
 	void Integrate_SemiImplicitEuler(float dt);
+	void Integrate_Verlet(float dt);
+	void Integrate_VerletStart(float dt);
+
 
 	// Interpolates between the previous state and current state
 	State InterpolateState(float alpha);
-	//void Integrate_Rk4(float t, float dt);
 	//void Integrate_Verlet();
 
 
@@ -86,8 +89,10 @@ public:
 
 private:
 
+	int initialCounter_;
+
 	// State of body in the previous physics step
-	State prevState_;
+	State prevStates_[2];
 
 	// State of body in the current physics step
 	State currentState_;
