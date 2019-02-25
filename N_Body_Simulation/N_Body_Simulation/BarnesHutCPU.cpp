@@ -231,7 +231,7 @@ void BarnesHutCPU::TimeStepMultiImproved(float dt) {
 		//tree.UpdateForceOnBody(body);
 
 		TaskUpdateForces* newTask = new TaskUpdateForces();
-		newTask->Init(body, &tree);
+		//newTask->Init(body, &tree);
 		farm_->AddTask(newTask);
 	}
 
@@ -293,13 +293,16 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 	size_t arrayBegin = 0;
 	size_t arrayEnd = 0;
 
+	std::vector<std::vector<Body*>*> bodyArrays;
+
 	// Add an Insert task for each body to farm
 	for (size_t bodyIndex = 0; bodyIndex < std::min((size_t)NUM_OF_THREADS, bodies_.size()); bodyIndex++) {
 
 		arrayEnd += (remain > 0) ? (length + !!(remain--)) : length;
 		//tree.Insert(body);
 
-		std::vector<Body*>* taskBodies_ = new std::vector<Body*>(bodies_.begin() + arrayBegin, bodies_.begin() + arrayEnd);
+		//std::vector<Body*>* taskBodies_ = new std::vector<Body*>(bodies_.begin() + arrayBegin, bodies_.begin() + arrayEnd);
+		bodyArrays.push_back(new std::vector<Body*>(bodies_.begin() + arrayBegin, bodies_.begin() + arrayEnd));
 
 		arrayBegin = arrayEnd;
 
@@ -307,7 +310,7 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 
 		OctreeNode* threadTree = new OctreeNode(root_, &tree);
 
-		newTask->Init(&mergeTreeChannel_, threadTree, taskBodies_);
+		newTask->Init(&mergeTreeChannel_, threadTree, bodyArrays.at(bodyIndex));
 
 		//newTask->Init(body, &tree);
 		farm_->AddTask(newTask);
@@ -346,7 +349,7 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 
 
 	// Add an UpdateForces task for each body
-	for (auto body : bodies_) {
+	for (int i = 0; i < limit; i++) {
 
 		// reset body force before applying forces
 		//body->ResetForce();
@@ -354,7 +357,7 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 		//tree.UpdateForceOnBody(body);
 
 		TaskUpdateForces* newTask = new TaskUpdateForces();
-		newTask->Init(body, &tree);
+		newTask->Init(bodyArrays.at(i), &tree);
 		farm_->AddTask(newTask);
 	}
 
@@ -397,7 +400,11 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 #endif
 
 
+	for (int i = 0; i < limit; i++) {
 
+		delete bodyArrays.at(i);
+		bodyArrays.at(i) = nullptr;
+	}
 
 	//size_t limit2 = 0;
 	//length = 2;
