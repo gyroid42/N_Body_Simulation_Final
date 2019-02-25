@@ -10,7 +10,7 @@
 
 
 // forward declaration
-class PartitionTree;
+class OctreeNode;
 class Body;
 
 
@@ -21,7 +21,7 @@ public:
 	TaskInsertBody();
 	~TaskInsertBody();
 
-	void Init(Channel<PartitionTree*>* newChannel, Partition newPartition, std::vector<Body*>* newBodyArray);
+	void Init(Channel<OctreeNode*>* newChannel, OctreeNode* newRoot, std::vector<Body*>* newBodyArray);
 
 	void Run();
 
@@ -29,7 +29,7 @@ private:
 
 	// references to body and partition tree
 	std::vector<Body*>* bodyArray_;
-	PartitionTree* root_;
-	Channel<PartitionTree*>* outputChannel_;
+	OctreeNode* root_;
+	Channel<OctreeNode*>* outputChannel_;
 };
 

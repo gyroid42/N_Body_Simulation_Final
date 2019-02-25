@@ -24,6 +24,9 @@
     <Filter Include="Source Files\Simulation\BarnesHut\Worker Tasks">
       <UniqueIdentifier>{8c074730-b87e-43da-b813-ca8f5a059bd0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Simulation\BarnesHut\Octree">
+      <UniqueIdentifier>{6f0a353f-07c6-4cc8-8ba5-6a9a89fc949a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp">
@@ -33,12 +36,6 @@
       <Filter>Source Files\Simulation\BarnesHut</Filter>
     </ClCompile>
     <ClCompile Include="BarnesHutCPU.cpp">
-      <Filter>Source Files\Simulation\BarnesHut</Filter>
-    </ClCompile>
-    <ClCompile Include="PartitionTree.cpp">
-      <Filter>Source Files\Simulation\BarnesHut</Filter>
-    </ClCompile>
-    <ClCompile Include="Partition.cpp">
       <Filter>Source Files\Simulation\BarnesHut</Filter>
     </ClCompile>
     <ClCompile Include="BruteForce.cpp">
@@ -86,6 +83,15 @@
     <ClCompile Include="TaskUpdateForces.cpp">
       <Filter>Source Files\Simulation\BarnesHut\Worker Tasks</Filter>
     </ClCompile>
+    <ClCompile Include="Partition.cpp">
+      <Filter>Source Files\Simulation\BarnesHut\Octree</Filter>
+    </ClCompile>
+    <ClCompile Include="PartitionTree.cpp">
+      <Filter>Source Files\Simulation\BarnesHut\Octree</Filter>
+    </ClCompile>
+    <ClCompile Include="OctreeNode.cpp">
+      <Filter>Source Files\Simulation\BarnesHut\Octree</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -130,12 +136,6 @@
     <ClInclude Include="TaskIntegrateBody.h">
       <Filter>Source Files\Simulation</Filter>
     </ClInclude>
-    <ClInclude Include="Partition.h">
-      <Filter>Source Files\Simulation\BarnesHut</Filter>
-    </ClInclude>
-    <ClInclude Include="PartitionTree.h">
-      <Filter>Source Files\Simulation\BarnesHut</Filter>
-    </ClInclude>
     <ClInclude Include="Body.h">
       <Filter>Source Files\Simulation</Filter>
     </ClInclude>
@@ -150,6 +150,15 @@
     </ClInclude>
     <ClInclude Include="BodyChannelData.h">
       <Filter>Source Files\Simulation\BarnesHut\Worker Tasks</Filter>
+    </ClInclude>
+    <ClInclude Include="Partition.h">
+      <Filter>Source Files\Simulation\BarnesHut\Octree</Filter>
+    </ClInclude>
+    <ClInclude Include="PartitionTree.h">
+      <Filter>Source Files\Simulation\BarnesHut\Octree</Filter>
+    </ClInclude>
+    <ClInclude Include="OctreeNode.h">
+      <Filter>Source Files\Simulation\BarnesHut\Octree</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

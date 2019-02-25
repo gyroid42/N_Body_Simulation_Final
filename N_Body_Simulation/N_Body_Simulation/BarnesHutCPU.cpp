@@ -7,7 +7,7 @@
 
 // my class includes
 #include "Body.h"
-#include "PartitionTree.h"
+#include "OctreeNode.h"
 #include "TaskIntegrateBody.h"
 #include "TaskInsertBody.h"
 #include "TaskUpdateForces.h"
@@ -97,7 +97,7 @@ void BarnesHutCPU::TimeStepSingle(float dt) {
 	// Partition physics space
 
 	// create intial tree using partition root
-	PartitionTree tree(root_);
+	OctreeNode tree(root_);
 
 #if TIMING_STEPS
 
@@ -108,7 +108,8 @@ void BarnesHutCPU::TimeStepSingle(float dt) {
 	// insert each body into the partition tree
 	for (auto body : bodies_) {
 
-		tree.Insert(body);
+		int counter = 0;
+		tree.Insert(body, counter);
 	}
 
 #if TIMING_STEPS
@@ -163,7 +164,7 @@ void BarnesHutCPU::TimeStepSingle(float dt) {
 
 void BarnesHutCPU::TimeStepMultiImproved(float dt) {
 
-	PartitionTree tree(root_);
+	OctreeNode tree(root_);
 
 #if TIMING_STEPS
 
@@ -277,13 +278,15 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 	// Partition physics space
 
 	// create intial tree using partition root
-	PartitionTree tree(root_);
+	OctreeNode tree(root_);
 
 #if TIMING_STEPS
 
 	the_clock::time_point timeStart = the_clock::now();
 
 #endif
+
+	//std::cout << "start" << std::endl;
 	size_t length = bodies_.size() / NUM_OF_THREADS;
 	size_t remain = bodies_.size() % NUM_OF_THREADS;
 
@@ -302,7 +305,9 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 
 		TaskInsertBody* newTask = new TaskInsertBody();
 
-		newTask->Init(&mergeTreeChannel_, root_, taskBodies_);
+		OctreeNode* threadTree = new OctreeNode(root_, &tree);
+
+		newTask->Init(&mergeTreeChannel_, threadTree, taskBodies_);
 
 		//newTask->Init(body, &tree);
 		farm_->AddTask(newTask);
@@ -310,17 +315,21 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 
 	int limit = (bodies_.size() < NUM_OF_THREADS) ? bodies_.size() : NUM_OF_THREADS;
 
+	//std::cout << "waiting to merge" << std::endl;
+
 	for (int i = 0; i < limit; i++) {
 
-		PartitionTree* mergeTree = mergeTreeChannel_.read();
+		OctreeNode* mergeTree = mergeTreeChannel_.read();
 
 		// merge the tree;
 		tree.Merge(mergeTree);
 
 		delete mergeTree;
+
+		//std::cout << "merged" << i << std::endl;
 	}
 
-
+	//std::cout << "finished" << std::endl;
 
 #if TIMING_STEPS
 
@@ -332,6 +341,10 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 	timeStart = the_clock::now();
 
 #endif
+
+
+
+
 	// Add an UpdateForces task for each body
 	for (auto body : bodies_) {
 
@@ -379,7 +392,30 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 
 	std::cout << "integrate time = " << std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() << std::endl;
 
+	timeStart = the_clock::now();
+
 #endif
+
+
+
+
+	//size_t limit2 = 0;
+	//length = 2;
+
+	// clear bodieslist
+	bodies_.clear();
+
+	// get new list from partition tree
+	tree.GetOrderedElementsList(bodies_);
+
+#if TIMING_STEPS
+
+	timeEnd = the_clock::now();
+
+	std::cout << "sorting time = " << std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() << std::endl;
+
+#endif
+
 }
 
 

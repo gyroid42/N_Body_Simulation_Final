@@ -5,7 +5,7 @@
 
 
 // forward declaration
-class PartitionTree;
+class OctreeNode;
 class Body;
 
 class TaskUpdateForces :
@@ -15,7 +15,7 @@ public:
 	TaskUpdateForces();
 	~TaskUpdateForces();
 
-	void Init(Body* newBody, PartitionTree* newRoot);
+	void Init(Body* newBody, OctreeNode* newRoot);
 
 	void Run();
 
@@ -23,7 +23,7 @@ private:
 
 	// references to body and partition tree
 	Body* body_;
-	PartitionTree* root_;
+	OctreeNode* root_;
 
 };
 

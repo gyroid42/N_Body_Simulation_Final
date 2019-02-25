@@ -6,7 +6,7 @@
 
 
 #define ADD_RANDOM_BODIES	true
-#define NUM_RAND_BODIES		1000
+#define NUM_RAND_BODIES		1500
 #define RANDOM_BODY_MAX_X	2280.0f
 #define RANDOM_BODY_MAX_Y	2720.0f
 #define RANDOM_BODY_MAX_Z	2720.0f
@@ -17,7 +17,7 @@
 
 #define PLACE_BODY_MASS 1.0E15f
 
-constexpr auto STEPS_PER_SECOND = 15.0f;
+constexpr auto STEPS_PER_SECOND = 5.0f;
 constexpr auto SIMULATION_SPEED = 1.0f;
 #define DAMPENING_FACTOR	0.0f//0125f
 
@@ -31,4 +31,4 @@ constexpr auto INTERPOLATE_BETWEEN_FRAMES = true;
 
 
 
-#define TIMING_STEPS true
+#define TIMING_STEPS false
