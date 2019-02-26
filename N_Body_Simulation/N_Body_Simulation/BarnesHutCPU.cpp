@@ -20,6 +20,8 @@
 typedef std::chrono::steady_clock the_clock;
 
 
+int soo = 0;
+
 BarnesHutCPU::BarnesHutCPU() :
 	farm_(nullptr)
 {
@@ -275,6 +277,10 @@ void BarnesHutCPU::TimeStepMultiImproved(float dt) {
 
 void BarnesHutCPU::TimeStepMulti(float dt) {
 
+	std::cout << "starting" << std::endl;
+
+	soo = 0;
+
 	// Partition physics space
 
 	// create intial tree using partition root
@@ -316,6 +322,8 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 		farm_->AddTask(newTask);
 	}
 
+	soo = 0;
+
 	int limit = (bodies_.size() < NUM_OF_THREADS) ? bodies_.size() : NUM_OF_THREADS;
 
 	//std::cout << "waiting to merge" << std::endl;
@@ -324,15 +332,19 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 
 		OctreeNode* mergeTree = mergeTreeChannel_.read();
 
+		soo++;
+
 		// merge the tree;
 		tree.Merge(mergeTree);
 
 		delete mergeTree;
 
+		soo++;
+
 		//std::cout << "merged" << i << std::endl;
 	}
 
-	//std::cout << "finished" << std::endl;
+	std::cout << "finished" << std::endl;
 
 #if TIMING_STEPS
 

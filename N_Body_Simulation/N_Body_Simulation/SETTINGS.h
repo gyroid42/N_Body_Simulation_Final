@@ -34,4 +34,4 @@ constexpr auto INTERPOLATE_BETWEEN_FRAMES = true;
 
 
 
-#define TIMING_STEPS		true
+#define TIMING_STEPS		false
