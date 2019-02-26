@@ -138,6 +138,35 @@ void BruteForce::TimeStepSingle(float dt) {
 
 
 	std::cout << "integrate time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
+
+	start = the_clock::now();
+#endif
+
+#if COLLISION
+
+	for (auto b1 : bodies_) {
+
+		for (auto b2 : bodies_) {
+
+			if (b1 == b2) {
+
+				break;
+			}
+
+			collisionTree_.TestCollision(b1, b2);
+
+		}
+	}
+
+
+#if TIMING_STEPS
+
+	end = the_clock::now();
+
+	std::cout << "Collision Test time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
+
+#endif
+
 #endif
 }
 

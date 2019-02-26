@@ -82,10 +82,13 @@ public:
 	inline sf::Vector3f Position() { return currentState_.position_; }
 	inline float ModelRadius() { return modelRadius_; }
 	inline State CurrentState() { return currentState_; }
+	inline Body* NextBody() { return nextBody_; }
 
 	// Setters
 	inline void SetColour(sf::Vector3f rgb) { colour_ = rgb; }
 	void SetMass(float newMass);
+	inline void Destroy() { destroy_ = true; }
+	inline void SetNextBody(Body* next) { nextBody_ = next; }
 
 private:
 
@@ -109,5 +112,8 @@ private:
 	float modelRadius_;
 	sf::Vector3f colour_;
 
+	bool destroy_;
+
+	Body* nextBody_;
 };
 

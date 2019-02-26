@@ -19,7 +19,8 @@ public:
 	bool Contains(sf::Vector3f point);
 
 	// Getters
-	inline float Length() { return length_; }
+	inline float HalfLength() { return halfLength_; }
+	inline sf::Vector3f Position() { return position_; }
 
 private:
 
@@ -27,6 +28,6 @@ private:
 	sf::Vector3f position_;
 
 	// length is the size of 1 side of the partition
-	float length_;
+	float halfLength_;
 };
 

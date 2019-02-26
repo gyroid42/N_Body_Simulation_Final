@@ -29,9 +29,11 @@ constexpr auto INTERPOLATE_BETWEEN_FRAMES = true;
 // methods: 0 = BruteForce, 1 = BarnesHutCPU
 #define SIMULATION_METHOD	1
 
+#define COLLISION			false
+
 #define MULTITHREADING		true
 #define NUM_OF_THREADS		8
 
 
 
-#define TIMING_STEPS		false
+#define TIMING_STEPS		true

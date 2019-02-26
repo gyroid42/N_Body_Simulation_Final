@@ -209,7 +209,7 @@ void OctreeNode::UpdateForceOnBody(Body* body) {
 		}
 
 		// check if distance and length is appropriate to use this node
-		else if (partition_.Length() / PhysicsUtil::DistanceTo(centerOfMass_, body->Position()) < 1.0f) {
+		else if ((partition_.HalfLength() * 2.0f) / PhysicsUtil::DistanceTo(centerOfMass_, body->Position()) < 1.0f) {
 
 			body->AddForce(centerOfMass_, totalMass_);
 		}

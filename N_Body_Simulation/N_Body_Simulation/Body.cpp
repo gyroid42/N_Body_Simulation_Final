@@ -46,6 +46,8 @@ void Body::Init(sf::Vector3f newPos, sf::Vector3f newVel, float newMass) {
 
 	initialCounter_ = 0;
 
+	nextBody_ = nullptr;
+
 #if INTEGRATION_METHOD == 0
 
 	Integrate = &Body::Integrate_SemiImplicitEuler;
