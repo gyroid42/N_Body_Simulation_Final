@@ -83,12 +83,14 @@ public:
 	inline float ModelRadius() { return modelRadius_; }
 	inline State CurrentState() { return currentState_; }
 	inline Body* NextBody() { return nextBody_; }
+	inline bool InsertedCollision() { return collisionTreeInserted_; }
 
 	// Setters
 	inline void SetColour(sf::Vector3f rgb) { colour_ = rgb; }
 	void SetMass(float newMass);
 	inline void Destroy() { destroy_ = true; }
 	inline void SetNextBody(Body* next) { nextBody_ = next; }
+	inline void SetInsertedCollision(bool newValue) { collisionTreeInserted_ = newValue; }
 
 private:
 
@@ -113,6 +115,7 @@ private:
 	sf::Vector3f colour_;
 
 	bool destroy_;
+	bool collisionTreeInserted_;
 
 	Body* nextBody_;
 };

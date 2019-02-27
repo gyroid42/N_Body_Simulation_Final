@@ -17,6 +17,7 @@ public:
 
 	// returns whether point is inside this partition
 	bool Contains(sf::Vector3f point);
+	bool StraddleCheck(sf::Vector3f point, float radius);
 
 	// Getters
 	inline float HalfLength() { return halfLength_; }

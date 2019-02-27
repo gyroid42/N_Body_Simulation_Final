@@ -2,6 +2,7 @@
 // class header include
 #include "Partition.h"
 
+#include <cmath>
 
 
 Partition::Partition() {
@@ -57,6 +58,24 @@ bool Partition::Contains(sf::Vector3f point) {
 		point.z >= position_.z - halfLength_ && point.z <= position_.z + halfLength_) {
 
 		return true;
+	}
+
+	return false;
+}
+
+bool Partition::StraddleCheck(sf::Vector3f point, float radius) {
+
+	float delta[3];
+	delta[0] = point.x - position_.x;
+	delta[1] = point.y - position_.y;
+	delta[2] = point.z - position_.z;
+
+	for (int i = 0; i < 3; i++) {
+
+		if (abs(delta[i]) <= radius) {
+
+			return true;
+		}
 	}
 
 	return false;

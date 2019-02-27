@@ -384,6 +384,65 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 	//farm_->WaitUntilTasksFinished();
 
 
+#if COLLISION
+
+
+	tree.CollisionBegin();
+
+	/*
+	CollisionNode* collisionRoot = collisionTree_.Build(root_, 4);
+	for (auto body : bodies_) {
+
+	collisionTree_.Insert(collisionRoot, body);
+	}
+
+	#if TIMING_STEPS
+
+	timeEnd = the_clock::now();
+
+	std::cout << "Collision Insert time = " << std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() << std::endl;
+
+	timeStart = the_clock::now();
+
+	#endif
+
+	collisionTree_.TestAllCollisions(collisionRoot);
+
+	if (collisionRoot) {
+
+	delete collisionRoot;
+	collisionRoot = nullptr;
+	}
+	*/
+
+	//for (auto b1 : bodies_) {
+
+	//	for (auto b2 : bodies_) {
+
+	//		if (b1 == b2) {
+
+	//			break;
+	//		}
+
+	//		collisionTree_.TestCollision(b1, b2);
+
+	//	}
+	//}
+
+
+#if TIMING_STEPS
+
+	timeEnd = the_clock::now();
+
+	std::cout << "Collision Test time = " << std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() << std::endl;
+
+	timeStart = the_clock::now();
+
+#endif
+
+#endif
+
+
 #if TIMING_STEPS
 
 	timeEnd = the_clock::now();
@@ -416,62 +475,9 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 
 	std::cout << "sorting time = " << std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() << std::endl;
 
-	timeStart = the_clock::now();
-
 #endif
 	
-#if COLLISION
 
-	/*
-	CollisionNode* collisionRoot = collisionTree_.Build(root_, 4);
-	for (auto body : bodies_) {
-
-		collisionTree_.Insert(collisionRoot, body);
-	}
-
-#if TIMING_STEPS
-
-	timeEnd = the_clock::now();
-
-	std::cout << "Collision Insert time = " << std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() << std::endl;
-
-	timeStart = the_clock::now();
-
-#endif
-
-	collisionTree_.TestAllCollisions(collisionRoot);
-
-	if (collisionRoot) {
-
-		delete collisionRoot;
-		collisionRoot = nullptr;
-	}
-	*/
-
-	for (auto b1 : bodies_) {
-
-		for (auto b2 : bodies_) {
-
-			if (b1 == b2) {
-
-				break;
-			}
-
-			collisionTree_.TestCollision(b1, b2);
-
-		}
-	}
-
-
-#if TIMING_STEPS
-
-	timeEnd = the_clock::now();
-
-	std::cout << "Collision Test time = " << std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() << std::endl;
-
-#endif
-
-#endif
 }
 
 

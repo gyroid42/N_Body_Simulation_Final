@@ -107,7 +107,7 @@ bool Simulation::GenerateAsteroids(int numAsteroids) {
 
 
 		Body* satelite3 = new Body();
-		satelite3->Init(sf::Vector3f(0.0f, 500.0f, 0.0f), sf::Vector3f(-115.5249f + 40.0f, 40.0f, 40.0f), 100);
+		satelite3->Init(sf::Vector3f(0.0f, -1005.0f, 0.0f), sf::Vector3f(-115.5249f + 40.0f, 40.0f, 40.0f), 100);
 		satelite3->SetColour(sf::Vector3f(0.0f, 0.5f, 0.5f));
 		bodies_.push_back(satelite3);
 
