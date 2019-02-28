@@ -12,6 +12,7 @@
 #include "TaskInsertBody.h"
 #include "TaskUpdateForces.h"
 #include "BodyChannelData.h"
+#include "OctreeCollision.h"
 
 
 // testing
@@ -19,6 +20,8 @@
 
 typedef std::chrono::steady_clock the_clock;
 
+
+int soo = 0;
 
 BarnesHutCPU::BarnesHutCPU() :
 	farm_(nullptr)
@@ -36,7 +39,7 @@ void BarnesHutCPU::Init() {
 	BarnesHut::Init();
 
 	// Create the partition tree root
-	root_ = Partition(sf::Vector3f(0.0f, 0.0f, 0.0f), 100000.0f);
+	root_ = Partition(sf::Vector3f(0.0f, 0.0f, 0.0f), PARTITION_SIZE);
 
 	// If Multi-threading then start the thread farm
 	// and set the TimeStep function to the multi-threaded impelmentation
@@ -275,6 +278,7 @@ void BarnesHutCPU::TimeStepMultiImproved(float dt) {
 
 void BarnesHutCPU::TimeStepMulti(float dt) {
 
+
 	// Partition physics space
 
 	// create intial tree using partition root
@@ -316,9 +320,9 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 		farm_->AddTask(newTask);
 	}
 
+
 	int limit = (bodies_.size() < NUM_OF_THREADS) ? bodies_.size() : NUM_OF_THREADS;
 
-	//std::cout << "waiting to merge" << std::endl;
 
 	for (int i = 0; i < limit; i++) {
 
@@ -329,24 +333,19 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 
 		delete mergeTree;
 
-		//std::cout << "merged" << i << std::endl;
 	}
 
-	//std::cout << "finished" << std::endl;
 
 #if TIMING_STEPS
 
 	the_clock::time_point timeEnd = the_clock::now();
 
 
-	std::cout << "insert time = " << std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() << std::endl;
+	std::cout << "insert time = " << std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeStart).count() << std::endl;
 
 	timeStart = the_clock::now();
 
 #endif
-
-
-
 
 	// Add an UpdateForces task for each body
 	for (int i = 0; i < limit; i++) {
@@ -369,31 +368,86 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 
 	timeEnd = the_clock::now();
 
-	std::cout << "force time = " << std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() << std::endl;
+	std::cout << "force time = " << std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeStart).count() << std::endl;
 
 	timeStart = the_clock::now();
 
 #endif
 
-	// Add an integration task for each body
+	//integrate each body
 	for (auto body : bodies_) {
 
-		body->Integrate_SemiImplicitEuler(dt);
-
-		//TaskIntegrateBody* newTask = new TaskIntegrateBody();
-		//newTask->Init(body, dt);
-		//farm_->AddTask(newTask);
+		std::invoke(body->Integrate, *body, dt);
 	}
 
 	// Wait until all bodies are integrated
 	//farm_->WaitUntilTasksFinished();
 
 
+#if COLLISION
+
+
+	tree.CollisionBegin();
+
+	/*
+	CollisionNode* collisionRoot = collisionTree_.Build(root_, 4);
+	for (auto body : bodies_) {
+
+	collisionTree_.Insert(collisionRoot, body);
+	}
+
+	#if TIMING_STEPS
+
+	timeEnd = the_clock::now();
+
+	std::cout << "Collision Insert time = " << std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() << std::endl;
+
+	timeStart = the_clock::now();
+
+	#endif
+
+	collisionTree_.TestAllCollisions(collisionRoot);
+
+	if (collisionRoot) {
+
+	delete collisionRoot;
+	collisionRoot = nullptr;
+	}
+	*/
+
+	//for (auto b1 : bodies_) {
+
+	//	for (auto b2 : bodies_) {
+
+	//		if (b1 == b2) {
+
+	//			break;
+	//		}
+
+	//		collisionTree_.TestCollision(b1, b2);
+
+	//	}
+	//}
+
+
 #if TIMING_STEPS
 
 	timeEnd = the_clock::now();
 
-	std::cout << "integrate time = " << std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() << std::endl;
+	std::cout << "Collision Test time = " << std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeStart).count() << std::endl;
+
+	timeStart = the_clock::now();
+
+#endif
+
+#endif
+
+
+#if TIMING_STEPS
+
+	timeEnd = the_clock::now();
+
+	std::cout << "integrate time = " << std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeStart).count() << std::endl;
 
 	timeStart = the_clock::now();
 
@@ -419,9 +473,10 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 
 	timeEnd = the_clock::now();
 
-	std::cout << "sorting time = " << std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() << std::endl;
+	std::cout << "sorting time = " << std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeStart).count() << std::endl;
 
 #endif
+	
 
 }
 

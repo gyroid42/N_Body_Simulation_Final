@@ -27,6 +27,12 @@
     <Filter Include="Source Files\Simulation\BarnesHut\Octree">
       <UniqueIdentifier>{6f0a353f-07c6-4cc8-8ba5-6a9a89fc949a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Simulation\Collision">
+      <UniqueIdentifier>{66de5134-08e1-45cc-8bf4-4a84939c0f3e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Simulation\Collision\Octree">
+      <UniqueIdentifier>{5f76937a-d1d3-4f00-8b90-6436e6f5fbb7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp">
@@ -91,6 +97,9 @@
     </ClCompile>
     <ClCompile Include="OctreeNode.cpp">
       <Filter>Source Files\Simulation\BarnesHut\Octree</Filter>
+    </ClCompile>
+    <ClCompile Include="OctreeCollision.cpp">
+      <Filter>Source Files\Simulation\Collision\Octree</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -159,6 +168,9 @@
     </ClInclude>
     <ClInclude Include="OctreeNode.h">
       <Filter>Source Files\Simulation\BarnesHut\Octree</Filter>
+    </ClInclude>
+    <ClInclude Include="OctreeCollision.h">
+      <Filter>Source Files\Simulation\Collision\Octree</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

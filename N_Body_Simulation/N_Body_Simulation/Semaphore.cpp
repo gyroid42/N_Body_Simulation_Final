@@ -17,55 +17,30 @@ Semaphore::~Semaphore()
 
 void Semaphore::Wait() {
 
-	while (true) {
 
-		// if counter <= 0 thread cannot continue
-		if (counter_ <= 0) {
-
-			unique_lock<mutex> lck(*this);
-			lock_.wait(lck);
-		}
-
-		unique_lock<mutex> lck(counterMutex_);
-
-		// if counter is <= 0 loop back to start
-		if (counter_ <= 0) {
-			continue;
-		}
-
-		// reduce counter by 1 and leave loop
-		counter_--;
-		break;
+	std::unique_lock<decltype(mutex_)> lock(mutex_);
+	while (!counter_) {
+		condition_.wait(lock);
 	}
+
+	counter_--;
+
 }
 
 
-void Semaphore::Signal(int n) {
+void Semaphore::Signal() {
 
 
-	int notifyCount = 0;
+	std::lock_guard<decltype(mutex_)> lock(mutex_);
+	counter_++;
+	condition_.notify_one();
 
-	{
-		unique_lock<mutex> lck(counterMutex_);
-		if (counter_ < 0) {
-			notifyCount = counter_ + n;
-		}
-		else {
-			notifyCount = n;
-		}
-		counter_ += n;
-	}
-
-	for (int i = 0; i < notifyCount; i++) {
-
-		lock_.notify_one();
-	}
 }
 
 
 void Semaphore::SignalAll() {
 
-	unique_lock<mutex> lck(counterMutex_);
+	unique_lock<mutex> lck(mutex_);
 	counter_ += 20;
-	lock_.notify_all();
+	condition_.notify_all();
 }

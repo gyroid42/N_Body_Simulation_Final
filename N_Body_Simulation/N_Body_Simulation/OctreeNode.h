@@ -40,14 +40,19 @@ public:
 	// Creates empty children on this node
 	void CreateChildren();
 
+
+	void CollisionBegin();
+	void CheckAllCollision(Body* bodyList[], unsigned short int depth);
+	void TestCollision(Body* b1, Body* b2);
+
 	// Getters
 	OctreeNode* GetChild(int index);
 	inline float Mass() { return totalMass_; }
 	inline sf::Vector3f CenterOfMass() { return centerOfMass_; }
 	inline Body* GetBody() { return body_; }
+	inline Body* GetBodyList() { return bodyList_; }
 	inline bool IsExternal() { return isExternal_; }
 	inline int NumBodies() { return numBodies_; }
-	inline std::vector<Body*>& GetBodyList() { return bodyList_; }
 	inline Partition GetPartition() { return partition_; }
 	inline OctreeNode* Root() { return treeRoot_; }
 
@@ -55,6 +60,9 @@ public:
 	inline void SetChild(int index, OctreeNode* newChild) { children_[index] = newChild; }
 
 private:
+
+
+	bool SphereToSphereCollision(Body* b1, Body* b2);
 
 	// Partitioned space this node contains
 	Partition partition_;
@@ -71,7 +79,7 @@ private:
 	// reference to initial body inserted in this partition
 	Body* body_;
 
-	std::vector<Body*> bodyList_;
+	Body* bodyList_;
 
 	// isExternal is true if this is this partition only contains 1 body
 	bool isExternal_;

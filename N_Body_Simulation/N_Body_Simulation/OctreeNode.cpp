@@ -34,6 +34,8 @@ OctreeNode::OctreeNode(Partition newPartition) :
 	numBodies_ = 0;
 
 	treeRoot_ = this;
+
+	bodyList_ = nullptr;
 }
 
 OctreeNode::OctreeNode(Partition newPartition, OctreeNode* newRoot) :
@@ -58,6 +60,8 @@ OctreeNode::OctreeNode(Partition newPartition, OctreeNode* newRoot) :
 
 
 	numBodies_ = 0;
+
+	bodyList_ = nullptr;
 }
 
 
@@ -116,6 +120,11 @@ void OctreeNode::Insert(Body* body, int& counter) {
 		centerOfMass_ = body->Position();
 		body_ = body;
 		numBodies_++;
+
+		if (!body->InsertedCollision()) {
+
+			bodyList_ = body;
+		}
 	}
 
 	// if body is present and this isn't an external node
@@ -133,7 +142,6 @@ void OctreeNode::Insert(Body* body, int& counter) {
 		centerOfMass_ /= totalMass_;
 		numBodies_++;
 
-
 		// loop for each octant in partition
 		for (int i = 0; i < 8; i++) {
 
@@ -148,6 +156,19 @@ void OctreeNode::Insert(Body* body, int& counter) {
 
 					children_[i] = new OctreeNode(newPartition, treeRoot_);
 				}
+
+				
+				if (!body->InsertedCollision()) {
+
+					if (partition_.StraddleCheck(body->Position(), body->ModelRadius())) {
+
+						body->SetNextBody(bodyList_);
+						bodyList_ = body;
+
+						body->SetInsertedCollision(true);
+					}
+				}
+				
 
 				// Insert body into octant found
 				children_[i]->Insert(body, counter);
@@ -174,7 +195,19 @@ void OctreeNode::Insert(Body* body, int& counter) {
 
 					children_[i] = new OctreeNode(newPartition, treeRoot_);
 				}
+				
+				if (bodyList_) {
 
+					if (partition_.StraddleCheck(bodyList_->Position(), bodyList_->ModelRadius())) {
+
+						bodyList_->SetInsertedCollision(true);
+					}
+					else {
+
+						bodyList_ = nullptr;
+					}
+				}
+				
 				// add body to the new node
 				children_[i]->Insert(body_, counter);
 
@@ -209,7 +242,7 @@ void OctreeNode::UpdateForceOnBody(Body* body) {
 		}
 
 		// check if distance and length is appropriate to use this node
-		else if (partition_.Length() / PhysicsUtil::DistanceTo(centerOfMass_, body->Position()) < 1.0f) {
+		else if ((partition_.HalfLength() * 2.0f) / PhysicsUtil::DistanceTo(centerOfMass_, body->Position()) < 1.0f) {
 
 			body->AddForce(centerOfMass_, totalMass_);
 		}
@@ -242,6 +275,8 @@ void OctreeNode::Merge(OctreeNode* mergeTree) {
 		body_ = mergeTree->GetBody();
 		numBodies_ = mergeTree->NumBodies();
 
+		bodyList_ = mergeTree->GetBodyList();
+
 		isExternal_ = mergeTree->IsExternal();
 
 		// Set all children to mergeTree children
@@ -262,6 +297,17 @@ void OctreeNode::Merge(OctreeNode* mergeTree) {
 		centerOfMass_ = totalTimesCenter + bodyMassTimesPosition;
 		centerOfMass_ /= totalMass_;
 		numBodies_ += mergeTree->NumBodies();
+
+		if (bodyList_) {
+
+			bodyList_->SetNextBody(mergeTree->GetBodyList());
+		}
+		else {
+
+			bodyList_ = mergeTree->GetBodyList();
+		}
+		//body_->SetNextBody(mergeTree->GetBodyList());
+
 
 		// Loop for each child and merge with the mergeTrees children
 		for (int i = 0; i < 8; i++) {
@@ -294,6 +340,8 @@ void OctreeNode::Merge(OctreeNode* mergeTree) {
 		centerOfMass_ = totalTimesCenter + bodyMassTimesPosition;
 		centerOfMass_ /= totalMass_;
 		numBodies_ += mergeTree->NumBodies();
+
+		//body_->SetNextBody(mergeTree->GetBodyList());
 
 		// If this node is external
 		if (isExternal_) {
@@ -331,6 +379,18 @@ void OctreeNode::Merge(OctreeNode* mergeTree) {
 						children_[i] = new OctreeNode(newPartition, treeRoot_);
 					}
 
+					if (bodyList_) {
+
+						if (partition_.StraddleCheck(bodyList_->Position(), bodyList_->ModelRadius())) {
+
+							bodyList_->SetInsertedCollision(true);
+						}
+						else {
+
+							bodyList_ = nullptr;
+						}
+					}
+
 					int counter = 0;
 
 					children_[i]->Insert(body_, counter);
@@ -345,9 +405,31 @@ void OctreeNode::Merge(OctreeNode* mergeTree) {
 
 		}
 
+		// handle merge tree
+		Body* mergeBodyList = mergeTree->GetBodyList();
+
+		if (mergeBodyList) {
+
+			if (!mergeBodyList->InsertedCollision()) {
+
+				if (partition_.StraddleCheck(mergeBodyList->Position(), mergeBodyList->ModelRadius())) {
+
+					mergeBodyList->SetNextBody(bodyList_);
+					bodyList_ = mergeBodyList;
+
+					mergeBodyList->SetInsertedCollision(true);
+				}
+				else {
+					mergeBodyList = nullptr;
+				}
+			}
+		}
+
+
 		// If the merge tree node is external
 		if (mergeTree->IsExternal()) {
 
+			Body* body = mergeTree->GetBody();
 
 			// loop for each child and insert the merge tree node's body into the correct one
 			for (int i = 0; i < 8; i++) {
@@ -355,7 +437,7 @@ void OctreeNode::Merge(OctreeNode* mergeTree) {
 				// check if body is in current subdivision
 				Partition newPartition = partition_.GetSubDivision(i);
 
-				if (newPartition.Contains(mergeTree->GetBody()->Position())) {
+				if (newPartition.Contains(body->Position())) {
 
 					// if it is then insert it into that child
 					if (!children_[i]) {
@@ -363,14 +445,28 @@ void OctreeNode::Merge(OctreeNode* mergeTree) {
 						children_[i] = new OctreeNode(newPartition, treeRoot_);
 					}
 
+
+
+
 					int counter = 0;
-					children_[i]->Insert(mergeTree->GetBody(), counter);
+					children_[i]->Insert(body, counter);
 
 					break;
 				}
 			}
 
 		}
+
+		//if (bodyList_) {
+
+		//	bodyList_->SetNextBody(mergeBodyList);
+		//}
+		//else {
+
+		//	bodyList_ = mergeBodyList;
+		//}
+
+
 	}
 
 }
@@ -387,6 +483,8 @@ void OctreeNode::GetOrderedElementsList(std::vector<Body*>& newList) {
 		// only add body if it's within the physics space
 		if (treeRoot_->GetPartition().Contains(body_->Position())) {
 
+			body_->SetInsertedCollision(false);
+			body_->SetNextBody(nullptr);
 			// add it to the new body list
 			newList.push_back(body_);
 		}
@@ -431,4 +529,70 @@ OctreeNode* OctreeNode::GetChild(int index) {
 
 
 
+
+void OctreeNode::CheckAllCollision(Body* ancestorList[50], unsigned short int depth) {
+
+	
+	ancestorList[depth] = bodyList_;
+
+	depth++;
+
+	for (int i = 0; i < depth; i++) {
+
+		Body* b1;
+		Body* b2;
+
+		for (b1 = ancestorList[i]; b1; b1 = b1->NextBody()) {
+
+			for (b2 = bodyList_; b2; b2 = b2->NextBody()) {
+
+				if (b1 == b2) {
+
+					break;
+				}
+
+				TestCollision(b1, b2);
+			}
+		}
+	}
+
+
+	for (int i = 0; i < 8; i++) {
+
+		if (children_[i]) {
+
+			children_[i]->CheckAllCollision(ancestorList, depth);
+		}
+	}
+
+	depth--;
+}
+
+
+
+void OctreeNode::TestCollision(Body* b1, Body* b2) {
+
+	if (SphereToSphereCollision(b1, b2)) {
+
+		int poop = 0;
+	}
+}
+
+
+bool OctreeNode::SphereToSphereCollision(Body* b1, Body* b2) {
+
+	float distance = PhysicsUtil::DistanceToSqr(b1->Position(), b2->Position());
+	float radius = b1->ModelRadius() + b2->ModelRadius();
+
+	return distance <= radius * radius;
+}
+
+
+void OctreeNode::CollisionBegin() {
+
+
+	Body* ancestorList[50];
+
+	CheckAllCollision(ancestorList, 0);
+}
 

@@ -3,6 +3,8 @@
 // SFML includes
 #include <SFML\System\Vector3.hpp>
 
+#include <string>
+
 // forward declarations
 class Renderer;
 
@@ -62,11 +64,14 @@ public:
 	void ResetForce();
 
 	// Integration Methods
+	void (Body::*Integrate)(float);
 	void Integrate_SemiImplicitEuler(float dt);
+	void Integrate_Verlet(float dt);
+	void Integrate_VerletStart(float dt);
+
 
 	// Interpolates between the previous state and current state
 	State InterpolateState(float alpha);
-	//void Integrate_Rk4(float t, float dt);
 	//void Integrate_Verlet();
 
 
@@ -79,15 +84,28 @@ public:
 	inline sf::Vector3f Position() { return currentState_.position_; }
 	inline float ModelRadius() { return modelRadius_; }
 	inline State CurrentState() { return currentState_; }
+	inline Body* NextBody() { return nextBody_; }
+	inline bool InsertedCollision() { return collisionTreeInserted_; }
 
 	// Setters
 	inline void SetColour(sf::Vector3f rgb) { colour_ = rgb; }
 	void SetMass(float newMass);
+	inline void Destroy() { destroy_ = true; }
+	inline void SetNextBody(Body* next) { nextBody_ = next; 
+	if (nextBody_ == this) 
+		int meh = 0; 
+	}
+	inline void SetInsertedCollision(bool newValue) { collisionTreeInserted_ = newValue; }
+	inline void SetName(std::string newName) { name_ = newName; }
 
 private:
 
+	std::string name_;
+
+	int initialCounter_;
+
 	// State of body in the previous physics step
-	State prevState_;
+	State prevStates_[2];
 
 	// State of body in the current physics step
 	State currentState_;
@@ -104,5 +122,9 @@ private:
 	float modelRadius_;
 	sf::Vector3f colour_;
 
+	bool destroy_;
+	bool collisionTreeInserted_;
+
+	Body* nextBody_;
 };
 
