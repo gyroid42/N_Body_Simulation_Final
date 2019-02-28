@@ -17,11 +17,11 @@ class OctreeNode
 {
 public:
 	OctreeNode(Partition newPartition);
-	OctreeNode(Partition newPartition, OctreeNode* newRoot);
+	OctreeNode(Partition newPartition, OctreeNode* newRoot, int newDepth);
 	~OctreeNode();
 
 	// inserts a new body into the partition tree
-	void Insert(Body* body, int& counter);
+	void Insert(Body* body, int& depthCounter);
 
 
 	// Update the force on a given body by traversing the tree
@@ -40,9 +40,13 @@ public:
 	// Creates empty children on this node
 	void CreateChildren();
 
-
+	// Starts collision checks
 	void CollisionBegin();
+
+	// checks collision in all the nodes
 	void CheckAllCollision(Body* bodyList[], unsigned short int depth);
+
+	// Check Collision between 2 bodies
 	void TestCollision(Body* b1, Body* b2);
 
 	// Getters
@@ -51,6 +55,7 @@ public:
 	inline sf::Vector3f CenterOfMass() { return centerOfMass_; }
 	inline Body* GetBody() { return body_; }
 	inline Body* GetBodyList() { return bodyList_; }
+	inline Body* GetBodyListEnd() { return bodyListEnd_; }
 	inline bool IsExternal() { return isExternal_; }
 	inline int NumBodies() { return numBodies_; }
 	inline Partition GetPartition() { return partition_; }
@@ -58,10 +63,13 @@ public:
 
 	// Setters
 	inline void SetChild(int index, OctreeNode* newChild) { children_[index] = newChild; }
+	inline void SetBodyList(Body* newList) { bodyList_ = newList; }
+	inline void SetBodyListEnd(Body* newListEnd) { bodyListEnd_ = newListEnd; }
 
 private:
 
 
+	// Sphere to sphere collision test
 	bool SphereToSphereCollision(Body* b1, Body* b2);
 
 	// Partitioned space this node contains
@@ -79,11 +87,17 @@ private:
 	// reference to initial body inserted in this partition
 	Body* body_;
 
+	// list of bodies at this node for collision
 	Body* bodyList_;
+	Body* bodyListEnd_;
 
 	// isExternal is true if this is this partition only contains 1 body
 	bool isExternal_;
 
+	// number of bodies in branch of tree
 	int numBodies_;
+
+	// depth of node
+	int depth_;
 };
 

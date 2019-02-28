@@ -11,6 +11,7 @@
 
 OctreeNode::OctreeNode(Partition newPartition) :
 	body_(nullptr),
+	bodyList_(nullptr),
 	treeRoot_(nullptr)
 {
 
@@ -30,16 +31,19 @@ OctreeNode::OctreeNode(Partition newPartition) :
 	totalMass_ = 0.0f;
 	centerOfMass_ = sf::Vector3f(0.0f, 0.0f, 0.0f);
 
-
+	// node starts with 0 bodies
 	numBodies_ = 0;
 
+	// no root given therefore this node is the root
 	treeRoot_ = this;
 
-	bodyList_ = nullptr;
+	// this is root node therefore depth is 0
+	depth_ = 0;
 }
 
-OctreeNode::OctreeNode(Partition newPartition, OctreeNode* newRoot) :
+OctreeNode::OctreeNode(Partition newPartition, OctreeNode* newRoot, int newDepth) :
 	body_(nullptr),
+	bodyList_(nullptr),
 	treeRoot_(newRoot)
 {
 	// set all children to null
@@ -58,10 +62,11 @@ OctreeNode::OctreeNode(Partition newPartition, OctreeNode* newRoot) :
 	totalMass_ = 0.0f;
 	centerOfMass_ = sf::Vector3f(0.0f, 0.0f, 0.0f);
 
-
+	// nodes starts with 0 bodies
 	numBodies_ = 0;
 
-	bodyList_ = nullptr;
+	// set depth
+	depth_ = newDepth;
 }
 
 
@@ -103,12 +108,12 @@ void OctreeNode::AddBody(Body* body) {
 }
 
 
-void OctreeNode::Insert(Body* body, int& counter) {
+void OctreeNode::Insert(Body* body, int& depthCounter) {
 
 
-	counter++;
+	depthCounter++;
 
-	if (counter > 500) {
+	if (depthCounter > 500) {
 
 		int poop = 0;
 	}
@@ -121,9 +126,12 @@ void OctreeNode::Insert(Body* body, int& counter) {
 		body_ = body;
 		numBodies_++;
 
+		// If body hasn't been inserted to lowest collision depth yet
 		if (!body->InsertedCollision()) {
 
+			// set body list to new body
 			bodyList_ = body;
+			bodyListEnd_ = body;
 		}
 	}
 
@@ -154,15 +162,23 @@ void OctreeNode::Insert(Body* body, int& counter) {
 				// If current octant not being used add a new node
 				if (children_[i] == nullptr) {
 
-					children_[i] = new OctreeNode(newPartition, treeRoot_);
+					children_[i] = new OctreeNode(newPartition, treeRoot_, depth_ + 1);
 				}
 
-				
+				// If body hasn't been inserted to lowest collision depth yet
 				if (!body->InsertedCollision()) {
 
+					// Check if body is straddling edge of node
 					if (partition_.StraddleCheck(body->Position(), body->ModelRadius())) {
 
-						body->SetNextBody(bodyList_);
+						// Body is straddling therefore this is the lowest depth for body
+						// Add body to bodyList
+						if (bodyList_) {
+							body->SetNextBody(bodyList_);
+						}
+						else {
+							bodyListEnd_ = body;
+						}
 						bodyList_ = body;
 
 						body->SetInsertedCollision(true);
@@ -171,7 +187,7 @@ void OctreeNode::Insert(Body* body, int& counter) {
 				
 
 				// Insert body into octant found
-				children_[i]->Insert(body, counter);
+				children_[i]->Insert(body, depthCounter);
 
 				// exit the loop since we've found the octant the body belongs in
 				break;
@@ -193,23 +209,28 @@ void OctreeNode::Insert(Body* body, int& counter) {
 				// if node doesn't exist yet create one
 				if (children_[i] == nullptr) {
 
-					children_[i] = new OctreeNode(newPartition, treeRoot_);
+					children_[i] = new OctreeNode(newPartition, treeRoot_, depth_ + 1);
 				}
 				
+				// If there is a body in current bodyList
 				if (bodyList_) {
 
+					// there is a body so check if it is at it's lowest depth
 					if (partition_.StraddleCheck(bodyList_->Position(), bodyList_->ModelRadius())) {
 
+						// It is straddling so flag it to no longer be checked in deeper nodes
 						bodyList_->SetInsertedCollision(true);
 					}
 					else {
 
+						// remove body from body list as it's being inserted into a deeper bodyList
 						bodyList_ = nullptr;
+						bodyListEnd_ = nullptr;
 					}
 				}
 				
 				// add body to the new node
-				children_[i]->Insert(body_, counter);
+				children_[i]->Insert(body_, depthCounter);
 
 				// this node is no longer external
 				isExternal_ = false;
@@ -220,10 +241,10 @@ void OctreeNode::Insert(Body* body, int& counter) {
 		}
 
 		// re-insert the body into this node
-		Insert(body, counter);
+		Insert(body, depthCounter);
 	}
 
-	counter++;
+	depthCounter--;
 }
 
 
@@ -276,6 +297,7 @@ void OctreeNode::Merge(OctreeNode* mergeTree) {
 		numBodies_ = mergeTree->NumBodies();
 
 		bodyList_ = mergeTree->GetBodyList();
+		bodyListEnd_ = mergeTree->GetBodyListEnd();
 
 		isExternal_ = mergeTree->IsExternal();
 
@@ -298,13 +320,18 @@ void OctreeNode::Merge(OctreeNode* mergeTree) {
 		centerOfMass_ /= totalMass_;
 		numBodies_ += mergeTree->NumBodies();
 
+		// If there's a bodyList
 		if (bodyList_) {
 
-			bodyList_->SetNextBody(mergeTree->GetBodyList());
+			// Add the mergeTree bodylist onto the end of merged body list
+			bodyListEnd_->SetNextBody(mergeTree->GetBodyList());
+			bodyListEnd_ = mergeTree->GetBodyListEnd();
 		}
 		else {
 
+			// Set body list to mergeTree's body list
 			bodyList_ = mergeTree->GetBodyList();
+			bodyListEnd_ = mergeTree->GetBodyListEnd();
 		}
 		//body_->SetNextBody(mergeTree->GetBodyList());
 
@@ -341,8 +368,6 @@ void OctreeNode::Merge(OctreeNode* mergeTree) {
 		centerOfMass_ /= totalMass_;
 		numBodies_ += mergeTree->NumBodies();
 
-		//body_->SetNextBody(mergeTree->GetBodyList());
-
 		// If this node is external
 		if (isExternal_) {
 
@@ -376,18 +401,23 @@ void OctreeNode::Merge(OctreeNode* mergeTree) {
 					// if it is then insert it into that child
 					if (!children_[i]) {
 
-						children_[i] = new OctreeNode(newPartition, treeRoot_);
+						children_[i] = new OctreeNode(newPartition, treeRoot_, depth_ + 1);
 					}
 
+					// If body list contains a body
 					if (bodyList_) {
 
+						// check if it's straddling
 						if (partition_.StraddleCheck(bodyList_->Position(), bodyList_->ModelRadius())) {
 
+							// It is so flag the body not be added into deeper body lists
 							bodyList_->SetInsertedCollision(true);
 						}
 						else {
 
+							// body can go deeper so remove from body list
 							bodyList_ = nullptr;
+							bodyListEnd_ = nullptr;
 						}
 					}
 
@@ -405,14 +435,22 @@ void OctreeNode::Merge(OctreeNode* mergeTree) {
 
 		}
 
+		////////////////////////////////////////////////
+		/*
 		// handle merge tree
 		Body* mergeBodyList = mergeTree->GetBodyList();
 
+		// if there is a body list in the merge tree
 		if (mergeBodyList) {
 
+			// check if body in list can be inserted
 			if (!mergeBodyList->InsertedCollision()) {
 
+				// do a straddle check on merge body
 				if (partition_.StraddleCheck(mergeBodyList->Position(), mergeBodyList->ModelRadius())) {
+
+					// merge body is straddling so add to body list
+					
 
 					mergeBodyList->SetNextBody(bodyList_);
 					bodyList_ = mergeBodyList;
@@ -420,11 +458,14 @@ void OctreeNode::Merge(OctreeNode* mergeTree) {
 					mergeBodyList->SetInsertedCollision(true);
 				}
 				else {
+
+					// body can go deeper, so remove from merge body list
 					mergeBodyList = nullptr;
 				}
 			}
 		}
-
+		*/
+		//////////////////////////////////////////////////////////
 
 		// If the merge tree node is external
 		if (mergeTree->IsExternal()) {
@@ -442,10 +483,34 @@ void OctreeNode::Merge(OctreeNode* mergeTree) {
 					// if it is then insert it into that child
 					if (!children_[i]) {
 
-						children_[i] = new OctreeNode(newPartition, treeRoot_);
+						children_[i] = new OctreeNode(newPartition, treeRoot_, depth_ + 1);
 					}
 
+					Body* mergeBodyList = mergeTree->GetBodyList();
 
+					if (mergeBodyList) {
+
+						if (!mergeBodyList->InsertedCollision()) {
+
+							// do a straddle check on merge body
+							if (partition_.StraddleCheck(mergeBodyList->Position(), mergeBodyList->ModelRadius())) {
+
+								// merge body is straddling so add to body list
+
+
+								mergeBodyList->SetNextBody(bodyList_);
+								bodyList_ = mergeBodyList;
+
+								mergeBodyList->SetInsertedCollision(true);
+							}
+							else {
+
+								// body can go deeper, so remove from merge body list
+								mergeTree->SetBodyList(nullptr);
+								mergeTree->SetBodyListEnd(nullptr);
+							}
+						}
+					}
 
 
 					int counter = 0;
@@ -457,16 +522,19 @@ void OctreeNode::Merge(OctreeNode* mergeTree) {
 
 		}
 
-		//if (bodyList_) {
+		// combine the two merge lists
+		if (bodyList_) {
 
-		//	bodyList_->SetNextBody(mergeBodyList);
-		//}
-		//else {
+			// Add the mergeTree bodylist onto the end of merged body list
+			bodyListEnd_->SetNextBody(mergeTree->GetBodyList());
+			bodyListEnd_ = mergeTree->GetBodyListEnd();
+		}
+		else {
 
-		//	bodyList_ = mergeBodyList;
-		//}
-
-
+			// Set body list to mergeTree's body list
+			bodyList_ = mergeTree->GetBodyList();
+			bodyListEnd_ = mergeTree->GetBodyListEnd();
+		}
 	}
 
 }
@@ -514,7 +582,7 @@ void OctreeNode::CreateChildren() {
 
 		if (!children_[i]) {
 
-			children_[i] = new OctreeNode(partition_.GetSubDivision(i), treeRoot_);
+			children_[i] = new OctreeNode(partition_.GetSubDivision(i), treeRoot_, depth_ + 1);
 		}
 	}
 
@@ -530,7 +598,7 @@ OctreeNode* OctreeNode::GetChild(int index) {
 
 
 
-void OctreeNode::CheckAllCollision(Body* ancestorList[50], unsigned short int depth) {
+void OctreeNode::CheckAllCollision(Body* ancestorList[], unsigned short int depth) {
 
 	
 	ancestorList[depth] = bodyList_;
