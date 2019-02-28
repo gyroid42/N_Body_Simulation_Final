@@ -408,7 +408,7 @@ void OctreeNode::Merge(OctreeNode* mergeTree) {
 		// If the merge tree node is external
 		if (mergeTree->IsExternal()) {
 
-			Body* body = mergeTree->GetBodyList();
+			Body* body = mergeTree->GetBody();
 
 			// loop for each child and insert the merge tree node's body into the correct one
 			for (int i = 0; i < 8; i++) {
@@ -424,14 +424,19 @@ void OctreeNode::Merge(OctreeNode* mergeTree) {
 						children_[i] = new OctreeNode(newPartition, treeRoot_);
 					}
 
-					if (!mergeTree->GetBodyList()->InsertedCollision()) {
+					Body* mergeBodyList = mergeTree->GetBodyList();
 
-						if (partition_.StraddleCheck(body->Position(), body->ModelRadius())) {
+					if (mergeBodyList) {
 
-							body->SetNextBody(bodyList_);
-							bodyList_ = body;
+						if (!mergeBodyList->InsertedCollision()) {
 
-							body->SetInsertedCollision(true);
+							if (partition_.StraddleCheck(mergeBodyList->Position(), mergeBodyList->ModelRadius())) {
+
+								mergeBodyList->SetNextBody(bodyList_);
+								bodyList_ = mergeBodyList;
+
+								mergeBodyList->SetInsertedCollision(true);
+							}
 						}
 					}
 
@@ -444,6 +449,17 @@ void OctreeNode::Merge(OctreeNode* mergeTree) {
 			}
 
 		}
+
+		if (bodyList_) {
+
+			bodyList_->SetNextBody(mergeTree->GetBodyList());
+		}
+		else {
+
+			bodyList_ = mergeTree->GetBodyList();
+		}
+
+
 	}
 
 }
