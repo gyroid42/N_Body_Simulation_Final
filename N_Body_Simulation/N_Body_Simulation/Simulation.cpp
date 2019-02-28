@@ -52,10 +52,34 @@ void Simulation::CleanUpBodies() {
 
 bool Simulation::GenerateAsteroids(int numAsteroids) {
 
+#if TEST_SIMULATION
+
+	Body* body = new Body();
+	body->Init(sf::Vector3f(1.0f, 500.0f, 1.0f), sf::Vector3f(0.0f, 0.0f, 0.0f), 20.0f);
+	body->SetName("b1");
+	bodies_.push_back(body);
+
+	body = new Body();
+	body->Init(sf::Vector3f(-4000.0f, 500.0f, 4000.0f), sf::Vector3f(0.0f, 0.0f, 0.0f), 20.0f);
+	body->SetName("b2");
+	bodies_.push_back(body);
+
+	body = new Body();
+	body->Init(sf::Vector3f(3751.0f, 500.0f, 2501.0f), sf::Vector3f(0.0f, 0.0f, 0.0f), 20.0f);
+	body->SetName("b3");
+	bodies_.push_back(body);
+
+	body = new Body();
+	body->Init(sf::Vector3f(4900.0f, 500.0f, 2501.0f), sf::Vector3f(0.0f, 0.0f, 0.0f), 20.0f);
+	body->SetName("b4");
+	bodies_.push_back(body);
+
+#else
+
 	// If adding random bodies
 	if (ADD_RANDOM_BODIES) {
 
-		
+
 		float lower_bound = 0.0;
 		float upper_bound = 700.0;
 		std::uniform_real_distribution<float> unif(lower_bound, upper_bound);
@@ -86,8 +110,8 @@ bool Simulation::GenerateAsteroids(int numAsteroids) {
 
 	}
 	bodyCount_ = numAsteroids;
-	
-	
+
+
 	if (ADD_ORBIT_BODIES) {
 
 		Body* planet = new Body();
@@ -117,6 +141,8 @@ bool Simulation::GenerateAsteroids(int numAsteroids) {
 		bodies_.push_back(satelite4);
 
 	}
+
+#endif
 
 	return true;
 }

@@ -3,6 +3,8 @@
 // SFML includes
 #include <SFML\System\Vector3.hpp>
 
+#include <string>
+
 // forward declarations
 class Renderer;
 
@@ -91,8 +93,11 @@ public:
 	inline void Destroy() { destroy_ = true; }
 	inline void SetNextBody(Body* next) { nextBody_ = next; }
 	inline void SetInsertedCollision(bool newValue) { collisionTreeInserted_ = newValue; }
+	inline void SetName(std::string newName) { name_ = newName; }
 
 private:
+
+	std::string name_;
 
 	int initialCounter_;
 

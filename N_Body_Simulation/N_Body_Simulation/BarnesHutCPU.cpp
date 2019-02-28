@@ -39,7 +39,7 @@ void BarnesHutCPU::Init() {
 	BarnesHut::Init();
 
 	// Create the partition tree root
-	root_ = Partition(sf::Vector3f(0.0f, 0.0f, 0.0f), 100000.0f);
+	root_ = Partition(sf::Vector3f(0.0f, 0.0f, 0.0f), PARTITION_SIZE);
 
 	// If Multi-threading then start the thread farm
 	// and set the TimeStep function to the multi-threaded impelmentation

@@ -34,6 +34,8 @@ OctreeNode::OctreeNode(Partition newPartition) :
 	numBodies_ = 0;
 
 	treeRoot_ = this;
+
+	bodyList_ = nullptr;
 }
 
 OctreeNode::OctreeNode(Partition newPartition, OctreeNode* newRoot) :
@@ -58,6 +60,8 @@ OctreeNode::OctreeNode(Partition newPartition, OctreeNode* newRoot) :
 
 
 	numBodies_ = 0;
+
+	bodyList_ = nullptr;
 }
 
 
@@ -116,7 +120,11 @@ void OctreeNode::Insert(Body* body, int& counter) {
 		centerOfMass_ = body->Position();
 		body_ = body;
 		numBodies_++;
-		bodyList_ = body;
+
+		if (!body->InsertedCollision()) {
+
+			bodyList_ = body;
+		}
 	}
 
 	// if body is present and this isn't an external node
@@ -149,14 +157,10 @@ void OctreeNode::Insert(Body* body, int& counter) {
 					children_[i] = new OctreeNode(newPartition, treeRoot_);
 				}
 
+				
 				if (!body->InsertedCollision()) {
 
 					if (partition_.StraddleCheck(body->Position(), body->ModelRadius())) {
-
-						if (bodyList_ == nullptr) {
-
-							body_ = body;
-						}
 
 						body->SetNextBody(bodyList_);
 						bodyList_ = body;
@@ -164,6 +168,7 @@ void OctreeNode::Insert(Body* body, int& counter) {
 						body->SetInsertedCollision(true);
 					}
 				}
+				
 
 				// Insert body into octant found
 				children_[i]->Insert(body, counter);
@@ -190,16 +195,19 @@ void OctreeNode::Insert(Body* body, int& counter) {
 
 					children_[i] = new OctreeNode(newPartition, treeRoot_);
 				}
+				
+				if (bodyList_) {
 
-				if (partition_.StraddleCheck(bodyList_->Position(), bodyList_->ModelRadius())) {
+					if (partition_.StraddleCheck(bodyList_->Position(), bodyList_->ModelRadius())) {
 
-					bodyList_->SetInsertedCollision(true);
+						bodyList_->SetInsertedCollision(true);
+					}
+					else {
+
+						bodyList_ = nullptr;
+					}
 				}
-				else {
-
-					bodyList_ = nullptr;
-				}
-
+				
 				// add body to the new node
 				children_[i]->Insert(body_, counter);
 
@@ -290,7 +298,15 @@ void OctreeNode::Merge(OctreeNode* mergeTree) {
 		centerOfMass_ /= totalMass_;
 		numBodies_ += mergeTree->NumBodies();
 
-		body_->SetNextBody(mergeTree->GetBodyList());
+		if (bodyList_) {
+
+			bodyList_->SetNextBody(mergeTree->GetBodyList());
+		}
+		else {
+
+			bodyList_ = mergeTree->GetBodyList();
+		}
+		//body_->SetNextBody(mergeTree->GetBodyList());
 
 
 		// Loop for each child and merge with the mergeTrees children
@@ -325,7 +341,7 @@ void OctreeNode::Merge(OctreeNode* mergeTree) {
 		centerOfMass_ /= totalMass_;
 		numBodies_ += mergeTree->NumBodies();
 
-		body_->SetNextBody(mergeTree->GetBodyList());
+		//body_->SetNextBody(mergeTree->GetBodyList());
 
 		// If this node is external
 		if (isExternal_) {
@@ -363,6 +379,18 @@ void OctreeNode::Merge(OctreeNode* mergeTree) {
 						children_[i] = new OctreeNode(newPartition, treeRoot_);
 					}
 
+					if (bodyList_) {
+
+						if (partition_.StraddleCheck(bodyList_->Position(), bodyList_->ModelRadius())) {
+
+							bodyList_->SetInsertedCollision(true);
+						}
+						else {
+
+							bodyList_ = nullptr;
+						}
+					}
+
 					int counter = 0;
 
 					children_[i]->Insert(body_, counter);
@@ -380,6 +408,7 @@ void OctreeNode::Merge(OctreeNode* mergeTree) {
 		// If the merge tree node is external
 		if (mergeTree->IsExternal()) {
 
+			Body* body = mergeTree->GetBodyList();
 
 			// loop for each child and insert the merge tree node's body into the correct one
 			for (int i = 0; i < 8; i++) {
@@ -387,13 +416,25 @@ void OctreeNode::Merge(OctreeNode* mergeTree) {
 				// check if body is in current subdivision
 				Partition newPartition = partition_.GetSubDivision(i);
 
-				if (newPartition.Contains(mergeTree->GetBody()->Position())) {
+				if (newPartition.Contains(body->Position())) {
 
 					// if it is then insert it into that child
 					if (!children_[i]) {
 
 						children_[i] = new OctreeNode(newPartition, treeRoot_);
 					}
+
+					if (!mergeTree->GetBodyList()->InsertedCollision()) {
+
+						if (partition_.StraddleCheck(body->Position(), body->ModelRadius())) {
+
+							body->SetNextBody(bodyList_);
+							bodyList_ = body;
+
+							body->SetInsertedCollision(true);
+						}
+					}
+
 
 					int counter = 0;
 					children_[i]->Insert(mergeTree->GetBody(), counter);
