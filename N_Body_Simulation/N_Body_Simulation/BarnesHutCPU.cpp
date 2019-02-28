@@ -341,7 +341,7 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 	the_clock::time_point timeEnd = the_clock::now();
 
 
-	std::cout << "insert time = " << std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() << std::endl;
+	std::cout << "insert time = " << std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeStart).count() << std::endl;
 
 	timeStart = the_clock::now();
 
@@ -368,7 +368,7 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 
 	timeEnd = the_clock::now();
 
-	std::cout << "force time = " << std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() << std::endl;
+	std::cout << "force time = " << std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeStart).count() << std::endl;
 
 	timeStart = the_clock::now();
 
@@ -434,7 +434,7 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 
 	timeEnd = the_clock::now();
 
-	std::cout << "Collision Test time = " << std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() << std::endl;
+	std::cout << "Collision Test time = " << std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeStart).count() << std::endl;
 
 	timeStart = the_clock::now();
 
@@ -447,7 +447,7 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 
 	timeEnd = the_clock::now();
 
-	std::cout << "integrate time = " << std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() << std::endl;
+	std::cout << "integrate time = " << std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeStart).count() << std::endl;
 
 	timeStart = the_clock::now();
 
@@ -473,7 +473,7 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 
 	timeEnd = the_clock::now();
 
-	std::cout << "sorting time = " << std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() << std::endl;
+	std::cout << "sorting time = " << std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeStart).count() << std::endl;
 
 #endif
 	

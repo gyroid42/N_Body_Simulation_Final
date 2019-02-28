@@ -15,7 +15,7 @@
 #define ADD_ORBIT_BODIES	true
 
 
-#define TEST_SIMULATION		true
+#define TEST_SIMULATION		false
 
 #define PARTITION_SIZE		5000
 
@@ -36,7 +36,7 @@ constexpr auto INTERPOLATE_BETWEEN_FRAMES = true;
 #define COLLISION			true
 
 #define MULTITHREADING		true
-#define NUM_OF_THREADS		1
+#define NUM_OF_THREADS		8
 
 
 
