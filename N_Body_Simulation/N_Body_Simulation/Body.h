@@ -91,7 +91,10 @@ public:
 	inline void SetColour(sf::Vector3f rgb) { colour_ = rgb; }
 	void SetMass(float newMass);
 	inline void Destroy() { destroy_ = true; }
-	inline void SetNextBody(Body* next) { nextBody_ = next; }
+	inline void SetNextBody(Body* next) { nextBody_ = next; 
+	if (nextBody_ == this) 
+		int meh = 0; 
+	}
 	inline void SetInsertedCollision(bool newValue) { collisionTreeInserted_ = newValue; }
 	inline void SetName(std::string newName) { name_ = newName; }
 

@@ -275,7 +275,7 @@ void OctreeNode::Merge(OctreeNode* mergeTree) {
 		body_ = mergeTree->GetBody();
 		numBodies_ = mergeTree->NumBodies();
 
-		bodyList_ = body_;
+		bodyList_ = mergeTree->GetBodyList();
 
 		isExternal_ = mergeTree->IsExternal();
 
@@ -408,6 +408,24 @@ void OctreeNode::Merge(OctreeNode* mergeTree) {
 		// handle merge tree
 		Body* mergeBodyList = mergeTree->GetBodyList();
 
+		if (mergeBodyList) {
+
+			if (!mergeBodyList->InsertedCollision()) {
+
+				if (partition_.StraddleCheck(mergeBodyList->Position(), mergeBodyList->ModelRadius())) {
+
+					mergeBodyList->SetNextBody(bodyList_);
+					bodyList_ = mergeBodyList;
+
+					mergeBodyList->SetInsertedCollision(true);
+				}
+				else {
+					mergeBodyList = nullptr;
+				}
+			}
+		}
+
+
 		// If the merge tree node is external
 		if (mergeTree->IsExternal()) {
 
@@ -427,26 +445,11 @@ void OctreeNode::Merge(OctreeNode* mergeTree) {
 						children_[i] = new OctreeNode(newPartition, treeRoot_);
 					}
 
-					if (mergeBodyList) {
 
-						if (!mergeBodyList->InsertedCollision()) {
-
-							if (partition_.StraddleCheck(mergeBodyList->Position(), mergeBodyList->ModelRadius())) {
-
-								mergeBodyList->SetNextBody(bodyList_);
-								bodyList_ = mergeBodyList;
-
-								mergeBodyList->SetInsertedCollision(true);
-							}
-							else {
-								mergeBodyList = nullptr;
-							}
-						}
-					}
 
 
 					int counter = 0;
-					children_[i]->Insert(mergeTree->GetBody(), counter);
+					children_[i]->Insert(body, counter);
 
 					break;
 				}
@@ -454,14 +457,14 @@ void OctreeNode::Merge(OctreeNode* mergeTree) {
 
 		}
 
-		if (bodyList_) {
+		//if (bodyList_) {
 
-			bodyList_->SetNextBody(mergeBodyList);
-		}
-		else {
+		//	bodyList_->SetNextBody(mergeBodyList);
+		//}
+		//else {
 
-			bodyList_ = mergeBodyList;
-		}
+		//	bodyList_ = mergeBodyList;
+		//}
 
 
 	}
