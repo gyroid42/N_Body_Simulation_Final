@@ -132,6 +132,8 @@
     <ClCompile Include="Channel.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="OctreeCollision.cpp" />
+    <ClCompile Include="OctreeNode.cpp" />
     <ClCompile Include="Partition.cpp" />
     <ClCompile Include="PartitionTree.cpp" />
     <ClCompile Include="PhysicsUtil.cpp" />
@@ -140,8 +142,6 @@
     <ClCompile Include="Task.cpp" />
     <ClCompile Include="TaskBruteForceCPU.cpp" />
     <ClCompile Include="TaskInsertBody.cpp" />
-    <ClCompile Include="TaskInsertBodyImproved.cpp" />
-    <ClCompile Include="TaskInsertManager.cpp" />
     <ClCompile Include="TaskIntegrateBody.cpp" />
     <ClCompile Include="TaskUpdateForces.cpp" />
     <ClCompile Include="ThreadFarm.cpp" />
@@ -156,6 +156,8 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Channel.h" />
     <ClInclude Include="Input.h" />
+    <ClInclude Include="OctreeCollision.h" />
+    <ClInclude Include="OctreeNode.h" />
     <ClInclude Include="Partition.h" />
     <ClInclude Include="PartitionTree.h" />
     <ClInclude Include="PhysicsUtil.h" />
@@ -165,8 +167,6 @@
     <ClInclude Include="Task.h" />
     <ClInclude Include="TaskBruteForceCPU.h" />
     <ClInclude Include="TaskInsertBody.h" />
-    <ClInclude Include="TaskInsertBodyImproved.h" />
-    <ClInclude Include="TaskInsertManager.h" />
     <ClInclude Include="TaskIntegrateBody.h" />
     <ClInclude Include="TaskUpdateForces.h" />
     <ClInclude Include="ThreadFarm.h" />

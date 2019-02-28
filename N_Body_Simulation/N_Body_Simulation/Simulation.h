@@ -1,7 +1,7 @@
 #pragma once
 
 // standard library includes
-#include <list>
+#include <vector>
 
 // my class includes
 #include "SETTINGS.h"
@@ -45,6 +45,6 @@ protected:
 	int bodyCount_;
 
 	// list of all bodies in the simulation
-	std::list<Body*> bodies_;
+	std::vector<Body*> bodies_;
 };
 

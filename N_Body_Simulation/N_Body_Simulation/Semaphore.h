@@ -16,7 +16,7 @@ public:
 	~Semaphore();
 
 	void Wait();
-	void Signal(int n = 1);
+	void Signal();
 
 	void SignalAll();
 
@@ -28,7 +28,7 @@ private:
 
 	int counter_;
 
-	mutex counterMutex_;
-	condition_variable lock_;
+	mutex mutex_;
+	condition_variable condition_;
 };
 

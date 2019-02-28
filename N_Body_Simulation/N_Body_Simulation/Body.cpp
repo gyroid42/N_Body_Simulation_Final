@@ -38,9 +38,28 @@ void Body::Init(sf::Vector3f newPos, sf::Vector3f newVel, float newMass) {
 	currentState_.position_ = newPos;
 	currentState_.velocity_ = newVel;
 
-	prevState_.position_ = newPos;
-	prevState_.velocity_ = newVel;
+	prevStates_[0].position_ = newPos;
+	prevStates_[0].velocity_ = newVel;
 
+	prevStates_[1].position_ = newPos;
+	prevStates_[1].velocity_ = newVel;
+
+	initialCounter_ = 0;
+
+	nextBody_ = nullptr;
+	collisionTreeInserted_ = false;
+
+#if INTEGRATION_METHOD == 0
+
+	Integrate = &Body::Integrate_SemiImplicitEuler;
+
+#endif
+
+#if INTEGRATION_METHOD == 1
+
+	Integrate = &Body::Integrate_VerletStart;
+
+#endif
 }
 
 
@@ -97,18 +116,45 @@ void Body::ResetForce() {
 void Body::Integrate_SemiImplicitEuler(float dt) {
 
 	// set previous state before integrating
-	prevState_ = currentState_;
+	prevStates_[0] = currentState_;
 
 	// calculate velocity then position linearly
 	currentState_.velocity_ += (force_ / mass_) * dt;
 	currentState_.position_ += currentState_.velocity_ * dt;
 }
 
+void Body::Integrate_Verlet(float dt) {
+
+
+	// set previous states from last frame
+	prevStates_[1] = prevStates_[0];
+	prevStates_[0] = currentState_;
+
+	// get next position
+	currentState_.position_ = 2.0f * prevStates_[0].position_ - prevStates_[1].position_ + (force_ / mass_) * dt * dt;
+
+	// get next velocity
+	currentState_.velocity_ = (currentState_.position_ - prevStates_[1].position_) / (2.0f * dt);
+	
+}
+
+void Body::Integrate_VerletStart(float dt) {
+
+	Integrate_SemiImplicitEuler(dt);
+
+	initialCounter_++;
+
+	if (initialCounter_ >= 2) {
+
+		Integrate = &Body::Integrate_Verlet;
+	}
+}
+
 
 State Body::InterpolateState(float alpha) {
 
 	// Larps between the previous state and current state given alpha (0-1)
-	return (currentState_ * alpha) + (prevState_ * (1.0f - alpha));
+	return (currentState_ * alpha) + (prevStates_[0] * (1.0f - alpha));
 }
 
 

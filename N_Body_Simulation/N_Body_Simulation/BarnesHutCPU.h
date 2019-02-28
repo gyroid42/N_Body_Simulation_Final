@@ -8,6 +8,9 @@
 #include "Channel.h"
 #include "Body.h"
 #include "BodyChannelData.h"
+#include "OctreeCollision.h"
+
+class OctreeNode;
 
 class BarnesHutCPU :
 	public BarnesHut
@@ -38,9 +41,11 @@ protected:
 	ThreadFarm* farm_;
 
 
+	Channel<OctreeNode*> mergeTreeChannel_;
+
 	Channel<BodyChannelData*> bodyChannels_[8];
 
-
+	OctreeCollision collisionTree_;
 
 	// function pointer to which time step is being used
 	void (BarnesHutCPU::*timeStepFunc_)(float);

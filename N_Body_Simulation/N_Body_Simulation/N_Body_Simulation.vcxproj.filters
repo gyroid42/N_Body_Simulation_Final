@@ -24,6 +24,15 @@
     <Filter Include="Source Files\Simulation\BarnesHut\Worker Tasks">
       <UniqueIdentifier>{8c074730-b87e-43da-b813-ca8f5a059bd0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Simulation\BarnesHut\Octree">
+      <UniqueIdentifier>{6f0a353f-07c6-4cc8-8ba5-6a9a89fc949a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Simulation\Collision">
+      <UniqueIdentifier>{66de5134-08e1-45cc-8bf4-4a84939c0f3e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Simulation\Collision\Octree">
+      <UniqueIdentifier>{5f76937a-d1d3-4f00-8b90-6436e6f5fbb7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp">
@@ -33,12 +42,6 @@
       <Filter>Source Files\Simulation\BarnesHut</Filter>
     </ClCompile>
     <ClCompile Include="BarnesHutCPU.cpp">
-      <Filter>Source Files\Simulation\BarnesHut</Filter>
-    </ClCompile>
-    <ClCompile Include="PartitionTree.cpp">
-      <Filter>Source Files\Simulation\BarnesHut</Filter>
-    </ClCompile>
-    <ClCompile Include="Partition.cpp">
       <Filter>Source Files\Simulation\BarnesHut</Filter>
     </ClCompile>
     <ClCompile Include="BruteForce.cpp">
@@ -83,14 +86,20 @@
     <ClCompile Include="TaskInsertBody.cpp">
       <Filter>Source Files\Simulation\BarnesHut\Worker Tasks</Filter>
     </ClCompile>
-    <ClCompile Include="TaskInsertManager.cpp">
-      <Filter>Source Files\Simulation\BarnesHut\Worker Tasks</Filter>
-    </ClCompile>
     <ClCompile Include="TaskUpdateForces.cpp">
       <Filter>Source Files\Simulation\BarnesHut\Worker Tasks</Filter>
     </ClCompile>
-    <ClCompile Include="TaskInsertBodyImproved.cpp">
-      <Filter>Source Files\Simulation\BarnesHut\Worker Tasks</Filter>
+    <ClCompile Include="Partition.cpp">
+      <Filter>Source Files\Simulation\BarnesHut\Octree</Filter>
+    </ClCompile>
+    <ClCompile Include="PartitionTree.cpp">
+      <Filter>Source Files\Simulation\BarnesHut\Octree</Filter>
+    </ClCompile>
+    <ClCompile Include="OctreeNode.cpp">
+      <Filter>Source Files\Simulation\BarnesHut\Octree</Filter>
+    </ClCompile>
+    <ClCompile Include="OctreeCollision.cpp">
+      <Filter>Source Files\Simulation\Collision\Octree</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -136,12 +145,6 @@
     <ClInclude Include="TaskIntegrateBody.h">
       <Filter>Source Files\Simulation</Filter>
     </ClInclude>
-    <ClInclude Include="Partition.h">
-      <Filter>Source Files\Simulation\BarnesHut</Filter>
-    </ClInclude>
-    <ClInclude Include="PartitionTree.h">
-      <Filter>Source Files\Simulation\BarnesHut</Filter>
-    </ClInclude>
     <ClInclude Include="Body.h">
       <Filter>Source Files\Simulation</Filter>
     </ClInclude>
@@ -151,17 +154,23 @@
     <ClInclude Include="TaskInsertBody.h">
       <Filter>Source Files\Simulation\BarnesHut\Worker Tasks</Filter>
     </ClInclude>
-    <ClInclude Include="TaskInsertManager.h">
-      <Filter>Source Files\Simulation\BarnesHut\Worker Tasks</Filter>
-    </ClInclude>
     <ClInclude Include="TaskUpdateForces.h">
       <Filter>Source Files\Simulation\BarnesHut\Worker Tasks</Filter>
     </ClInclude>
     <ClInclude Include="BodyChannelData.h">
       <Filter>Source Files\Simulation\BarnesHut\Worker Tasks</Filter>
     </ClInclude>
-    <ClInclude Include="TaskInsertBodyImproved.h">
-      <Filter>Source Files\Simulation\BarnesHut\Worker Tasks</Filter>
+    <ClInclude Include="Partition.h">
+      <Filter>Source Files\Simulation\BarnesHut\Octree</Filter>
+    </ClInclude>
+    <ClInclude Include="PartitionTree.h">
+      <Filter>Source Files\Simulation\BarnesHut\Octree</Filter>
+    </ClInclude>
+    <ClInclude Include="OctreeNode.h">
+      <Filter>Source Files\Simulation\BarnesHut\Octree</Filter>
+    </ClInclude>
+    <ClInclude Include="OctreeCollision.h">
+      <Filter>Source Files\Simulation\Collision\Octree</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

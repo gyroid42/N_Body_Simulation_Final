@@ -8,6 +8,7 @@
 
 // my class includes
 #include "ThreadFarm.h"
+#include "OctreeCollision.h"
 
 class BruteForce :
 	public Simulation
@@ -37,6 +38,9 @@ private:
 
 	// farm for managing threads and providing tasks
 	ThreadFarm* farm_;
+
+	OctreeCollision collisionTree_;
+
 
 	// function pointer to which time step is being used
 	void (BruteForce::*timeStepFunc_)(float);

@@ -3,7 +3,7 @@
 #include "TaskUpdateForces.h"
 
 // my class includes
-#include "PartitionTree.h"
+#include "OctreeNode.h"
 #include "Body.h"
 
 
@@ -17,16 +17,19 @@ TaskUpdateForces::~TaskUpdateForces()
 }
 
 
-void TaskUpdateForces::Init(Body* newBody, PartitionTree* newRoot) {
+void TaskUpdateForces::Init(std::vector<Body*>* newBodyArray, OctreeNode* newRoot) {
 
 	// set references to body and partition tree
-	body_ = newBody;
+	bodyArray_ = newBodyArray;
 	root_ = newRoot;
 }
 
 void TaskUpdateForces::Run() {
 
-	// run method for calculating force on body
-	body_->ResetForce();
-	root_->UpdateForceOnBody(body_);
+	for (auto body : *bodyArray_) {
+		// run method for calculating force on body
+
+		body->ResetForce();
+		root_->UpdateForceOnBody(body);
+	}
 }
