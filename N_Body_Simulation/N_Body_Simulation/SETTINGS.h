@@ -6,7 +6,7 @@
 
 
 #define ADD_RANDOM_BODIES	true
-#define NUM_RAND_BODIES		800
+#define NUM_RAND_BODIES		2000
 #define RANDOM_BODY_MAX_X	4280.0f
 #define RANDOM_BODY_MAX_Y	4720.0f
 #define RANDOM_BODY_MAX_Z	4720.0f
@@ -17,7 +17,7 @@
 
 #define TEST_SIMULATION		false
 
-#define PARTITION_SIZE		5000
+#define PARTITION_SIZE		50000
 
 #define PLACE_BODY_MASS 1.0E15f
 

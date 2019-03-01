@@ -9,9 +9,12 @@
 #include "Body.h"
 #include "PhysicsUtil.h"
 
+int OctreeNode::maxListSize = 0;
+
 OctreeNode::OctreeNode(Partition newPartition) :
 	body_(nullptr),
 	bodyList_(nullptr),
+	bodyListEnd_(nullptr),
 	treeRoot_(nullptr)
 {
 
@@ -44,6 +47,7 @@ OctreeNode::OctreeNode(Partition newPartition) :
 OctreeNode::OctreeNode(Partition newPartition, OctreeNode* newRoot, int newDepth) :
 	body_(nullptr),
 	bodyList_(nullptr),
+	bodyListEnd_(nullptr),
 	treeRoot_(newRoot)
 {
 	// set all children to null
@@ -109,7 +113,6 @@ void OctreeNode::AddBody(Body* body) {
 
 
 void OctreeNode::Insert(Body* body, int& depthCounter) {
-
 
 	depthCounter++;
 
@@ -321,17 +324,19 @@ void OctreeNode::Merge(OctreeNode* mergeTree) {
 		numBodies_ += mergeTree->NumBodies();
 
 		// If there's a bodyList
-		if (bodyList_) {
+		if (mergeTree->GetBodyList()) {
+			if (bodyList_) {
 
-			// Add the mergeTree bodylist onto the end of merged body list
-			bodyListEnd_->SetNextBody(mergeTree->GetBodyList());
-			bodyListEnd_ = mergeTree->GetBodyListEnd();
-		}
-		else {
+				// Add the mergeTree bodylist onto the end of merged body list
+				bodyListEnd_->SetNextBody(mergeTree->GetBodyList());
+				bodyListEnd_ = mergeTree->GetBodyListEnd();
+			}
+			else {
 
-			// Set body list to mergeTree's body list
-			bodyList_ = mergeTree->GetBodyList();
-			bodyListEnd_ = mergeTree->GetBodyListEnd();
+				// Set body list to mergeTree's body list
+				bodyList_ = mergeTree->GetBodyList();
+				bodyListEnd_ = mergeTree->GetBodyListEnd();
+			}
 		}
 		//body_->SetNextBody(mergeTree->GetBodyList());
 
@@ -497,21 +502,25 @@ void OctreeNode::Merge(OctreeNode* mergeTree) {
 
 								// merge body is straddling so add to body list
 
+								if (bodyList_) {
 
-								mergeBodyList->SetNextBody(bodyList_);
+									mergeBodyList->SetNextBody(bodyList_);
+								}
+								else {
+
+									bodyListEnd_ = mergeTree->GetBodyListEnd();
+								}
 								bodyList_ = mergeBodyList;
 
 								mergeBodyList->SetInsertedCollision(true);
 							}
-							else {
 
-								// body can go deeper, so remove from merge body list
-								mergeTree->SetBodyList(nullptr);
-								mergeTree->SetBodyListEnd(nullptr);
-							}
+							// Body is has either been already merged into bodylist or is being placed deeper
+							// so set mergeTree's body list to nullptr
+							mergeTree->SetBodyList(nullptr);
+							mergeTree->SetBodyListEnd(nullptr);
 						}
 					}
-
 
 					int counter = 0;
 					children_[i]->Insert(body, counter);
@@ -523,20 +532,21 @@ void OctreeNode::Merge(OctreeNode* mergeTree) {
 		}
 
 		// combine the two merge lists
-		if (bodyList_) {
+		if (mergeTree->GetBodyList()) {
+			if (bodyList_) {
 
-			// Add the mergeTree bodylist onto the end of merged body list
-			bodyListEnd_->SetNextBody(mergeTree->GetBodyList());
-			bodyListEnd_ = mergeTree->GetBodyListEnd();
-		}
-		else {
+				// Add the mergeTree bodylist onto the end of merged body list
+				bodyListEnd_->SetNextBody(mergeTree->GetBodyList());
+				bodyListEnd_ = mergeTree->GetBodyListEnd();
+			}
+			else {
 
-			// Set body list to mergeTree's body list
-			bodyList_ = mergeTree->GetBodyList();
-			bodyListEnd_ = mergeTree->GetBodyListEnd();
+				// Set body list to mergeTree's body list
+				bodyList_ = mergeTree->GetBodyList();
+				bodyListEnd_ = mergeTree->GetBodyListEnd();
+			}
 		}
 	}
-
 }
 
 
@@ -599,18 +609,22 @@ OctreeNode* OctreeNode::GetChild(int index) {
 
 
 void OctreeNode::CheckAllCollision(Body* ancestorList[], unsigned short int depth) {
-
 	
 	ancestorList[depth] = bodyList_;
 
 	depth++;
+
+	int poop = 0;
 
 	for (int i = 0; i < depth; i++) {
 
 		Body* b1;
 		Body* b2;
 
+
 		for (b1 = ancestorList[i]; b1; b1 = b1->NextBody()) {
+
+			poop++;
 
 			for (b2 = bodyList_; b2; b2 = b2->NextBody()) {
 
@@ -622,6 +636,11 @@ void OctreeNode::CheckAllCollision(Body* ancestorList[], unsigned short int dept
 				TestCollision(b1, b2);
 			}
 		}
+	}
+
+	if (poop > maxListSize) {
+
+		maxListSize = poop;
 	}
 
 
@@ -636,13 +655,14 @@ void OctreeNode::CheckAllCollision(Body* ancestorList[], unsigned short int dept
 	depth--;
 }
 
-
+int OctreeNode::totalCollisions = 0;
 
 void OctreeNode::TestCollision(Body* b1, Body* b2) {
 
 	if (SphereToSphereCollision(b1, b2)) {
 
 		int poop = 0;
+		totalCollisions++;
 	}
 }
 
@@ -657,6 +677,8 @@ bool OctreeNode::SphereToSphereCollision(Body* b1, Body* b2) {
 
 
 void OctreeNode::CollisionBegin() {
+
+	totalCollisions = 0;
 
 
 	Body* ancestorList[50];

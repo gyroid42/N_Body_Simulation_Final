@@ -66,6 +66,9 @@ public:
 	inline void SetBodyList(Body* newList) { bodyList_ = newList; }
 	inline void SetBodyListEnd(Body* newListEnd) { bodyListEnd_ = newListEnd; }
 
+	static int maxListSize;
+	static int totalCollisions;
+
 private:
 
 
