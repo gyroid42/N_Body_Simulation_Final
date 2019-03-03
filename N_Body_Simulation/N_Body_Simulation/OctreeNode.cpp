@@ -559,7 +559,7 @@ void OctreeNode::GetOrderedElementsList(std::vector<Body*>& newList) {
 	if (isExternal_ && body_) {
 
 		// only add body if it's within the physics space
-		if (treeRoot_->GetPartition().Contains(body_->Position())) {
+		if (!body_->DestroyFlag() && treeRoot_->GetPartition().Contains(body_->Position())) {
 
 			body_->SetInsertedCollision(false);
 			body_->SetNextBody(nullptr);
@@ -568,7 +568,8 @@ void OctreeNode::GetOrderedElementsList(std::vector<Body*>& newList) {
 		}
 		else {
 
-			int pee = 0;
+			delete body_;
+			body_ = nullptr;
 		}
 	}
 	else {
@@ -654,6 +655,27 @@ void OctreeNode::CheckAllCollision(Body* ancestorList[], unsigned short int dept
 
 	depth--;
 }
+
+
+void OctreeNode::CheckCollisionSingleNode(Body* comparisonList[]) {
+
+	Body* b1;
+	Body* b2;
+
+	for (b1 = comparisonList[i]; b1; b1 = b1->NextBody()) {
+
+		for (b2 = bodyList_; b2; b2 = b2->NextBody()) {
+
+			if (b1 == b2) {
+
+				break;
+			}
+
+			TestCollision(b1, b2);
+		}
+	}
+}
+
 
 int OctreeNode::totalCollisions = 0;
 

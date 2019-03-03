@@ -35,6 +35,8 @@ constexpr auto INTERPOLATE_BETWEEN_FRAMES = true;
 
 #define COLLISION			true
 
+#define MAX_COLLISION_DEPTH	50
+
 #define MULTITHREADING		true
 #define NUM_OF_THREADS		8
 

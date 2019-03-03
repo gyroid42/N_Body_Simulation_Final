@@ -45,6 +45,7 @@ public:
 
 	// checks collision in all the nodes
 	void CheckAllCollision(Body* bodyList[], unsigned short int depth);
+	void CheckCollisionSingleNode(Body* bodyList[]);
 
 	// Check Collision between 2 bodies
 	void TestCollision(Body* b1, Body* b2);

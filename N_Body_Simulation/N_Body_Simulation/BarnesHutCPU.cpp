@@ -13,6 +13,8 @@
 #include "TaskUpdateForces.h"
 #include "BodyChannelData.h"
 #include "OctreeCollision.h"
+#include "TaskCollisionCheckNode.h"
+#include "TaskCollisionCheckTree.h"
 
 
 // testing
@@ -387,7 +389,24 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 #if COLLISION
 
 
-	tree.CollisionBegin();
+	Body* ancestorList[MAX_COLLISION_DEPTH];
+	ancestorList[0] = tree.GetBodyList;
+
+
+	TaskCollisionCheckNode* nodeCheckTask = new TaskCollisionCheckNode();
+	nodeCheckTask->Init(&tree, ancestorList);
+	farm_->AddTask(nodeCheckTask);
+
+	for (int i = 0; i < 8; i++) {
+
+		TaskCollisionCheckTree* treeCollisionTask = new TaskCollisionCheckTree();
+		treeCollisionTask->Init(tree.GetChild(i), ancestorList, 1);
+		farm_->AddTask(treeCollisionTask);
+	}
+
+	farm_->WaitUntilTasksFinished();
+
+	//tree.CollisionBegin();
 
 	/*
 	CollisionNode* collisionRoot = collisionTree_.Build(root_, 4);

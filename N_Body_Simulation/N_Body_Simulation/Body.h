@@ -86,6 +86,8 @@ public:
 	inline State CurrentState() { return currentState_; }
 	inline Body* NextBody() { return nextBody_; }
 	inline bool InsertedCollision() { return collisionTreeInserted_; }
+	inline bool DestroyFlag() { return destroy_; }
+
 
 	// Setters
 	inline void SetColour(sf::Vector3f rgb) { colour_ = rgb; }
