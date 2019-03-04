@@ -130,6 +130,8 @@
     <ClCompile Include="BruteForce.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Channel.cpp" />
+    <ClCompile Include="TaskCollisionCheckNode.cpp" />
+    <ClCompile Include="TaskCollisionCheckTree.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="OctreeCollision.cpp" />
@@ -155,6 +157,8 @@
     <ClInclude Include="BruteForce.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Channel.h" />
+    <ClInclude Include="TaskCollisionCheckNode.h" />
+    <ClInclude Include="TaskCollisionCheckTree.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="OctreeCollision.h" />
     <ClInclude Include="OctreeNode.h" />

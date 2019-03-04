@@ -78,6 +78,9 @@ public:
 	// Draws the body to the render target
 	void Draw(float alpha);
 
+
+	void MergeBody(Body* b);
+
 	
 	// Getters
 	inline float Mass() { return mass_; }
@@ -87,16 +90,14 @@ public:
 	inline Body* NextBody() { return nextBody_; }
 	inline bool InsertedCollision() { return collisionTreeInserted_; }
 	inline bool DestroyFlag() { return destroy_; }
+	inline sf::Vector3f Force() { return force_; }
 
 
 	// Setters
 	inline void SetColour(sf::Vector3f rgb) { colour_ = rgb; }
 	void SetMass(float newMass);
 	inline void Destroy() { destroy_ = true; }
-	inline void SetNextBody(Body* next) { nextBody_ = next; 
-	if (nextBody_ == this) 
-		int meh = 0; 
-	}
+	inline void SetNextBody(Body* next) { nextBody_ = next; }
 	inline void SetInsertedCollision(bool newValue) { collisionTreeInserted_ = newValue; }
 	inline void SetName(std::string newName) { name_ = newName; }
 

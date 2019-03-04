@@ -12,14 +12,19 @@ TaskCollisionCheckNode::~TaskCollisionCheckNode()
 {
 }
 
-void TaskCollisionCheckNode::Init(OctreeNode* newNode, Body* newComparisonList[MAX_COLLISION_DEPTH]) {
+void TaskCollisionCheckNode::Init(OctreeNode* newNode, Channel<CollisionEvent*>* newCollisionEventsChannel,  Body* newComparisonList[MAX_COLLISION_DEPTH]) {
 
 	node_ = newNode;
 	std::memcpy(comparisonList_, newComparisonList, MAX_COLLISION_DEPTH * sizeof(Body*));
+	collisionEventsChannel_ = newCollisionEventsChannel;
 }
 
 
 void TaskCollisionCheckNode::Run() {
 
-	node_->CheckCollisionSingleNode(comparisonList_);
+	CollisionEvent* collisionEvents = nullptr;
+
+	node_->CheckCollisionSingleNode(comparisonList_, collisionEvents, 1);
+
+	collisionEventsChannel_->write(collisionEvents);
 }

@@ -11,6 +11,7 @@
 #include "OctreeCollision.h"
 
 class OctreeNode;
+struct CollisionEvent;
 
 class BarnesHutCPU :
 	public BarnesHut
@@ -44,6 +45,8 @@ protected:
 	Channel<OctreeNode*> mergeTreeChannel_;
 
 	Channel<BodyChannelData*> bodyChannels_[8];
+
+	Channel<CollisionEvent*> collisionEventsChannel_;
 
 	OctreeCollision collisionTree_;
 

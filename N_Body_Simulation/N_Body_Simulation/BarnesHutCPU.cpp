@@ -390,21 +390,62 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 
 
 	Body* ancestorList[MAX_COLLISION_DEPTH];
-	ancestorList[0] = tree.GetBodyList;
+	ancestorList[0] = tree.GetBodyList();
 
 
 	TaskCollisionCheckNode* nodeCheckTask = new TaskCollisionCheckNode();
-	nodeCheckTask->Init(&tree, ancestorList);
+	nodeCheckTask->Init(&tree, &collisionEventsChannel_, ancestorList);
 	farm_->AddTask(nodeCheckTask);
 
 	for (int i = 0; i < 8; i++) {
 
 		TaskCollisionCheckTree* treeCollisionTask = new TaskCollisionCheckTree();
-		treeCollisionTask->Init(tree.GetChild(i), ancestorList, 1);
+		treeCollisionTask->Init(tree.GetChild(i), &collisionEventsChannel_, ancestorList, 1);
 		farm_->AddTask(treeCollisionTask);
 	}
 
-	farm_->WaitUntilTasksFinished();
+	CollisionEvent* collisionEvents = nullptr;
+
+	for (int i = 0; i < NUM_OF_THREADS + 1; i++) {
+
+		CollisionEvent* newEvents = collisionEventsChannel_.read();
+
+		if (newEvents) {
+
+			CollisionEvent* endList = collisionEvents;
+			while (endList && endList->next) {
+
+				endList = endList->next;
+			}
+
+			if (endList) {
+
+				endList->next = newEvents;
+			}
+			else {
+
+				collisionEvents = newEvents;
+			}
+		}
+	}
+
+	for (CollisionEvent* collision = collisionEvents; collision; collision = collision->next) {
+
+		// handle collision here
+#if COLLISION_REACTION == 0
+
+		collision->b1->MergeBody(collision->b2);
+		collision->b2->Destroy();
+#endif
+	}
+
+	if (collisionEvents) {
+
+		delete collisionEvents;
+		collisionEvents = nullptr;
+	}
+
+	//farm_->WaitUntilTasksFinished();
 
 	//tree.CollisionBegin();
 

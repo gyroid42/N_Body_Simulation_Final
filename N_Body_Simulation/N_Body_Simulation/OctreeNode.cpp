@@ -609,7 +609,7 @@ OctreeNode* OctreeNode::GetChild(int index) {
 
 
 
-void OctreeNode::CheckAllCollision(Body* ancestorList[], unsigned short int depth) {
+void OctreeNode::CheckAllCollision(Body* ancestorList[], CollisionEvent* collisionEvents, unsigned short int depth) {
 	
 	ancestorList[depth] = bodyList_;
 
@@ -634,7 +634,17 @@ void OctreeNode::CheckAllCollision(Body* ancestorList[], unsigned short int dept
 					break;
 				}
 
-				TestCollision(b1, b2);
+				if (TestCollision(b1, b2)) {
+
+					CollisionEvent* newCollision = new CollisionEvent(b1, b2);
+
+					if (collisionEvents) {
+
+						newCollision->next = collisionEvents;
+					}
+
+					collisionEvents = newCollision;
+				}
 			}
 		}
 	}
@@ -649,7 +659,7 @@ void OctreeNode::CheckAllCollision(Body* ancestorList[], unsigned short int dept
 
 		if (children_[i]) {
 
-			children_[i]->CheckAllCollision(ancestorList, depth);
+			children_[i]->CheckAllCollision(ancestorList, collisionEvents, depth);
 		}
 	}
 
@@ -657,21 +667,34 @@ void OctreeNode::CheckAllCollision(Body* ancestorList[], unsigned short int dept
 }
 
 
-void OctreeNode::CheckCollisionSingleNode(Body* comparisonList[]) {
+void OctreeNode::CheckCollisionSingleNode(Body* comparisonList[], CollisionEvent* collisionEvents, unsigned short int depth) {
 
 	Body* b1;
 	Body* b2;
 
-	for (b1 = comparisonList[i]; b1; b1 = b1->NextBody()) {
+	for (int i = 0; i < depth; i++) {
 
-		for (b2 = bodyList_; b2; b2 = b2->NextBody()) {
+		for (b1 = comparisonList[i]; b1; b1 = b1->NextBody()) {
 
-			if (b1 == b2) {
+			for (b2 = bodyList_; b2; b2 = b2->NextBody()) {
 
-				break;
+				if (b1 == b2) {
+
+					break;
+				}
+
+				if (TestCollision(b1, b2)) {
+
+					CollisionEvent* newCollision = new CollisionEvent(b1, b2);
+
+					if (collisionEvents) {
+
+						newCollision->next = collisionEvents;
+					}
+
+					collisionEvents = newCollision;
+				}
 			}
-
-			TestCollision(b1, b2);
 		}
 	}
 }
@@ -679,13 +702,15 @@ void OctreeNode::CheckCollisionSingleNode(Body* comparisonList[]) {
 
 int OctreeNode::totalCollisions = 0;
 
-void OctreeNode::TestCollision(Body* b1, Body* b2) {
+bool OctreeNode::TestCollision(Body* b1, Body* b2) {
 
-	if (SphereToSphereCollision(b1, b2)) {
+	bool result = SphereToSphereCollision(b1, b2);
+	if (result) {
 
-		int poop = 0;
 		totalCollisions++;
 	}
+
+	return result;
 }
 
 
@@ -705,6 +730,6 @@ void OctreeNode::CollisionBegin() {
 
 	Body* ancestorList[50];
 
-	CheckAllCollision(ancestorList, 0);
+	//CheckAllCollision(ancestorList, 0);
 }
 

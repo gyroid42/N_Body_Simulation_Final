@@ -13,6 +13,27 @@
 class Body;
 
 
+struct CollisionEvent {
+	Body* b1;
+	Body* b2;
+	CollisionEvent* next;
+
+	CollisionEvent(Body* newB1 = nullptr, Body* newB2 = nullptr, CollisionEvent* nextCollision = nullptr) {
+		b1 = newB1;
+		b2 = newB2;
+		next = nextCollision;
+	}
+
+	~CollisionEvent() {
+
+		if (next) {
+
+			delete next;
+			next = nullptr;
+		}
+	}
+};
+
 class OctreeNode
 {
 public:
@@ -44,11 +65,11 @@ public:
 	void CollisionBegin();
 
 	// checks collision in all the nodes
-	void CheckAllCollision(Body* bodyList[], unsigned short int depth);
-	void CheckCollisionSingleNode(Body* bodyList[]);
+	void CheckAllCollision(Body* bodyList[], CollisionEvent* collisionEvents, unsigned short int depth);
+	void CheckCollisionSingleNode(Body* bodyList[], CollisionEvent* collisionEvents, unsigned short int depth);
 
 	// Check Collision between 2 bodies
-	void TestCollision(Body* b1, Body* b2);
+	bool TestCollision(Body* b1, Body* b2);
 
 	// Getters
 	OctreeNode* GetChild(int index);

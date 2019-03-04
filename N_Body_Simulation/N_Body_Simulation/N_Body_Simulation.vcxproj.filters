@@ -101,6 +101,12 @@
     <ClCompile Include="OctreeCollision.cpp">
       <Filter>Source Files\Simulation\Collision\Octree</Filter>
     </ClCompile>
+    <ClCompile Include="TaskCollisionCheckNode.cpp">
+      <Filter>Source Files\Simulation\BarnesHut\Worker Tasks</Filter>
+    </ClCompile>
+    <ClCompile Include="TaskCollisionCheckTree.cpp">
+      <Filter>Source Files\Simulation\BarnesHut\Worker Tasks</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -171,6 +177,12 @@
     </ClInclude>
     <ClInclude Include="OctreeCollision.h">
       <Filter>Source Files\Simulation\Collision\Octree</Filter>
+    </ClInclude>
+    <ClInclude Include="TaskCollisionCheckNode.h">
+      <Filter>Source Files\Simulation\BarnesHut\Worker Tasks</Filter>
+    </ClInclude>
+    <ClInclude Include="TaskCollisionCheckTree.h">
+      <Filter>Source Files\Simulation\BarnesHut\Worker Tasks</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -2,9 +2,11 @@
 #include "Task.h"
 
 #include "SETTINGS.h"
+#include "Channel.h"
 
 class Body;
 class OctreeNode;
+struct CollisionEvent;
 
 
 /*
@@ -22,7 +24,7 @@ public:
 	TaskCollisionCheckTree();
 	~TaskCollisionCheckTree();
 
-	void Init(OctreeNode* newRoot, Body* newAncestorList[MAX_COLLISION_DEPTH], int newDepth);
+	void Init(OctreeNode* newRoot, Channel<CollisionEvent*>* newCollisionEventChannel, Body* newAncestorList[MAX_COLLISION_DEPTH], int newDepth);
 
 	void Run();
 
@@ -33,6 +35,9 @@ private:
 	Body* ancestorList_[MAX_COLLISION_DEPTH];
 
 	int depth_;
+
+
+	Channel<CollisionEvent*>* collisionEventsChannel_;
 
 
 };

@@ -184,3 +184,23 @@ void Body::SetMass(float newMass) {
 	modelRadius_ = 20.0f;// std::cbrtf(3.0f * mass_ / (4.0f * PhysicsUtil::pi));
 
 }
+
+
+
+void Body::MergeBody(Body* b) {
+
+	// add forces
+	// combine current state
+	// combine mass
+
+	force_ += b->Force();
+	State bState = b->CurrentState();
+	float bMass = b->Mass();
+	float combinedMass = mass_ + bMass;
+
+	currentState_.position_ = (currentState_.position_ * mass_ + bState.position_ * bMass) / combinedMass;
+	currentState_.velocity_ = (currentState_.velocity_ * mass_ + bState.velocity_ * bMass) / combinedMass;
+
+	mass_ = combinedMass;
+
+}
