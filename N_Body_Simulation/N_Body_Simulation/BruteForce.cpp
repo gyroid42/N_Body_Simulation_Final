@@ -5,7 +5,6 @@
 
 // my class includes
 #include "TaskBruteForceCPU.h"
-#include "TaskIntegrateBody.h"
 #include "Body.h"
 #include "PhysicsUtil.h"
 
@@ -209,13 +208,7 @@ void BruteForce::TimeStepMulti(float dt) {
 		body->Integrate_SemiImplicitEuler(dt);
 
 
-		//TaskIntegrateBody* newTask = new TaskIntegrateBody();
-		//newTask->Init(body, dt);
-		//farm_->AddTask(newTask);
 	}
-	
-	// Wait until all the bodies have been integrated
-	//farm_->WaitUntilTasksFinished();
 
 
 #if TIMING_STEPS

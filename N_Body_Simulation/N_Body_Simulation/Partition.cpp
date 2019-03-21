@@ -31,11 +31,6 @@ Partition Partition::GetSubDivision(int octantNum) {
 		return Partition(position_, halfLength_);
 	}
 
-	// get x, y and z co-ordinate of octant
-	//int x = ((octantNum & 1) ? 1 : 0);
-	//int y = ((octantNum & 2) ? 1 : 0);
-	//int z = ((octantNum & 4) ? 1 : 0);
-
 	float step = halfLength_ * 0.5f;
 
 	sf::Vector3f offset;
@@ -46,7 +41,6 @@ Partition Partition::GetSubDivision(int octantNum) {
 
 	// create new partition using co-ordinates and length of current partition
 	return Partition(position_ + offset, step);
-	//return Partition(sf::Vector3f(position_.x + length_ * (2.0f * (float)x - 1.0f) / 4.0f, position_.y + length_ * (2.0f * (float)y - 1.0f) / 4.0f, position_.z + length_ * (2.0f * (float)z - 1.0f) / 4.0f), length_ / 2.0f);
 }
 
 

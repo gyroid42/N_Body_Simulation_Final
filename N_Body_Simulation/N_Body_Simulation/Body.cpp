@@ -198,8 +198,18 @@ void Body::MergeBody(Body* b) {
 	float bMass = b->Mass();
 	float combinedMass = mass_ + bMass;
 
-	currentState_.position_ = (currentState_.position_ * mass_ + bState.position_ * bMass) / combinedMass;
-	currentState_.velocity_ = (currentState_.velocity_ * mass_ + bState.velocity_ * bMass) / combinedMass;
+	sf::Vector3f distance = bState.position_ - currentState_.position_;
+
+	currentState_.position_ += distance * bMass / combinedMass;
+
+
+	//sf::Vector3f deltaVel = bState.velocity_ - currentState_.velocity_;
+
+	//currentState_.velocity_ -= deltaVel;
+	//currentState_.velocity_ += (mass_*deltaVel + bMass * deltaVel) / combinedMass;
+
+	//currentState_.position_ = (currentState_.position_ * mass_ + bState.position_ * bMass) / combinedMass;
+	//currentState_.velocity_ = (currentState_.velocity_ * mass_ + bState.velocity_ * bMass) / combinedMass;
 
 	mass_ = combinedMass;
 

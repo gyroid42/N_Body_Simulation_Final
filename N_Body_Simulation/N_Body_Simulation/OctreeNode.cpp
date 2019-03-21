@@ -8,6 +8,9 @@
 // my class includes
 #include "Body.h"
 #include "PhysicsUtil.h"
+#include "TaskCollisionCheckNode.h"
+#include "TaskCollisionCheckTree.h"
+#include "ThreadFarm.h"
 
 int OctreeNode::maxListSize = 0;
 
@@ -609,15 +612,15 @@ OctreeNode* OctreeNode::GetChild(int index) {
 
 
 
-void OctreeNode::CheckAllCollision(Body* ancestorList[], CollisionEvent* collisionEvents, unsigned short int depth) {
+void OctreeNode::CheckAllCollision(Body* ancestorList[], CollisionEvent*& collisionEvents, unsigned short int depth) {
 	
-	ancestorList[depth] = bodyList_;
+	ancestorList[depth_] = bodyList_;
 
 	depth++;
 
 	int poop = 0;
 
-	for (int i = 0; i < depth; i++) {
+	for (int i = 0; i < depth_ + 1; i++) {
 
 		Body* b1;
 		Body* b2;
@@ -667,12 +670,12 @@ void OctreeNode::CheckAllCollision(Body* ancestorList[], CollisionEvent* collisi
 }
 
 
-void OctreeNode::CheckCollisionSingleNode(Body* comparisonList[], CollisionEvent* collisionEvents, unsigned short int depth) {
+void OctreeNode::CheckCollisionSingleNode(Body* comparisonList[], CollisionEvent*& collisionEvents, unsigned short int depth) {
 
 	Body* b1;
 	Body* b2;
 
-	for (int i = 0; i < depth; i++) {
+	for (int i = 0; i < depth_ + 1; i++) {
 
 		for (b1 = comparisonList[i]; b1; b1 = b1->NextBody()) {
 
@@ -723,13 +726,96 @@ bool OctreeNode::SphereToSphereCollision(Body* b1, Body* b2) {
 }
 
 
-void OctreeNode::CollisionBegin() {
 
-	totalCollisions = 0;
+int OctreeNode::CollisionCreateTasks(Body* ancestorList[], ThreadFarm* farm, int bodyNumPerTask, Channel<CollisionEvent*>* collisionEventChannel) {
 
 
-	Body* ancestorList[50];
+	int tasksCreated = 1;
 
-	//CheckAllCollision(ancestorList, 0);
+	ancestorList[depth_] = GetBodyList();
+	TaskCollisionCheckNode* nodeCheckTask = new TaskCollisionCheckNode();
+	nodeCheckTask->Init(this, collisionEventChannel, ancestorList);
+	farm->AddTask(nodeCheckTask);
+
+	for (int i = 0; i < 8; i++) {
+
+		// get child at i
+		OctreeNode* child = GetChild(i);
+
+		// if child exists
+		if (child) {
+
+			if (child->NumBodies() < bodyNumPerTask) {
+
+				TaskCollisionCheckTree* treeCollisionTask = new TaskCollisionCheckTree();
+				treeCollisionTask->Init(child, collisionEventChannel, ancestorList, 1);
+				farm->AddTask(treeCollisionTask);
+				tasksCreated++;
+			}
+			else {
+
+				tasksCreated += child->CollisionCreateTasks(ancestorList, farm, bodyNumPerTask, collisionEventChannel);
+			}
+		}
+	}
+
+
+	return tasksCreated;
+}
+
+void OctreeNode::CollisionCheckParallel(ThreadFarm* farm, int bodyNumPerTask) {
+
+
+	Body* ancestorList[MAX_COLLISION_DEPTH];
+
+
+	int tasksCreated = CollisionCreateTasks(ancestorList, farm, bodyNumPerTask, &collisionEventsChannel_);
+
+	
+
+	CollisionEvent* collisionEvents = nullptr;
+
+	// for number of tasks started
+	for (int i = 0; i < tasksCreated; i++) {
+
+		CollisionEvent* newEvents = collisionEventsChannel_.read();
+
+		if (newEvents) {
+
+			CollisionEvent* endList = collisionEvents;
+			while (endList && endList->next) {
+
+				endList = endList->next;
+			}
+
+			if (endList) {
+
+				endList->next = newEvents;
+			}
+			else {
+
+				collisionEvents = newEvents;
+			}
+		}
+	}
+
+
+	for (CollisionEvent* collision = collisionEvents; collision; collision = collision->next) {
+
+		// handle collision here
+#if COLLISION_REACTION == 0
+
+		collision->b1->MergeBody(collision->b2);
+		collision->b2->Destroy();
+#endif
+
+	}
+
+
+	if (collisionEvents) {
+
+		delete collisionEvents;
+		collisionEvents = nullptr;
+	}
 }
 

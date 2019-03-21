@@ -8,10 +8,8 @@
 // my class includes
 #include "Body.h"
 #include "OctreeNode.h"
-#include "TaskIntegrateBody.h"
 #include "TaskInsertBody.h"
 #include "TaskUpdateForces.h"
-#include "BodyChannelData.h"
 #include "OctreeCollision.h"
 #include "TaskCollisionCheckNode.h"
 #include "TaskCollisionCheckTree.h"
@@ -22,8 +20,6 @@
 
 typedef std::chrono::steady_clock the_clock;
 
-
-int soo = 0;
 
 BarnesHutCPU::BarnesHutCPU() :
 	farm_(nullptr)
@@ -167,116 +163,6 @@ void BarnesHutCPU::TimeStepSingle(float dt) {
 }
 
 
-void BarnesHutCPU::TimeStepMultiImproved(float dt) {
-
-	OctreeNode tree(root_);
-
-#if TIMING_STEPS
-
-	the_clock::time_point start = the_clock::now();
-
-#endif
-
-	tree.CreateChildren();
-
-	for (int i = 0; i < 8; i++) {
-
-		//TaskInsertBodyImproved* newTask = new TaskInsertBodyImproved();
-		//newTask->Init(&bodyChannels_[i], tree.GetChild(i));
-
-		//farm_->AddTask(newTask);
-	}
-
-
-	for (auto body : bodies_) {
-
-		tree.AddBody(body);
-
-		for (int i = 0; i < 8; i++) {
-
-			Partition newPartition = root_.GetSubDivision(i);
-
-			if (newPartition.Contains(body->Position())) {
-
-				BodyChannelData* newData = new BodyChannelData(body, DEFAULT);
-				bodyChannels_[i].write(newData);
-
-				break;
-			}
-		}
-	}
-
-
-	for (int i = 0; i < 8; i++) {
-
-		BodyChannelData* newData = new BodyChannelData(nullptr, END);
-		bodyChannels_[i].write(newData);
-	}
-
-
-	farm_->WaitUntilTasksFinished();
-
-#if TIMING_STEPS
-
-	the_clock::time_point end = the_clock::now();
-
-
-	std::cout << "insert time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
-
-	start = the_clock::now();
-
-#endif
-
-	// Add an UpdateForces task for each body
-	for (auto body : bodies_) {
-
-		// reset body force before applying forces
-		//body->ResetForce();
-
-		//tree.UpdateForceOnBody(body);
-
-		TaskUpdateForces* newTask = new TaskUpdateForces();
-		//newTask->Init(body, &tree);
-		farm_->AddTask(newTask);
-	}
-
-	// Wait until all bodies are added
-	farm_->WaitUntilTasksFinished();
-
-
-#if TIMING_STEPS
-
-	end = the_clock::now();
-
-	std::cout << "force time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
-
-	start = the_clock::now();
-
-#endif
-
-	// Add an integration task for each body
-	for (auto body : bodies_) {
-
-		body->Integrate_SemiImplicitEuler(dt);
-
-		//TaskIntegrateBody* newTask = new TaskIntegrateBody();
-		//newTask->Init(body, dt);
-		//farm_->AddTask(newTask);
-	}
-
-	// Wait until all bodies are integrated
-	//farm_->WaitUntilTasksFinished();
-
-
-#if TIMING_STEPS
-
-	end = the_clock::now();
-
-	std::cout << "integrate time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
-
-#endif
-
-}
 
 void BarnesHutCPU::TimeStepMulti(float dt) {
 
@@ -389,105 +275,8 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 #if COLLISION
 
 
-	Body* ancestorList[MAX_COLLISION_DEPTH];
-	ancestorList[0] = tree.GetBodyList();
+	tree.CollisionCheckParallel(farm_, bodies_.size() / NUM_OF_THREADS);
 
-
-	TaskCollisionCheckNode* nodeCheckTask = new TaskCollisionCheckNode();
-	nodeCheckTask->Init(&tree, &collisionEventsChannel_, ancestorList);
-	farm_->AddTask(nodeCheckTask);
-
-	for (int i = 0; i < 8; i++) {
-
-		TaskCollisionCheckTree* treeCollisionTask = new TaskCollisionCheckTree();
-		treeCollisionTask->Init(tree.GetChild(i), &collisionEventsChannel_, ancestorList, 1);
-		farm_->AddTask(treeCollisionTask);
-	}
-
-	CollisionEvent* collisionEvents = nullptr;
-
-	for (int i = 0; i < NUM_OF_THREADS + 1; i++) {
-
-		CollisionEvent* newEvents = collisionEventsChannel_.read();
-
-		if (newEvents) {
-
-			CollisionEvent* endList = collisionEvents;
-			while (endList && endList->next) {
-
-				endList = endList->next;
-			}
-
-			if (endList) {
-
-				endList->next = newEvents;
-			}
-			else {
-
-				collisionEvents = newEvents;
-			}
-		}
-	}
-
-	for (CollisionEvent* collision = collisionEvents; collision; collision = collision->next) {
-
-		// handle collision here
-#if COLLISION_REACTION == 0
-
-		collision->b1->MergeBody(collision->b2);
-		collision->b2->Destroy();
-#endif
-	}
-
-	if (collisionEvents) {
-
-		delete collisionEvents;
-		collisionEvents = nullptr;
-	}
-
-	//farm_->WaitUntilTasksFinished();
-
-	//tree.CollisionBegin();
-
-	/*
-	CollisionNode* collisionRoot = collisionTree_.Build(root_, 4);
-	for (auto body : bodies_) {
-
-	collisionTree_.Insert(collisionRoot, body);
-	}
-
-	#if TIMING_STEPS
-
-	timeEnd = the_clock::now();
-
-	std::cout << "Collision Insert time = " << std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() << std::endl;
-
-	timeStart = the_clock::now();
-
-	#endif
-
-	collisionTree_.TestAllCollisions(collisionRoot);
-
-	if (collisionRoot) {
-
-	delete collisionRoot;
-	collisionRoot = nullptr;
-	}
-	*/
-
-	//for (auto b1 : bodies_) {
-
-	//	for (auto b2 : bodies_) {
-
-	//		if (b1 == b2) {
-
-	//			break;
-	//		}
-
-	//		collisionTree_.TestCollision(b1, b2);
-
-	//	}
-	//}
 
 
 #if TIMING_STEPS
