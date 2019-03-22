@@ -25,10 +25,13 @@ void TaskCollisionCheckTree::Init(OctreeNode* newRoot, Channel<CollisionEvent*>*
 
 void TaskCollisionCheckTree::Run() {
 
+	// create collision events list
 	CollisionEvent* collisionEvents = nullptr;
 
+	// check collisions
 	root_->CheckAllCollision(ancestorList_, collisionEvents, depth_);
 
+	// output collision events found to events channel
 	collisionEventsChannel_->write(collisionEvents);
 }
 

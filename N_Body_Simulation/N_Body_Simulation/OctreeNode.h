@@ -66,8 +66,8 @@ public:
 	void CollisionCheckParallel(ThreadFarm* farm, int bodyNumPerTask);
 
 	// checks collision in all the nodes
-	void CheckAllCollision(Body* bodyList[], CollisionEvent*& collisionEvents, unsigned short int depth);
-	void CheckCollisionSingleNode(Body* bodyList[], CollisionEvent*& collisionEvents, unsigned short int depth);
+	void CheckAllCollision(Body* ancestorList[], CollisionEvent*& collisionEvents, unsigned short int depth);
+	void CheckCollisionSingleNode(Body* ancestorList[], CollisionEvent*& collisionEvents, unsigned short int depth);
 
 	// Check Collision between 2 bodies
 	bool TestCollision(Body* b1, Body* b2);

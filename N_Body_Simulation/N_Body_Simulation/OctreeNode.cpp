@@ -583,50 +583,62 @@ OctreeNode* OctreeNode::GetChild(int index) {
 
 void OctreeNode::CheckAllCollision(Body* ancestorList[], CollisionEvent*& collisionEvents, unsigned short int depth) {
 	
+	// add this nodes bodylist to the ancestor list
 	ancestorList[depth_] = bodyList_;
 
 	depth++;
 
-	int poop = 0;
+	int ancestorListSize = 0;
 
-	for (int i = 0; i < depth_ + 1; i++) {
+	// only check for collisions if this node contains a body list
+	if (bodyList_) {
 
 		Body* b1;
 		Body* b2;
 
+		// for each ancestor list upto and including current depth
+		for (int i = 0; i < depth_ + 1; i++) {
 
-		for (b1 = ancestorList[i]; b1; b1 = b1->NextBody()) {
+			// check each body in current ancestor list depth
+			for (b1 = ancestorList[i]; b1; b1 = b1->NextBody()) {
 
-			poop++;
+				ancestorListSize++;
 
-			for (b2 = bodyList_; b2; b2 = b2->NextBody()) {
+				// check each body in this node's depth
+				for (b2 = bodyList_; b2; b2 = b2->NextBody()) {
 
-				if (b1 == b2) {
+					// don't check collision if bodies are the same
+					if (b1 == b2) {
 
-					break;
-				}
-
-				if (TestCollision(b1, b2)) {
-
-					CollisionEvent* newCollision = new CollisionEvent(b1, b2);
-
-					if (collisionEvents) {
-
-						newCollision->next = collisionEvents;
+						break;
 					}
 
-					collisionEvents = newCollision;
+					// Check collision using Bounding Sphere
+					if (TestCollision(b1, b2)) {
+
+						// collision has happened so create a collision event
+						// and add the collision event to list
+						CollisionEvent* newCollision = new CollisionEvent(b1, b2);
+
+						if (collisionEvents) {
+
+							newCollision->next = collisionEvents;
+						}
+
+						collisionEvents = newCollision;
+					}
 				}
 			}
 		}
 	}
 
-	if (poop > maxListSize) {
+	// if this list was larger than max, then new max found
+	if (ancestorListSize > maxListSize) {
 
-		maxListSize = poop;
+		maxListSize = ancestorListSize;
 	}
 
-
+	// check all the children of this node for collisions
 	for (int i = 0; i < 8; i++) {
 
 		if (children_[i]) {
@@ -639,24 +651,33 @@ void OctreeNode::CheckAllCollision(Body* ancestorList[], CollisionEvent*& collis
 }
 
 
-void OctreeNode::CheckCollisionSingleNode(Body* comparisonList[], CollisionEvent*& collisionEvents, unsigned short int depth) {
+
+// checks collision only for this node
+void OctreeNode::CheckCollisionSingleNode(Body* ancestorList[], CollisionEvent*& collisionEvents, unsigned short int depth) {
 
 	Body* b1;
 	Body* b2;
 
+	// check ancestor list upto and including this nodes depth
 	for (int i = 0; i < depth_ + 1; i++) {
 
-		for (b1 = comparisonList[i]; b1; b1 = b1->NextBody()) {
+		// check each body in current ancestor list depth
+		for (b1 = ancestorList[i]; b1; b1 = b1->NextBody()) {
 
+			// check each body in this node's depth
 			for (b2 = bodyList_; b2; b2 = b2->NextBody()) {
 
+				// don't check collision if bodies are the same
 				if (b1 == b2) {
 
 					break;
 				}
 
+				// Check collision using Bounding Sphere
 				if (TestCollision(b1, b2)) {
 
+					// collision has happened so create a collision event
+					// and add the collision event to list
 					CollisionEvent* newCollision = new CollisionEvent(b1, b2);
 
 					if (collisionEvents) {
@@ -676,7 +697,9 @@ int OctreeNode::totalCollisions = 0;
 
 bool OctreeNode::TestCollision(Body* b1, Body* b2) {
 
+	// check collision using sphere to sphere
 	bool result = SphereToSphereCollision(b1, b2);
+
 	if (result) {
 
 		totalCollisions++;
@@ -688,6 +711,9 @@ bool OctreeNode::TestCollision(Body* b1, Body* b2) {
 
 bool OctreeNode::SphereToSphereCollision(Body* b1, Body* b2) {
 
+
+	// x1*x2 + y1*y2 + z1*z2 <= (r1+r2)*(r1*r2)
+
 	float distance = PhysicsUtil::DistanceToSqr(b1->Position(), b2->Position());
 	float radius = b1->ModelRadius() + b2->ModelRadius();
 
@@ -698,14 +724,18 @@ bool OctreeNode::SphereToSphereCollision(Body* b1, Body* b2) {
 
 int OctreeNode::CollisionCreateTasks(Body* ancestorList[], ThreadFarm* farm, int bodyNumPerTask, Channel<CollisionEvent*>* collisionEventChannel) {
 
-
+	// int determines how many tasks have been created
 	int tasksCreated = 1;
 
+	// add this nodes bodylist to ancestor list
 	ancestorList[depth_] = GetBodyList();
+
+	// create a task to check this node
 	TaskCollisionCheckNode* nodeCheckTask = new TaskCollisionCheckNode();
 	nodeCheckTask->Init(this, collisionEventChannel, ancestorList);
 	farm->AddTask(nodeCheckTask);
 
+	// for each child
 	for (int i = 0; i < 8; i++) {
 
 		// get child at i
@@ -714,43 +744,54 @@ int OctreeNode::CollisionCreateTasks(Body* ancestorList[], ThreadFarm* farm, int
 		// if child exists
 		if (child) {
 
-			if (child->NumBodies() < bodyNumPerTask) {
+			// only add a task if child contains <= (total Body Count) / (Number of Threads)
+			if (child->NumBodies() <= bodyNumPerTask) {
 
+				// create task to check entire tree below this child
 				TaskCollisionCheckTree* treeCollisionTask = new TaskCollisionCheckTree();
 				treeCollisionTask->Init(child, collisionEventChannel, ancestorList, 1);
 				farm->AddTask(treeCollisionTask);
+
+				// task has been created so add to counter
 				tasksCreated++;
 			}
 			else {
 
+				// too many bodies, create tasks in child
 				tasksCreated += child->CollisionCreateTasks(ancestorList, farm, bodyNumPerTask, collisionEventChannel);
 			}
 		}
 	}
 
-
+	
 	return tasksCreated;
 }
 
 void OctreeNode::CollisionCheckParallel(ThreadFarm* farm, int bodyNumPerTask) {
 
 
+	// create ancestor list
 	Body* ancestorList[MAX_COLLISION_DEPTH];
 
 
+	// Create tasks for collision detection
+	// Get number of tasks created
 	int tasksCreated = CollisionCreateTasks(ancestorList, farm, bodyNumPerTask, &collisionEventsChannel_);
 
 	
 
 	CollisionEvent* collisionEvents = nullptr;
 
-	// for number of tasks started
+	// for number of tasks created
 	for (int i = 0; i < tasksCreated; i++) {
 
+		// get collision event from tasks
 		CollisionEvent* newEvents = collisionEventsChannel_.read();
 
+		// if there is a collisoin event
 		if (newEvents) {
 
+			// add to collision events list
 			CollisionEvent* endList = collisionEvents;
 			while (endList && endList->next) {
 
@@ -769,22 +810,28 @@ void OctreeNode::CollisionCheckParallel(ThreadFarm* farm, int bodyNumPerTask) {
 	}
 
 
+	// all collision have been detected now and the events collected
+	// safe to evaluate results of collisions
+
+	// loop for every collision event that occured
 	for (CollisionEvent* collision = collisionEvents; collision; collision = collision->next) {
 
 		// handle collision here
 #if COLLISION_REACTION == 0
 
+		// Collision Reaction 0 is to merge the bodies in the collision
 		collision->b1->MergeBody(collision->b2);
 		collision->b2->Destroy();
 #endif
 
 	}
 
-
+	// delete collision events
 	if (collisionEvents) {
 
 		delete collisionEvents;
 		collisionEvents = nullptr;
 	}
+	
 }
 
