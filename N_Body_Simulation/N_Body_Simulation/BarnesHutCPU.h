@@ -41,7 +41,6 @@ protected:
 
 
 	Channel<OctreeNode*> mergeTreeChannel_;
-
 	Channel<CollisionEvent*> collisionEventsChannel_;
 
 	// function pointer to which time step is being used

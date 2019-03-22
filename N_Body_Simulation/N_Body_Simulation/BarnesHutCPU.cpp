@@ -178,7 +178,10 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 
 #endif
 
-	//std::cout << "start" << std::endl;
+	// Create body lists for each thread to insert
+	// Also create and start each task to insert bodies
+
+	// determine length of body list each thread uses
 	size_t length = bodies_.size() / NUM_OF_THREADS;
 	size_t remain = bodies_.size() % NUM_OF_THREADS;
 
@@ -190,28 +193,23 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 	// Add an Insert task for each body to farm
 	for (size_t bodyIndex = 0; bodyIndex < std::min((size_t)NUM_OF_THREADS, bodies_.size()); bodyIndex++) {
 
+		// create array of bodies for thread to use
 		arrayEnd += (remain > 0) ? (length + !!(remain--)) : length;
-		//tree.Insert(body);
-
-		//std::vector<Body*>* taskBodies_ = new std::vector<Body*>(bodies_.begin() + arrayBegin, bodies_.begin() + arrayEnd);
 		bodyArrays.push_back(new std::vector<Body*>(bodies_.begin() + arrayBegin, bodies_.begin() + arrayEnd));
-
 		arrayBegin = arrayEnd;
 
-		TaskInsertBody* newTask = new TaskInsertBody();
-
+		// create tree used for thread to use
 		OctreeNode* threadTree = new OctreeNode(root_, &tree, 0);
 
+		// create insert task
+		TaskInsertBody* newTask = new TaskInsertBody();
 		newTask->Init(&mergeTreeChannel_, threadTree, bodyArrays.at(bodyIndex));
-
-		//newTask->Init(body, &tree);
 		farm_->AddTask(newTask);
 	}
 
 
+	// read each tree from channel created by insert tasks
 	int limit = (bodies_.size() < NUM_OF_THREADS) ? bodies_.size() : NUM_OF_THREADS;
-
-
 	for (int i = 0; i < limit; i++) {
 
 		OctreeNode* mergeTree = mergeTreeChannel_.read();
@@ -220,7 +218,6 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 		tree.Merge(mergeTree);
 
 		delete mergeTree;
-
 	}
 
 
@@ -237,11 +234,6 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 
 	// Add an UpdateForces task for each body
 	for (int i = 0; i < limit; i++) {
-
-		// reset body force before applying forces
-		//body->ResetForce();
-
-		//tree.UpdateForceOnBody(body);
 
 		TaskUpdateForces* newTask = new TaskUpdateForces();
 		newTask->Init(bodyArrays.at(i), &tree);
@@ -268,8 +260,6 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 		std::invoke(body->Integrate, *body, dt);
 	}
 
-	// Wait until all bodies are integrated
-	//farm_->WaitUntilTasksFinished();
 
 #if TIMING_STEPS
 
@@ -284,6 +274,7 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 #if COLLISION
 
 
+	// Detect collision using parallel algorithm
 	tree.CollisionCheckParallel(farm_, bodies_.size() / NUM_OF_THREADS);
 
 
@@ -303,15 +294,14 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 
 
 
-
+	// delete body arrays used for insertion and force calculations
 	for (int i = 0; i < limit; i++) {
 
 		delete bodyArrays.at(i);
 		bodyArrays.at(i) = nullptr;
 	}
 
-	//size_t limit2 = 0;
-	//length = 2;
+	// Construct new ordered bodies list
 
 	// clear bodieslist
 	bodies_.clear();

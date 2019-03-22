@@ -1,20 +1,16 @@
 #pragma once
+
+// include parent class
 #include "Task.h"
 
+// include my classes
 #include "SETTINGS.h"
 #include "Channel.h"
 
+// forward declarations
 class Body;
 class OctreeNode;
 struct CollisionEvent;
-
-
-/*
-
-test collision with all bodies on top level before checking lower tasks
-probs make it as its own task
-
-*/
 
 
 class TaskCollisionCheckTree :
@@ -30,13 +26,16 @@ public:
 
 private:
 
+	// root of octree being checked
 	OctreeNode* root_;
 
+	// list of ancestors to this node
 	Body* ancestorList_[MAX_COLLISION_DEPTH];
 
+	// depth of this node
 	int depth_;
 
-
+	// channel to output collisions found
 	Channel<CollisionEvent*>* collisionEventsChannel_;
 
 
