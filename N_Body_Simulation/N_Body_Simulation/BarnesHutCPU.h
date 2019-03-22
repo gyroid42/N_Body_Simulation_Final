@@ -7,10 +7,10 @@
 #include "ThreadFarm.h"
 #include "Channel.h"
 #include "Body.h"
-#include "BodyChannelData.h"
 #include "OctreeCollision.h"
 
 class OctreeNode;
+struct CollisionEvent;
 
 class BarnesHutCPU :
 	public BarnesHut
@@ -33,7 +33,6 @@ protected:
 	void CalculateForceOnBody(Body* body);
 
 	// TimeStep methods depending on whether mult-threading is being used
-	void TimeStepMultiImproved(float dt);
 	void TimeStepMulti(float dt);
 	void TimeStepSingle(float dt);
 
@@ -43,9 +42,7 @@ protected:
 
 	Channel<OctreeNode*> mergeTreeChannel_;
 
-	Channel<BodyChannelData*> bodyChannels_[8];
-
-	OctreeCollision collisionTree_;
+	Channel<CollisionEvent*> collisionEventsChannel_;
 
 	// function pointer to which time step is being used
 	void (BarnesHutCPU::*timeStepFunc_)(float);

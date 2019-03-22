@@ -59,9 +59,6 @@
     <ClCompile Include="Simulation.cpp">
       <Filter>Source Files\Simulation</Filter>
     </ClCompile>
-    <ClCompile Include="TaskIntegrateBody.cpp">
-      <Filter>Source Files\Simulation</Filter>
-    </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -92,14 +89,17 @@
     <ClCompile Include="Partition.cpp">
       <Filter>Source Files\Simulation\BarnesHut\Octree</Filter>
     </ClCompile>
-    <ClCompile Include="PartitionTree.cpp">
-      <Filter>Source Files\Simulation\BarnesHut\Octree</Filter>
-    </ClCompile>
     <ClCompile Include="OctreeNode.cpp">
       <Filter>Source Files\Simulation\BarnesHut\Octree</Filter>
     </ClCompile>
     <ClCompile Include="OctreeCollision.cpp">
       <Filter>Source Files\Simulation\Collision\Octree</Filter>
+    </ClCompile>
+    <ClCompile Include="TaskCollisionCheckNode.cpp">
+      <Filter>Source Files\Simulation\BarnesHut\Worker Tasks</Filter>
+    </ClCompile>
+    <ClCompile Include="TaskCollisionCheckTree.cpp">
+      <Filter>Source Files\Simulation\BarnesHut\Worker Tasks</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -142,9 +142,6 @@
     <ClInclude Include="Simulation.h">
       <Filter>Source Files\Simulation</Filter>
     </ClInclude>
-    <ClInclude Include="TaskIntegrateBody.h">
-      <Filter>Source Files\Simulation</Filter>
-    </ClInclude>
     <ClInclude Include="Body.h">
       <Filter>Source Files\Simulation</Filter>
     </ClInclude>
@@ -157,13 +154,7 @@
     <ClInclude Include="TaskUpdateForces.h">
       <Filter>Source Files\Simulation\BarnesHut\Worker Tasks</Filter>
     </ClInclude>
-    <ClInclude Include="BodyChannelData.h">
-      <Filter>Source Files\Simulation\BarnesHut\Worker Tasks</Filter>
-    </ClInclude>
     <ClInclude Include="Partition.h">
-      <Filter>Source Files\Simulation\BarnesHut\Octree</Filter>
-    </ClInclude>
-    <ClInclude Include="PartitionTree.h">
       <Filter>Source Files\Simulation\BarnesHut\Octree</Filter>
     </ClInclude>
     <ClInclude Include="OctreeNode.h">
@@ -171,6 +162,12 @@
     </ClInclude>
     <ClInclude Include="OctreeCollision.h">
       <Filter>Source Files\Simulation\Collision\Octree</Filter>
+    </ClInclude>
+    <ClInclude Include="TaskCollisionCheckNode.h">
+      <Filter>Source Files\Simulation\BarnesHut\Worker Tasks</Filter>
+    </ClInclude>
+    <ClInclude Include="TaskCollisionCheckTree.h">
+      <Filter>Source Files\Simulation\BarnesHut\Worker Tasks</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

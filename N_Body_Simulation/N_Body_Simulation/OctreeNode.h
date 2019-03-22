@@ -8,10 +8,32 @@
 
 // my class includes
 #include "Partition.h"
+#include "Channel.h"
 
 // forward declarations
 class Body;
+class ThreadFarm;
 
+struct CollisionEvent {
+	Body* b1;
+	Body* b2;
+	CollisionEvent* next;
+
+	CollisionEvent(Body* newB1 = nullptr, Body* newB2 = nullptr, CollisionEvent* nextCollision = nullptr) {
+		b1 = newB1;
+		b2 = newB2;
+		next = nextCollision;
+	}
+
+	~CollisionEvent() {
+
+		if (next) {
+
+			delete next;
+			next = nullptr;
+		}
+	}
+};
 
 class OctreeNode
 {
@@ -41,13 +63,14 @@ public:
 	void CreateChildren();
 
 	// Starts collision checks
-	void CollisionBegin();
+	void CollisionCheckParallel(ThreadFarm* farm, int bodyNumPerTask);
 
 	// checks collision in all the nodes
-	void CheckAllCollision(Body* bodyList[], unsigned short int depth);
+	void CheckAllCollision(Body* bodyList[], CollisionEvent*& collisionEvents, unsigned short int depth);
+	void CheckCollisionSingleNode(Body* bodyList[], CollisionEvent*& collisionEvents, unsigned short int depth);
 
 	// Check Collision between 2 bodies
-	void TestCollision(Body* b1, Body* b2);
+	bool TestCollision(Body* b1, Body* b2);
 
 	// Getters
 	OctreeNode* GetChild(int index);
@@ -74,6 +97,8 @@ private:
 
 	// Sphere to sphere collision test
 	bool SphereToSphereCollision(Body* b1, Body* b2);
+
+	int CollisionCreateTasks(Body* ancestorList[], ThreadFarm* farm, int bodyNumPerTask, Channel<CollisionEvent*>* collisionEventChannel);
 
 	// Partitioned space this node contains
 	Partition partition_;
@@ -102,5 +127,9 @@ private:
 
 	// depth of node
 	int depth_;
+
+
+	Channel<CollisionEvent*> collisionEventsChannel_;
+
 };
 

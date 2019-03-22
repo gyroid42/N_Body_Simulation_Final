@@ -8,6 +8,9 @@
 // my class includes
 #include "Body.h"
 #include "PhysicsUtil.h"
+#include "TaskCollisionCheckNode.h"
+#include "TaskCollisionCheckTree.h"
+#include "ThreadFarm.h"
 
 int OctreeNode::maxListSize = 0;
 
@@ -440,37 +443,6 @@ void OctreeNode::Merge(OctreeNode* mergeTree) {
 
 		}
 
-		////////////////////////////////////////////////
-		/*
-		// handle merge tree
-		Body* mergeBodyList = mergeTree->GetBodyList();
-
-		// if there is a body list in the merge tree
-		if (mergeBodyList) {
-
-			// check if body in list can be inserted
-			if (!mergeBodyList->InsertedCollision()) {
-
-				// do a straddle check on merge body
-				if (partition_.StraddleCheck(mergeBodyList->Position(), mergeBodyList->ModelRadius())) {
-
-					// merge body is straddling so add to body list
-					
-
-					mergeBodyList->SetNextBody(bodyList_);
-					bodyList_ = mergeBodyList;
-
-					mergeBodyList->SetInsertedCollision(true);
-				}
-				else {
-
-					// body can go deeper, so remove from merge body list
-					mergeBodyList = nullptr;
-				}
-			}
-		}
-		*/
-		//////////////////////////////////////////////////////////
 
 		// If the merge tree node is external
 		if (mergeTree->IsExternal()) {
@@ -559,7 +531,7 @@ void OctreeNode::GetOrderedElementsList(std::vector<Body*>& newList) {
 	if (isExternal_ && body_) {
 
 		// only add body if it's within the physics space
-		if (treeRoot_->GetPartition().Contains(body_->Position())) {
+		if (!body_->DestroyFlag() && treeRoot_->GetPartition().Contains(body_->Position())) {
 
 			body_->SetInsertedCollision(false);
 			body_->SetNextBody(nullptr);
@@ -568,7 +540,8 @@ void OctreeNode::GetOrderedElementsList(std::vector<Body*>& newList) {
 		}
 		else {
 
-			int pee = 0;
+			delete body_;
+			body_ = nullptr;
 		}
 	}
 	else {
@@ -608,15 +581,15 @@ OctreeNode* OctreeNode::GetChild(int index) {
 
 
 
-void OctreeNode::CheckAllCollision(Body* ancestorList[], unsigned short int depth) {
+void OctreeNode::CheckAllCollision(Body* ancestorList[], CollisionEvent*& collisionEvents, unsigned short int depth) {
 	
-	ancestorList[depth] = bodyList_;
+	ancestorList[depth_] = bodyList_;
 
 	depth++;
 
 	int poop = 0;
 
-	for (int i = 0; i < depth; i++) {
+	for (int i = 0; i < depth_ + 1; i++) {
 
 		Body* b1;
 		Body* b2;
@@ -633,7 +606,17 @@ void OctreeNode::CheckAllCollision(Body* ancestorList[], unsigned short int dept
 					break;
 				}
 
-				TestCollision(b1, b2);
+				if (TestCollision(b1, b2)) {
+
+					CollisionEvent* newCollision = new CollisionEvent(b1, b2);
+
+					if (collisionEvents) {
+
+						newCollision->next = collisionEvents;
+					}
+
+					collisionEvents = newCollision;
+				}
 			}
 		}
 	}
@@ -648,22 +631,58 @@ void OctreeNode::CheckAllCollision(Body* ancestorList[], unsigned short int dept
 
 		if (children_[i]) {
 
-			children_[i]->CheckAllCollision(ancestorList, depth);
+			children_[i]->CheckAllCollision(ancestorList, collisionEvents, depth);
 		}
 	}
 
 	depth--;
 }
 
+
+void OctreeNode::CheckCollisionSingleNode(Body* comparisonList[], CollisionEvent*& collisionEvents, unsigned short int depth) {
+
+	Body* b1;
+	Body* b2;
+
+	for (int i = 0; i < depth_ + 1; i++) {
+
+		for (b1 = comparisonList[i]; b1; b1 = b1->NextBody()) {
+
+			for (b2 = bodyList_; b2; b2 = b2->NextBody()) {
+
+				if (b1 == b2) {
+
+					break;
+				}
+
+				if (TestCollision(b1, b2)) {
+
+					CollisionEvent* newCollision = new CollisionEvent(b1, b2);
+
+					if (collisionEvents) {
+
+						newCollision->next = collisionEvents;
+					}
+
+					collisionEvents = newCollision;
+				}
+			}
+		}
+	}
+}
+
+
 int OctreeNode::totalCollisions = 0;
 
-void OctreeNode::TestCollision(Body* b1, Body* b2) {
+bool OctreeNode::TestCollision(Body* b1, Body* b2) {
 
-	if (SphereToSphereCollision(b1, b2)) {
+	bool result = SphereToSphereCollision(b1, b2);
+	if (result) {
 
-		int poop = 0;
 		totalCollisions++;
 	}
+
+	return result;
 }
 
 
@@ -676,13 +695,96 @@ bool OctreeNode::SphereToSphereCollision(Body* b1, Body* b2) {
 }
 
 
-void OctreeNode::CollisionBegin() {
 
-	totalCollisions = 0;
+int OctreeNode::CollisionCreateTasks(Body* ancestorList[], ThreadFarm* farm, int bodyNumPerTask, Channel<CollisionEvent*>* collisionEventChannel) {
 
 
-	Body* ancestorList[50];
+	int tasksCreated = 1;
 
-	CheckAllCollision(ancestorList, 0);
+	ancestorList[depth_] = GetBodyList();
+	TaskCollisionCheckNode* nodeCheckTask = new TaskCollisionCheckNode();
+	nodeCheckTask->Init(this, collisionEventChannel, ancestorList);
+	farm->AddTask(nodeCheckTask);
+
+	for (int i = 0; i < 8; i++) {
+
+		// get child at i
+		OctreeNode* child = GetChild(i);
+
+		// if child exists
+		if (child) {
+
+			if (child->NumBodies() < bodyNumPerTask) {
+
+				TaskCollisionCheckTree* treeCollisionTask = new TaskCollisionCheckTree();
+				treeCollisionTask->Init(child, collisionEventChannel, ancestorList, 1);
+				farm->AddTask(treeCollisionTask);
+				tasksCreated++;
+			}
+			else {
+
+				tasksCreated += child->CollisionCreateTasks(ancestorList, farm, bodyNumPerTask, collisionEventChannel);
+			}
+		}
+	}
+
+
+	return tasksCreated;
+}
+
+void OctreeNode::CollisionCheckParallel(ThreadFarm* farm, int bodyNumPerTask) {
+
+
+	Body* ancestorList[MAX_COLLISION_DEPTH];
+
+
+	int tasksCreated = CollisionCreateTasks(ancestorList, farm, bodyNumPerTask, &collisionEventsChannel_);
+
+	
+
+	CollisionEvent* collisionEvents = nullptr;
+
+	// for number of tasks started
+	for (int i = 0; i < tasksCreated; i++) {
+
+		CollisionEvent* newEvents = collisionEventsChannel_.read();
+
+		if (newEvents) {
+
+			CollisionEvent* endList = collisionEvents;
+			while (endList && endList->next) {
+
+				endList = endList->next;
+			}
+
+			if (endList) {
+
+				endList->next = newEvents;
+			}
+			else {
+
+				collisionEvents = newEvents;
+			}
+		}
+	}
+
+
+	for (CollisionEvent* collision = collisionEvents; collision; collision = collision->next) {
+
+		// handle collision here
+#if COLLISION_REACTION == 0
+
+		collision->b1->MergeBody(collision->b2);
+		collision->b2->Destroy();
+#endif
+
+	}
+
+
+	if (collisionEvents) {
+
+		delete collisionEvents;
+		collisionEvents = nullptr;
+	}
 }
 

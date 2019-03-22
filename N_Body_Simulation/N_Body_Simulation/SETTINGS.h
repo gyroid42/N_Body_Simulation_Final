@@ -6,7 +6,7 @@
 
 
 #define ADD_RANDOM_BODIES	true
-#define NUM_RAND_BODIES		2000
+#define NUM_RAND_BODIES		1000
 #define RANDOM_BODY_MAX_X	4280.0f
 #define RANDOM_BODY_MAX_Y	4720.0f
 #define RANDOM_BODY_MAX_Z	4720.0f
@@ -34,6 +34,11 @@ constexpr auto INTERPOLATE_BETWEEN_FRAMES = true;
 #define SIMULATION_METHOD	1
 
 #define COLLISION			true
+
+#define MAX_COLLISION_DEPTH	50
+
+// methods: 0 = merge bodies
+#define COLLISION_REACTION	0
 
 #define MULTITHREADING		true
 #define NUM_OF_THREADS		8
