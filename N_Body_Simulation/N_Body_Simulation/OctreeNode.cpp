@@ -443,37 +443,6 @@ void OctreeNode::Merge(OctreeNode* mergeTree) {
 
 		}
 
-		////////////////////////////////////////////////
-		/*
-		// handle merge tree
-		Body* mergeBodyList = mergeTree->GetBodyList();
-
-		// if there is a body list in the merge tree
-		if (mergeBodyList) {
-
-			// check if body in list can be inserted
-			if (!mergeBodyList->InsertedCollision()) {
-
-				// do a straddle check on merge body
-				if (partition_.StraddleCheck(mergeBodyList->Position(), mergeBodyList->ModelRadius())) {
-
-					// merge body is straddling so add to body list
-					
-
-					mergeBodyList->SetNextBody(bodyList_);
-					bodyList_ = mergeBodyList;
-
-					mergeBodyList->SetInsertedCollision(true);
-				}
-				else {
-
-					// body can go deeper, so remove from merge body list
-					mergeBodyList = nullptr;
-				}
-			}
-		}
-		*/
-		//////////////////////////////////////////////////////////
 
 		// If the merge tree node is external
 		if (mergeTree->IsExternal()) {

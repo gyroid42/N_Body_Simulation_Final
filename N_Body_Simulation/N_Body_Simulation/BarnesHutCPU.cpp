@@ -271,6 +271,15 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 	// Wait until all bodies are integrated
 	//farm_->WaitUntilTasksFinished();
 
+#if TIMING_STEPS
+
+	timeEnd = the_clock::now();
+
+	std::cout << "integrate time = " << std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() << std::endl;
+
+	timeStart = the_clock::now();
+
+#endif
 
 #if COLLISION
 
@@ -292,15 +301,7 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 #endif
 
 
-#if TIMING_STEPS
 
-	timeEnd = the_clock::now();
-
-	std::cout << "integrate time = " << std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() << std::endl;
-
-	timeStart = the_clock::now();
-
-#endif
 
 
 	for (int i = 0; i < limit; i++) {
