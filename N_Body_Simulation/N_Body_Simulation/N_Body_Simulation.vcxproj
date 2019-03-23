@@ -154,6 +154,7 @@
     <ClInclude Include="BruteForce.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Channel.h" />
+    <ClInclude Include="SettingsEnums.h" />
     <ClInclude Include="TaskCollisionCheckNode.h" />
     <ClInclude Include="TaskCollisionCheckTree.h" />
     <ClInclude Include="Input.h" />
@@ -168,6 +169,7 @@
     <ClInclude Include="TaskBruteForceCPU.h" />
     <ClInclude Include="TaskInsertBody.h" />
     <ClInclude Include="TaskUpdateForces.h" />
+    <ClInclude Include="TextUI.h" />
     <ClInclude Include="ThreadFarm.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

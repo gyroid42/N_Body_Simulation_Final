@@ -9,12 +9,16 @@
 
 // Include my classes
 #include "Camera.h"
+#include "TextUI.h"
 
 
 // Forward Declarations
 class Simulation;
 class Input;
 
+struct SimulationSettings;
+
+enum SIMULATION_MODE;
 
 class Application
 {
@@ -46,6 +50,12 @@ protected:
 
 	void DisplayText(float x, float y, float r, float g, float b, char* string);
 
+
+	void UpdateUIText();
+	void UpdateSimModeText();
+	void UpdateSimMethodText();
+	void UpdateIntegrationMethodText();
+
 	// variables to construct projection matrix
 	int width_, height_;
 	float fov_, nearPlane_, farPlane_;
@@ -59,7 +69,11 @@ protected:
 	// Simulation is the object which controls the whole n bodies simulation
 	Simulation* simulation_;
 
+	SimulationSettings* simSettings_;
 
-	char fps_[40];
+
+	SIMULATION_MODE simMode_;
+
+	TextUI textUI_;
 };
 

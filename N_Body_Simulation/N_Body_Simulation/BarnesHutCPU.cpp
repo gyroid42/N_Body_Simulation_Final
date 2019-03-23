@@ -37,15 +37,16 @@ void BarnesHutCPU::Init() {
 	BarnesHut::Init();
 
 	// Create the partition tree root
-	root_ = Partition(sf::Vector3f(0.0f, 0.0f, 0.0f), PARTITION_SIZE);
+	root_ = Partition(sf::Vector3f(0.0f, 0.0f, 0.0f), settings_.partitionSize);
 
 	// If Multi-threading then start the thread farm
 	// and set the TimeStep function to the multi-threaded impelmentation
-	if (MULTITHREADING) {
 
-		farm_ = new ThreadFarm();
-		farm_->SetThreadCount(NUM_OF_THREADS);
-		farm_->Run();
+	farm_ = new ThreadFarm();
+	farm_->SetThreadCount(NUM_OF_THREADS);
+	farm_->Run();
+
+	if (settings_.multiThreading) {
 
 		timeStepFunc_ = &BarnesHutCPU::TimeStepMulti;
 	}
@@ -62,14 +63,11 @@ void BarnesHutCPU::CleanUp() {
 	BarnesHut::CleanUp();
 
 	// If multi-threading then clean up the farm
-	if (MULTITHREADING) {
+	if (farm_) {
 
-		if (farm_) {
-
-			farm_->End();
-			delete farm_;
-			farm_ = nullptr;
-		}
+		farm_->End();
+		delete farm_;
+		farm_ = nullptr;
 	}
 }
 
@@ -77,34 +75,25 @@ void BarnesHutCPU::CleanUp() {
 void BarnesHutCPU::TimeStep(float dt) {
 
 
-#if TIMING_STEPS
-
-	the_clock::time_point start = the_clock::now();
-
-#endif
-
 	// Call the TimeStep method being used
 	(this->*timeStepFunc_)(dt);
 
-#if TIMING_STEPS
-	the_clock::time_point end = the_clock::now();
-
-#endif
-	//std::cout << "total time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl << std::endl;
 }
 
 void BarnesHutCPU::TimeStepSingle(float dt) {
+
+	the_clock::time_point start;
+	the_clock::time_point end;
 
 	// Partition physics space
 
 	// create intial tree using partition root
 	OctreeNode tree(root_);
 
-#if TIMING_STEPS
+	if (settings_.timingSteps) {
 
-	the_clock::time_point start = the_clock::now();
-
-#endif
+		start = the_clock::now();
+	}
 
 	// insert each body into the partition tree
 	for (auto body : bodies_) {
@@ -113,16 +102,17 @@ void BarnesHutCPU::TimeStepSingle(float dt) {
 		tree.Insert(body, counter);
 	}
 
-#if TIMING_STEPS
+	if (settings_.timingSteps) {
 
-	the_clock::time_point end = the_clock::now();
+		end = the_clock::now();
 
 
-	std::cout << "insert time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
+		std::cout << "insert time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
 
-	start = the_clock::now();
+		start = the_clock::now();
 
-#endif
+	}
+
 	// Calculate for acting on each body
 
 	// loop for each body and traverse partition tree
@@ -134,16 +124,16 @@ void BarnesHutCPU::TimeStepSingle(float dt) {
 		tree.UpdateForceOnBody(body);
 	}
 
-#if TIMING_STEPS
+	if (settings_.timingSteps) {
 
-	end = the_clock::now();
+		end = the_clock::now();
 
 
-	std::cout << "force time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
+		std::cout << "force time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
 
-	start = the_clock::now();
+		start = the_clock::now();
 
-#endif
+	}
 
 	// loop for each body and integrate
 
@@ -152,14 +142,14 @@ void BarnesHutCPU::TimeStepSingle(float dt) {
 		body->Integrate_SemiImplicitEuler(dt);
 	}
 
-#if TIMING_STEPS
+	if (settings_.timingSteps) {
 
-	end = the_clock::now();
+		end = the_clock::now();
 
 
-	std::cout << "integrate time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
+		std::cout << "integrate time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
 
-#endif
+	}
 }
 
 
@@ -167,16 +157,19 @@ void BarnesHutCPU::TimeStepSingle(float dt) {
 void BarnesHutCPU::TimeStepMulti(float dt) {
 
 
+	the_clock::time_point timeStart;
+	the_clock::time_point timeEnd;
+
+
 	// Partition physics space
 
 	// create intial tree using partition root
 	OctreeNode tree(root_);
 
-#if TIMING_STEPS
+	if (settings_.timingSteps) {
 
-	the_clock::time_point timeStart = the_clock::now();
-
-#endif
+		timeStart = the_clock::now();
+	}
 
 	// Create body lists for each thread to insert
 	// Also create and start each task to insert bodies
@@ -221,16 +214,16 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 	}
 
 
-#if TIMING_STEPS
+	if (settings_.timingSteps) {
 
-	the_clock::time_point timeEnd = the_clock::now();
+		timeEnd = the_clock::now();
 
 
-	std::cout << "insert time = " << std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() << std::endl;
+		std::cout << "insert time = " << std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() << std::endl;
 
-	timeStart = the_clock::now();
+		timeStart = the_clock::now();
 
-#endif
+	}
 
 	// Add an UpdateForces task for each body
 	for (int i = 0; i < limit; i++) {
@@ -244,15 +237,15 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 	farm_->WaitUntilTasksFinished();
 
 
-#if TIMING_STEPS
+	if (settings_.timingSteps) {
 
-	timeEnd = the_clock::now();
+		timeEnd = the_clock::now();
 
-	std::cout << "force time = " << std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() << std::endl;
+		std::cout << "force time = " << std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() << std::endl;
 
-	timeStart = the_clock::now();
+		timeStart = the_clock::now();
 
-#endif
+	}
 
 	//integrate each body
 	for (auto body : bodies_) {
@@ -261,36 +254,34 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 	}
 
 
-#if TIMING_STEPS
+	if (settings_.timingSteps) {
 
-	timeEnd = the_clock::now();
+		timeEnd = the_clock::now();
 
-	std::cout << "integrate time = " << std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() << std::endl;
+		std::cout << "integrate time = " << std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() << std::endl;
 
-	timeStart = the_clock::now();
+		timeStart = the_clock::now();
 
-#endif
+	}
 
-#if COLLISION
+	if (settings_.collision) {
 
-
-	// Detect collision using parallel algorithm
-	tree.CollisionCheckParallel(farm_, bodies_.size() / NUM_OF_THREADS);
-
+		// Detect collision using parallel algorithm
+		tree.CollisionCheckParallel(farm_, bodies_.size() / NUM_OF_THREADS);
 
 
-#if TIMING_STEPS
 
-	timeEnd = the_clock::now();
+		if (settings_.timingSteps) {
 
-	std::cout << "Collision Test time = " << std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() << std::endl;
+			timeEnd = the_clock::now();
 
-	timeStart = the_clock::now();
+			std::cout << "Collision Test time = " << std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() << std::endl;
 
-#endif
+			timeStart = the_clock::now();
 
-#endif
+		}
 
+	}
 
 
 
@@ -309,13 +300,13 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 	// get new list from partition tree
 	tree.GetOrderedElementsList(bodies_);
 
-#if TIMING_STEPS
+	if (settings_.timingSteps) {
 
-	timeEnd = the_clock::now();
+		timeEnd = the_clock::now();
 
-	std::cout << "sorting time = " << std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() << std::endl;
+		std::cout << "sorting time = " << std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() << std::endl;
 
-#endif
+	}
 	
 	std::cout << OctreeNode::maxListSize << std::endl;
 	std::cout << OctreeNode::totalCollisions << std::endl;

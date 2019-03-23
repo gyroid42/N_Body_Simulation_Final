@@ -71,33 +71,21 @@ void BruteForce::CleanUp() {
 void BruteForce::TimeStep(float dt) {
 
 
-#if TIMING_STEPS
-
-	the_clock::time_point start = the_clock::now();
-
-#endif
 
 	// Call the TimeStep method being used
 	(this->*timeStepFunc_)(dt);
 
-
-#if TIMING_STEPS
-
-	the_clock::time_point end = the_clock::now();
-
-	//std::cout << "total time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
-
-	
-#endif
 }
 
 void BruteForce::TimeStepSingle(float dt) {
 
-#if TIMING_STEPS
+	the_clock::time_point start;
+	the_clock::time_point end;
 
-	the_clock::time_point start = the_clock::now();
+	if (settings_.timingSteps) {
 
-#endif
+		start = the_clock::now();
+	}
 
 	// Loop for each body
 	for (auto body1 : bodies_) {
@@ -115,15 +103,15 @@ void BruteForce::TimeStepSingle(float dt) {
 		}
 	}
 
-#if TIMING_STEPS
+	if (settings_.timingSteps) {
 
-	the_clock::time_point end = the_clock::now();
 
-	std::cout << "force time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
+		end = the_clock::now();
 
-	start = the_clock::now();
+		std::cout << "force time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
 
-#endif
+		start = the_clock::now();
+	}
 
 	// Loop for each body and integrate it
 	for (auto body : bodies_) {
@@ -131,53 +119,56 @@ void BruteForce::TimeStepSingle(float dt) {
 		body->Integrate_SemiImplicitEuler(dt);
 	}
 
-#if TIMING_STEPS
 
-	end = the_clock::now();
+	if (settings_.timingSteps) {
 
+		end = the_clock::now();
 
-	std::cout << "integrate time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
+		std::cout << "integrate time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
 
-	start = the_clock::now();
-#endif
+		start = the_clock::now();
+	}
 
-#if COLLISION
+	if (settings_.collision) {
 
-	for (auto b1 : bodies_) {
+		for (auto b1 : bodies_) {
 
-		for (auto b2 : bodies_) {
+			for (auto b2 : bodies_) {
 
-			if (b1 == b2) {
+				if (b1 == b2) {
 
-				break;
+					break;
+				}
+
+				collisionTree_.TestCollision(b1, b2);
+
 			}
+		}
 
-			collisionTree_.TestCollision(b1, b2);
+
+		if (settings_.timingSteps) {
+
+
+			end = the_clock::now();
+
+			std::cout << "Collision Test time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
+
 
 		}
 	}
-
-
-#if TIMING_STEPS
-
-	end = the_clock::now();
-
-	std::cout << "Collision Test time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
-
-#endif
-
-#endif
 }
 
 
 void BruteForce::TimeStepMulti(float dt) {
 
 
-#if TIMING_STEPS
+	the_clock::time_point end;
+	the_clock::time_point start;
 
-	the_clock::time_point start = the_clock::now();
+	if (settings_.timingSteps) {
 
-#endif
+		start = the_clock::now();
+	}
 
 	// Add a BruteForceCPU task for each body to the thread farm
 	for (auto body : bodies_) {
@@ -191,16 +182,15 @@ void BruteForce::TimeStepMulti(float dt) {
 	farm_->WaitUntilTasksFinished();
 
 
-#if TIMING_STEPS
+	if (settings_.timingSteps) {
 
 
-	the_clock::time_point end = the_clock::now();
+		end = the_clock::now();
 
-	std::cout << "force time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
+		std::cout << "force time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
 
-	start = the_clock::now();
-
-#endif
+		start = the_clock::now();
+	}
 
 	// Add an integration task for each body to the thread farm
 	for (auto body : bodies_) {
@@ -211,14 +201,14 @@ void BruteForce::TimeStepMulti(float dt) {
 	}
 
 
-#if TIMING_STEPS
-
-	end = the_clock::now();
+	if (settings_.timingSteps) {
 
 
-	std::cout << "integrate time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
+		end = the_clock::now();
 
-#endif
+		std::cout << "integrate time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
+
+	}
 }
 
 

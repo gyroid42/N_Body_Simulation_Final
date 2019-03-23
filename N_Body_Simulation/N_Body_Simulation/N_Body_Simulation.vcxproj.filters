@@ -169,5 +169,11 @@
     <ClInclude Include="TaskCollisionCheckTree.h">
       <Filter>Source Files\Simulation\BarnesHut\Worker Tasks</Filter>
     </ClInclude>
+    <ClInclude Include="SettingsEnums.h">
+      <Filter>Source Files\Simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="TextUI.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

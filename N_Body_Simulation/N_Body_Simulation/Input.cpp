@@ -1,6 +1,39 @@
 #include "Input.h"
 
+#include <cstring>
 
+
+void Input::Update() {
+
+
+	std::memcpy(prev_, keys_, 256 * sizeof(bool));
+
+}
+
+
+
+bool Input::OnKeyPressed(int key) {
+
+	// if key pressed this frame and not last frame
+	if (keys_[key] && !prev_[key]) {
+
+		return true;
+	}
+
+
+	return false;
+}
+
+bool Input::OnKeyReleased(int key) {
+
+	// if key not pressed this frame and was pressed last frame
+	if (!keys_[key] && prev_[key]) {
+
+		return true;
+	}
+
+	return false;
+}
 
 
 void Input::SetKeyDown(unsigned char key) {

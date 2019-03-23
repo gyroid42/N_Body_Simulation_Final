@@ -28,10 +28,10 @@ constexpr auto SIMULATION_SPEED = 1.0f;
 constexpr auto INTERPOLATE_BETWEEN_FRAMES = true;
 
 // methods: 0 = semi-implicit euler, 1 = verlet
-#define INTEGRATION_METHOD	1
+//#define INTEGRATION_METHOD	1
 
 // methods: 0 = BruteForce, 1 = BarnesHutCPU
-#define SIMULATION_METHOD	1
+//#define SIMULATION_METHOD	1
 
 #define COLLISION			true
 

@@ -1,8 +1,11 @@
 #include "Simulation.h"
+
+
 #include "Body.h"
+#include "Application.h"
+
 #include <random>
 #include <ctime>
-//#include "Renderer.h"
 
 #include <GL\glut.h>
 #include <GL\GL.h>
@@ -27,7 +30,7 @@ void Simulation::Init() {
 	srand(time(NULL));
 
 	// set body count to number of random bodies
-	bodyCount_ = NUM_RAND_BODIES;
+	bodyCount_ = settings_.numRandBodies;
 }
 
 void Simulation::CleanUp() {
@@ -50,101 +53,89 @@ void Simulation::CleanUpBodies() {
 }
 
 
-bool Simulation::GenerateAsteroids(int numAsteroids) {
-
-#if TEST_SIMULATION
-
-	Body* body = new Body();
-	body->Init(sf::Vector3f(1.0f, 500.0f, 1.0f), sf::Vector3f(0.0f, 0.0f, 0.0f), 20.0f);
-	body->SetName("b1");
-	bodies_.push_back(body);
-
-	body = new Body();
-	body->Init(sf::Vector3f(-4000.0f, 500.0f, 4000.0f), sf::Vector3f(0.0f, 0.0f, 0.0f), 20.0f);
-	body->SetName("b2");
-	bodies_.push_back(body);
-
-	body = new Body();
-	body->Init(sf::Vector3f(3751.0f, 500.0f, 2501.0f), sf::Vector3f(0.0f, 0.0f, 0.0f), 20.0f);
-	body->SetName("b3");
-	bodies_.push_back(body);
-
-	body = new Body();
-	body->Init(sf::Vector3f(4900.0f, 500.0f, 2501.0f), sf::Vector3f(0.0f, 0.0f, 0.0f), 20.0f);
-	body->SetName("b4");
-	bodies_.push_back(body);
-
-#else
+bool Simulation::GenerateRandom() {
 
 	// If adding random bodies
-	if (ADD_RANDOM_BODIES) {
+	float lower_bound = 0.0;
+	float upper_bound = 700.0;
+	std::uniform_real_distribution<float> unif(lower_bound, upper_bound);
+	std::default_random_engine re;
 
 
-		float lower_bound = 0.0;
-		float upper_bound = 700.0;
-		std::uniform_real_distribution<float> unif(lower_bound, upper_bound);
-		std::default_random_engine re;
+	for (int i = 0; i < NUM_RAND_BODIES; i++) {
 
+		// create new body
+		Body* newAsteroid = new Body();
 
-		for (int i = 0; i < NUM_RAND_BODIES; i++) {
+		// generate random position
+		sf::Vector3f asteroidPos(
+			static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / settings_.maxRandX)),
+			static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / settings_.maxRandY)),
+			static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / settings_.maxRandZ))
+		);
 
-			// create new body
-			Body* newAsteroid = new Body();
+		// Initialise the new body
+		newAsteroid->Init(asteroidPos, sf::Vector3f(0.0f, 0.0f, 0.0f), settings_.randBodyMass, settings_.integrationMethod);
 
-			// generate random position
-			sf::Vector3f asteroidPos(
-				static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / RANDOM_BODY_MAX_X)),
-				static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / RANDOM_BODY_MAX_Y)),
-				static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / RANDOM_BODY_MAX_Z))
-			);
+		// Set default colour
+		newAsteroid->SetColour(sf::Vector3f(0.0f, 0.0f, 1.0f));
 
-			// Initialise the new body
-			newAsteroid->Init(asteroidPos, sf::Vector3f(0.0f, 0.0f, 0.0f), RANDOM_BODY_MASS);
-
-			// Set default colour
-			newAsteroid->SetColour(sf::Vector3f(0.0f, 0.0f, 1.0f));
-
-			// Add to bodies list
-			bodies_.push_back(newAsteroid);
-		}
-
+		// Add to bodies list
+		bodies_.push_back(newAsteroid);
 	}
-	bodyCount_ = numAsteroids;
-
 
 	if (ADD_ORBIT_BODIES) {
 
 		Body* planet = new Body();
-		planet->Init(sf::Vector3f(0.0f, 0.0f, 0.0f), sf::Vector3f(40.0f, 40.0f, 40.0f), 1.0E17f);
+		planet->Init(sf::Vector3f(0.0f, 0.0f, 0.0f), sf::Vector3f(40.0f, 40.0f, 40.0f), 1.0E17f, settings_.integrationMethod);
 		planet->SetColour(sf::Vector3f(1.0f, 0.0f, 0.0f));
 		bodies_.push_back(planet);
 
 		Body* satelite = new Body();
-		satelite->Init(sf::Vector3f(0.0f, 0.0f, -100.0f), sf::Vector3f(40.0f, -258.3215f + 40.0f, 40.0f), 100);
+		satelite->Init(sf::Vector3f(0.0f, 0.0f, -100.0f), sf::Vector3f(40.0f, -258.3215f + 40.0f, 40.0f), 100, settings_.integrationMethod);
 		satelite->SetColour(sf::Vector3f(0.0f, 0.5f, 0.5f));
 		bodies_.push_back(satelite);
 
 		Body* satelite2 = new Body();
-		satelite2->Init(sf::Vector3f(-300.0f, 0.0f, 0.0f), sf::Vector3f(40.0f, -149.14199f + 40.0f, 40.0f), 100);
+		satelite2->Init(sf::Vector3f(-300.0f, 0.0f, 0.0f), sf::Vector3f(40.0f, -149.14199f + 40.0f, 40.0f), 100, settings_.integrationMethod);
 		satelite2->SetColour(sf::Vector3f(0.0f, 0.5f, 0.5f));
 		bodies_.push_back(satelite2);
 
 
 		Body* satelite3 = new Body();
-		satelite3->Init(sf::Vector3f(0.0f, -1005.0f, 0.0f), sf::Vector3f(-115.5249f + 40.0f, 40.0f, 40.0f), 100);
+		satelite3->Init(sf::Vector3f(0.0f, -1005.0f, 0.0f), sf::Vector3f(-115.5249f + 40.0f, 40.0f, 40.0f), 100, settings_.integrationMethod);
 		satelite3->SetColour(sf::Vector3f(0.0f, 0.5f, 0.5f));
 		bodies_.push_back(satelite3);
 
 		Body* satelite4 = new Body();
-		satelite4->Init(sf::Vector3f(0.0f, -1000.0f, 0.0f), sf::Vector3f(81.68843f + 40.0f, 40.0f, 40.0f), 100);
+		satelite4->Init(sf::Vector3f(0.0f, -1000.0f, 0.0f), sf::Vector3f(81.68843f + 40.0f, 40.0f, 40.0f), 100, settings_.integrationMethod);
 		satelite4->SetColour(sf::Vector3f(0.0f, 0.5f, 0.5f));
 		bodies_.push_back(satelite4);
 
 	}
 
-#endif
-
 	return true;
+}
+
+
+bool Simulation::GenerateSimulation(SIMULATION_MODE simMode) {
+
+
+	bool result = true;
+
+	switch (simMode) {
+	case Random_Bodies: // Random Bodies
+		result = GenerateRandom();
+		break;
+	case Two_Body_Orbit:
+		//result = GenerateTwoBodyOrbit();
+		break;
+	default:
+		result = GenerateRandom();
+		break;
+	}
+
+	return result;
 }
 
 
@@ -157,14 +148,14 @@ void Simulation::AddBody(Body* newBody) {
 }
 
 
-bool Simulation::Reset() {
+bool Simulation::Reset(SIMULATION_MODE simMode) {
 
 	// delete all teh bodies in the simulation
 	CleanUpBodies();
 
 
 	// generate a new simulation
-	if (!GenerateAsteroids(bodyCount_)) {
+	if (!GenerateSimulation(simMode)) {
 
 		return false;
 	}

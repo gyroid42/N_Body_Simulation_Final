@@ -5,6 +5,9 @@
 
 #include <string>
 
+// my class includes
+#include "SettingsEnums.h"
+
 // forward declarations
 class Renderer;
 
@@ -53,7 +56,7 @@ public:
 	Body();
 	~Body();
 
-	void Init(sf::Vector3f newPos, sf::Vector3f newVel, float newMass);
+	void Init(sf::Vector3f newPos, sf::Vector3f newVel, float newMass, INTEGRATION_METHOD integrationMethod);
 
 	// Methods to add a force to the body
 	void AddForce(sf::Vector3f newForce);

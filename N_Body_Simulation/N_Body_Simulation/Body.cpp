@@ -23,7 +23,7 @@ Body::~Body()
 }
 
 
-void Body::Init(sf::Vector3f newPos, sf::Vector3f newVel, float newMass) {
+void Body::Init(sf::Vector3f newPos, sf::Vector3f newVel, float newMass, INTEGRATION_METHOD integrationMethod) {
 
 	// Set default body colour
 	SetColour(sf::Vector3f(0.0f, 0.0f, 0.0f));
@@ -49,17 +49,20 @@ void Body::Init(sf::Vector3f newPos, sf::Vector3f newVel, float newMass) {
 	nextBody_ = nullptr;
 	collisionTreeInserted_ = false;
 
-#if INTEGRATION_METHOD == 0
 
-	Integrate = &Body::Integrate_SemiImplicitEuler;
 
-#endif
+	switch (integrationMethod) {
+	case Semi_Implicit_Euler:
+		Integrate = &Body::Integrate_SemiImplicitEuler;
+		break;
+	case Verlet:
+		Integrate = &Body::Integrate_VerletStart;
+		break;
+	default:
+		Integrate = &Body::Integrate_SemiImplicitEuler;
+		break;
+	}
 
-#if INTEGRATION_METHOD == 1
-
-	Integrate = &Body::Integrate_VerletStart;
-
-#endif
 }
 
 
@@ -193,14 +196,14 @@ void Body::MergeBody(Body* b) {
 	// combine current state
 	// combine mass
 
-	force_ += b->Force();
+	//force_ += b->Force();
 	State bState = b->CurrentState();
 	float bMass = b->Mass();
 	float combinedMass = mass_ + bMass;
 
-	sf::Vector3f distance = bState.position_ - currentState_.position_;
+	//sf::Vector3f distance = bState.position_ - currentState_.position_;
 
-	currentState_.position_ += distance * bMass / combinedMass;
+	//currentState_.position_ += distance * bMass / combinedMass;
 
 
 	//sf::Vector3f deltaVel = bState.velocity_ - currentState_.velocity_;

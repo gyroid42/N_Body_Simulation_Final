@@ -17,10 +17,14 @@ class Input
 
 public:
 	
+	void Update();
+
 	// Keyboard controls
 	void SetKeyDown(unsigned char key);
 	void SetKeyUp(unsigned char key);
 	bool IsKeyDown(int key);
+	bool OnKeyPressed(int key);
+	bool OnKeyReleased(int key);
 
 	// Mouse Controls
 	void SetMouseX(int new_x);
@@ -35,6 +39,7 @@ private:
 
 	// stores all the keyboard input data
 	bool keys_[256];
+	bool prev_[256];
 
 	// stores mouse input data
 	Mouse mouse_;

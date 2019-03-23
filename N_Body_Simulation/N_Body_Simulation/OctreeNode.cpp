@@ -820,8 +820,17 @@ void OctreeNode::CollisionCheckParallel(ThreadFarm* farm, int bodyNumPerTask) {
 #if COLLISION_REACTION == 0
 
 		// Collision Reaction 0 is to merge the bodies in the collision
-		collision->b1->MergeBody(collision->b2);
-		collision->b2->Destroy();
+
+		if (collision->b1->Mass() > collision->b2->Mass()) {
+
+			collision->b1->MergeBody(collision->b2);
+			collision->b2->Destroy();
+		}
+		else {
+
+			collision->b2->MergeBody(collision->b1);
+			collision->b1->Destroy();
+		}
 #endif
 
 	}

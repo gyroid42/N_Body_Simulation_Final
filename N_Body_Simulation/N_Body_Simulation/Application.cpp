@@ -51,20 +51,31 @@ void Application::Init(Input* newInput) {
 	// create camera
 	camera_.Init(input_);
 
+	
+
+	simMode_ = Random_Bodies;
+
+	SimulationSettings newSimSettings;
+
 	// Create and start simulation
-	switch (SIMULATION_METHOD) {
-	case 0:
+	switch (newSimSettings.simMethod) {
+	case Direct:
 		simulation_ = new BruteForce();
 		break;
-	case 1:
+	case Barnes_Hut:
 		simulation_ = new BarnesHutCPU();
 		break;
 	default:
 		simulation_ = new BruteForce();
 		break;
 	}
+	
 	simulation_->Init();
-	simulation_->Reset();
+	simulation_->NewSettings(newSimSettings);
+	simulation_->Reset(simMode_);
+	simSettings_ = simulation_->Settings();
+
+	UpdateUIText();
 }
 
 
@@ -77,22 +88,45 @@ bool Application::Update(float frameTime) {
 	// Update the camera
 	camera_.Update(frameTime);
 
-	sprintf_s(fps_, "FPS: %4.2f", 1.0f / frameTime);
+	sprintf_s(textUI_.fps, "FPS: %4.2f", 1.0f / frameTime);
+	sprintf_s(textUI_.bodyCount, "Body Count = %d", simulation_->BodyCount());
+
+
+	input_->Update();
 
 	return true;
 }
 
+
+
 void Application::CheckInput(float frameTime) {
 
 	// Reset the simulation when 'r' is pressed
-	if (input_->IsKeyDown('r')) {
+	if (input_->OnKeyPressed('r')) {
 
-		simulation_->Reset();
-		input_->SetKeyUp('r');
+		simulation_->Reset(simMode_);
+	}
+
+
+	if (input_->OnKeyPressed('m')) {
+
+		switch (simMode_) {
+		case Random_Bodies:
+			simMode_ = Two_Body_Orbit;
+			break;
+		case Two_Body_Orbit:
+			simMode_ = Random_Bodies;
+			break;
+		default:
+			simMode_ = Random_Bodies;
+			break;
+		}
+
+		UpdateSimModeText();
 	}
 
 	// exit the application if escape is pressed
-	if (input_->IsKeyDown(VK_ESCAPE)) {
+	if (input_->OnKeyPressed(VK_ESCAPE)) {
 
 		exit(0);
 	}
@@ -121,7 +155,13 @@ bool Application::Render(float alpha) {
 	// Render the simulation
 	simulation_->Render(alpha);
 
-	DisplayText(-1.f, 0.96f, 1.f, 0.f, 0.f, fps_);
+	DisplayText(-1.f, 0.96f, 0.f, 0.f, 0.f, textUI_.fps);
+	DisplayText(-1.f, 0.80f, 0.f, 0.f, 0.f, textUI_.simMode);
+	DisplayText(-1.f, 0.76f, 0.f, 0.f, 0.f, textUI_.simMethod);
+	DisplayText(-1.f, 0.72f, 0.f, 0.f, 0.f, textUI_.integrationMethod);
+	DisplayText(-1.f, 0.60f, 0.f, 0.f, 0.f, textUI_.bodyCount);
+
+
 
 	return true;
 }
@@ -186,5 +226,59 @@ void Application::DisplayText(float x, float y, float r, float g, float b, char*
 	glMatrixMode(GL_MODELVIEW);
 }
 
+
+void Application::UpdateUIText() {
+
+	UpdateSimModeText();
+	UpdateSimMethodText();
+	UpdateIntegrationMethodText();
+
+	sprintf_s(textUI_.bodyCount, "Body Count = %d", simulation_->BodyCount());
+}
+
+void Application::UpdateSimModeText() {
+
+	switch (simMode_) {
+	case Random_Bodies:
+		sprintf_s(textUI_.simMode, "Simulation Mode = Random Bodies");
+		break;
+	case Two_Body_Orbit:
+		sprintf_s(textUI_.simMode, "Simulation Mode = 2-Body Orbit");
+		break;
+	default:
+		sprintf_s(textUI_.simMode, "Simulation Mode = UNKNOWN");
+		break;
+	}
+}
+
+void Application::UpdateSimMethodText() {
+
+	switch (simSettings_->simMethod) {
+	case Direct:
+		sprintf_s(textUI_.simMethod, "Simulation Method = Direct");
+		break;
+	case Barnes_Hut:
+		sprintf_s(textUI_.simMethod, "Simulation Method = Barnes-Hut");
+		break;
+	default:
+		sprintf_s(textUI_.simMethod, "Simulation Method = UNKNOWN");
+		break;
+	}
+}
+
+void Application::UpdateIntegrationMethodText() {
+
+	switch (simSettings_->integrationMethod) {
+	case Semi_Implicit_Euler:
+		sprintf_s(textUI_.integrationMethod, "Integration Method = Semi-Implicit Euler");
+		break;
+	case Verlet:
+		sprintf_s(textUI_.integrationMethod, "Integration Method = Verlet");
+		break;
+	default:
+		sprintf_s(textUI_.integrationMethod, "Integration Method = UNKNOWN");
+		break;
+	}
+}
 
 
