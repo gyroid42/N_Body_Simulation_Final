@@ -101,6 +101,9 @@
     <ClCompile Include="TaskCollisionCheckTree.cpp">
       <Filter>Source Files\Simulation\BarnesHut\Worker Tasks</Filter>
     </ClCompile>
+    <ClCompile Include="Benchmarker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -173,6 +176,12 @@
       <Filter>Source Files\Simulation</Filter>
     </ClInclude>
     <ClInclude Include="TextUI.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SimulationSettings.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Benchmarker.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -9,7 +9,10 @@
 #include "BarnesHutCPU.h"
 
 
-Application::Application()
+Application::Application() :
+	simulation_(nullptr),
+	input_(nullptr),
+	simSettings_(nullptr)
 {
 }
 
@@ -51,7 +54,6 @@ void Application::Init(Input* newInput) {
 	// create camera
 	camera_.Init(input_);
 
-	
 
 	simMode_ = Random_Bodies;
 
@@ -69,13 +71,14 @@ void Application::Init(Input* newInput) {
 		simulation_ = new BruteForce();
 		break;
 	}
-	
+
 	simulation_->Init();
 	simulation_->NewSettings(newSimSettings);
 	simulation_->Reset(simMode_);
 	simSettings_ = simulation_->Settings();
 
 	UpdateUIText();
+
 }
 
 
@@ -155,12 +158,20 @@ bool Application::Render(float alpha) {
 	// Render the simulation
 	simulation_->Render(alpha);
 
-	DisplayText(-1.f, 0.96f, 0.f, 0.f, 0.f, textUI_.fps);
-	DisplayText(-1.f, 0.80f, 0.f, 0.f, 0.f, textUI_.simMode);
-	DisplayText(-1.f, 0.76f, 0.f, 0.f, 0.f, textUI_.simMethod);
-	DisplayText(-1.f, 0.72f, 0.f, 0.f, 0.f, textUI_.integrationMethod);
-	DisplayText(-1.f, 0.60f, 0.f, 0.f, 0.f, textUI_.bodyCount);
+	DisplayText(0.9f, 0.96f, 0.f, 0.f, 0.f, textUI_.fps);
 
+	DisplayText(-1.f, 0.96f, 0.f, 0.f, 0.f, textUI_.simMode);
+
+	DisplayText(-1.f, 0.88f, 0.f, 0.f, 0.f, textUI_.simMethod);
+	DisplayText(-1.f, 0.84f, 0.f, 0.f, 0.f, textUI_.integrationMethod);
+	DisplayText(-1.f, 0.8f, 0.f, 0.f, 0.f, textUI_.timingSteps);
+
+	DisplayText(-1.f, 0.72f, 0.f, 0.f, 0.f, textUI_.multiThreading);
+	DisplayText(-1.f, 0.68f, 0.f, 0.f, 0.f, textUI_.threadCount);
+
+	DisplayText(-1.f, 0.60f, 0.f, 0.f, 0.f, textUI_.collision);
+	DisplayText(-1.f, 0.56f, 0.f, 0.f, 0.f, textUI_.maxCollisionTreeDepth);
+	DisplayText(-1.f, 0.48f, 0.f, 0.f, 0.f, textUI_.bodyCount);
 
 
 	return true;
@@ -234,6 +245,11 @@ void Application::UpdateUIText() {
 	UpdateIntegrationMethodText();
 
 	sprintf_s(textUI_.bodyCount, "Body Count = %d", simulation_->BodyCount());
+	sprintf_s(textUI_.multiThreading, "Multi-threading = %s", (simSettings_->multiThreading) ? "TRUE" : "FALSE");
+	sprintf_s(textUI_.collision, "Collision = %s", (simSettings_->collision) ? "TRUE" : "FALSE");
+	sprintf_s(textUI_.timingSteps, "Timing Steps = %s", (simSettings_->timingSteps) ? "TRUE" : "FALSE");
+	sprintf_s(textUI_.maxCollisionTreeDepth, "Max Collision Tree Depth = %d", simSettings_->maxCollisionDepth);
+	sprintf_s(textUI_.threadCount, "Thread Count = %d", simSettings_->threadCount);
 }
 
 void Application::UpdateSimModeText() {

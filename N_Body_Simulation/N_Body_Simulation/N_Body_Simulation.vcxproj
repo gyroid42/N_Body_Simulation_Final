@@ -76,11 +76,11 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)\..\..\glfw\include;$(ProjectDir)\..\..\glut\glew-1.11.0\include;$(ProjectDir)\..\..\glut\freeglut\include;$(ProjectDir)\..\..\SFML-2.5.0\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\..\lbxl\include_cpp;$(ProjectDir)\..\..\glfw\include;$(ProjectDir)\..\..\glut\glew-1.11.0\include;$(ProjectDir)\..\..\glut\freeglut\include;$(ProjectDir)\..\..\SFML-2.5.0\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>freeglut.lib;glew32.lib;glfw3.lib;sfml-system-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)\..\..\glfw\lib-vc2015;$(ProjectDir)\..\..\glut\freeglut\lib;$(ProjectDir)\..\..\glut\glew-1.11.0\lib;$(ProjectDir)\..\..\SFML-2.5.0\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>freeglut.lib;glew32.lib;glfw3.lib;sfml-system-d.lib;libxl.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)\..\..\lbxl\lib;$(ProjectDir)\..\..\glfw\lib-vc2015;$(ProjectDir)\..\..\glut\freeglut\lib;$(ProjectDir)\..\..\glut\glew-1.11.0\lib;$(ProjectDir)\..\..\SFML-2.5.0\lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -126,6 +126,7 @@
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="BarnesHut.cpp" />
     <ClCompile Include="BarnesHutCPU.cpp" />
+    <ClCompile Include="Benchmarker.cpp" />
     <ClCompile Include="Body.cpp" />
     <ClCompile Include="BruteForce.cpp" />
     <ClCompile Include="Camera.cpp" />
@@ -150,11 +151,13 @@
     <ClInclude Include="Application.h" />
     <ClInclude Include="BarnesHut.h" />
     <ClInclude Include="BarnesHutCPU.h" />
+    <ClInclude Include="Benchmarker.h" />
     <ClInclude Include="Body.h" />
     <ClInclude Include="BruteForce.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Channel.h" />
     <ClInclude Include="SettingsEnums.h" />
+    <ClInclude Include="SimulationSettings.h" />
     <ClInclude Include="TaskCollisionCheckNode.h" />
     <ClInclude Include="TaskCollisionCheckTree.h" />
     <ClInclude Include="Input.h" />

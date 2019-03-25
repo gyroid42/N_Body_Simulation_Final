@@ -16,6 +16,7 @@
 
 // my class includes
 #include "Application.h"
+#include "Benchmarker.h"
 #include "Input.h"
 #include "SETTINGS.h"
 
@@ -211,6 +212,19 @@ void Setup() {
 int main(int argc, char *argv[])
 {
 
+
+	input = new Input();
+
+#if BENCHMARKING
+
+	Benchmarker benchmarker;
+	
+	benchmarker.Init(input);
+	benchmarker.MainLoop();
+
+#else
+
+
 	// Initialise glut and create window
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
@@ -221,13 +235,12 @@ int main(int argc, char *argv[])
 	Setup();
 
 	// create Input and application
-	input = new Input();
 	app = new Application();
 	app->Init(input);
 
 	// enter main loop
 	glutMainLoop();
-
+#endif
 
 	return 0;
 }

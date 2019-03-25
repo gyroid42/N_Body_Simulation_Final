@@ -5,52 +5,12 @@
 
 // my class includes
 #include "SETTINGS.h"
-#include "SettingsEnums.h"
+#include "SimulationSettings.h"
 
 // forward declarations
 class Body;
 class Renderer;
 class Application;
-
-
-struct SimulationSettings {
-
-	int numRandBodies;
-	float maxRandX;
-	float maxRandY;
-	float maxRandZ;
-	float randBodyMass;
-
-	float partitionSize;
-
-	bool collision;
-	int maxCollisionDepth;
-
-	INTEGRATION_METHOD integrationMethod;
-	SIMULATION_METHOD simMethod;
-
-
-	bool multiThreading;
-	int threadCount;
-
-	bool timingSteps;
-
-	SimulationSettings(SIMULATION_METHOD newSimMethod = Barnes_Hut, INTEGRATION_METHOD newIntegrationMethod = Verlet, bool newCollision = true, bool newMultiThreading = true, bool newTimingSteps = true) {
-		simMethod = newSimMethod;
-		integrationMethod = newIntegrationMethod;
-		collision = newCollision;
-		multiThreading = newMultiThreading;
-		timingSteps = newTimingSteps;
-		numRandBodies = NUM_RAND_BODIES;
-		maxRandX = RANDOM_BODY_MAX_X;
-		maxRandY = RANDOM_BODY_MAX_Y;
-		maxRandZ = RANDOM_BODY_MAX_Z;
-		randBodyMass = RANDOM_BODY_MASS;
-		partitionSize = PARTITION_SIZE;
-		maxCollisionDepth = MAX_COLLISION_DEPTH;
-		threadCount = NUM_OF_THREADS;
-	}
-};
 
 class Simulation
 {
