@@ -104,6 +104,9 @@
     <ClCompile Include="Benchmarker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TaskDirectCollision.cpp">
+      <Filter>Source Files\Simulation\BruteForce</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -178,11 +181,17 @@
     <ClInclude Include="TextUI.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="SimulationSettings.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="Benchmarker.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SimulationSettings.h">
+      <Filter>Source Files\Simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionEvent.h">
+      <Filter>Source Files\Simulation\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="TaskDirectCollision.h">
+      <Filter>Source Files\Simulation\BruteForce</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
