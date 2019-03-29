@@ -148,14 +148,14 @@ void Simulation::AddBody(Body* newBody) {
 }
 
 
-bool Simulation::Reset(SIMULATION_MODE simMode) {
+bool Simulation::Reset() {
 
 	// delete all teh bodies in the simulation
 	CleanUpBodies();
 
 
 	// generate a new simulation
-	if (!GenerateSimulation(simMode)) {
+	if (!GenerateSimulation(settings_.simMode)) {
 
 		return false;
 	}

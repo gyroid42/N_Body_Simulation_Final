@@ -17,11 +17,12 @@ TaskUpdateForces::~TaskUpdateForces()
 }
 
 
-void TaskUpdateForces::Init(std::vector<Body*>* newBodyArray, OctreeNode* newRoot) {
+void TaskUpdateForces::Init(std::vector<Body*>* newBodyArray, OctreeNode* newRoot, float newTheta) {
 
 	// set references to body and partition tree
 	bodyArray_ = newBodyArray;
 	root_ = newRoot;
+	theta_ = newTheta;
 }
 
 void TaskUpdateForces::Run() {
@@ -30,6 +31,6 @@ void TaskUpdateForces::Run() {
 		// run method for calculating force on body
 
 		body->ResetForce();
-		root_->UpdateForceOnBody(body);
+		root_->UpdateForceOnBody(body, theta_);
 	}
 }

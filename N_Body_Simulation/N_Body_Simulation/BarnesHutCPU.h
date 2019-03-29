@@ -45,5 +45,13 @@ protected:
 
 	// function pointer to which time step is being used
 	void (BarnesHutCPU::*timeStepFunc_)(float);
+
+
+#if BENCHMARKING
+
+	std::vector<int> insertTimes_;
+	std::vector<int> sortTimes_;
+
+#endif
 };
 

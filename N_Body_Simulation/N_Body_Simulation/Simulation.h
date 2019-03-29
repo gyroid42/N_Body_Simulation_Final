@@ -26,7 +26,7 @@ public:
 	virtual bool GenerateSimulation(SIMULATION_MODE simMode);
 
 	// Resets the simulation
-	virtual bool Reset(SIMULATION_MODE simMode);
+	virtual bool Reset();
 
 	// TimeStep called each physics step
 	virtual void TimeStep(float dt);
@@ -57,5 +57,17 @@ protected:
 	std::vector<Body*> bodies_;
 
 	SimulationSettings settings_;
+
+#if BENCHMARKING
+
+	std::vector<int> forceCalcTimes_;
+	std::vector<int> collisionCheckTimes_;
+	std::vector<int> integrationTimes_;
+
+	std::vector<int> numForceCalculations_;
+	std::vector<int> numCollisionChecks_;
+
+#endif
+
 };
 

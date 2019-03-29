@@ -28,12 +28,7 @@ Benchmarker::~Benchmarker()
 		input_ = nullptr;
 	}
 
-	if (simulation_) {
-
-		simulation_->CleanUp();
-		delete simulation_;
-		simulation_ = nullptr;
-	}
+	EndSimulation();
 
 	if (outputBook_) {
 
@@ -66,18 +61,46 @@ void Benchmarker::CreateSimulationSettings() {
 void Benchmarker::MainLoop() {
 
 
+	// run a simulation for each setting
 	for (auto currentSettings : benchmarkSettingsList_) {
 
-		StartSimulation(&currentSettings);
+		// loop for each thread count in range (1, 2, 4, 6, 8, 10, 12...)
+		for (; currentSettings.threadCount <= std::thread::hardware_concurrency(); (currentSettings.threadCount == 1) ? currentSettings.threadCount++ : currentSettings.threadCount += 2) {
+
+			// loop for each body count in body count list
+			for (int bodyCountIndex = 0; bodyCountIndex < 20; bodyCountIndex++) {
+
+				// update body count for current simulation
+				currentSettings.bodyCount = currentSettings.bodyCountList[bodyCountIndex];
+
+				
+				StartSimulation(&currentSettings);
 
 
-		for (int i = 0; i < currentSettings.maxSteps; i++) {
+				// do a timestep until max has been hit
+				for (int i = 0; i < currentSettings.maxSteps; i++) {
 
-			simulation_->TimeStep(currentSettings.dt);
+					simulation_->TimeStep(currentSettings.dt);
+				}
+
+
+				// write results into excel spreadsheet
+
+
+
+
+				if (!currentSettings.varyBodies) {
+
+					break;
+				}
+			}
+
+			if (!currentSettings.varyMultiThreading) {
+
+				break;
+			}
+
 		}
-
-
-		// write results into excel spreadsheet
 	}
 
 }
@@ -109,11 +132,19 @@ void Benchmarker::StartSimulation(SimulationSettings* settings) {
 		break;
 	}
 
-	simulation_->Init(settings);
-	simulation_->Reset(settings->simMode);
+	simulation_->NewSettings(*settings);
+	simulation_->Init();
+	simulation_->Reset();
 }
 
 
 void Benchmarker::EndSimulation() {
 
+
+	if (simulation_) {
+
+		simulation_->CleanUp();
+		delete simulation_;
+		simulation_ = nullptr;
+	}
 }

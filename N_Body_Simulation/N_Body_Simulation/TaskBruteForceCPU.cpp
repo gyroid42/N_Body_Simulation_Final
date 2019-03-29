@@ -2,6 +2,7 @@
 // class header include
 #include "TaskBruteForceCPU.h"
 
+
 // my class includes
 #include "BruteForce.h"
 #include "Body.h"
@@ -17,17 +18,20 @@ TaskBruteForceCPU::~TaskBruteForceCPU()
 }
 
 
-void TaskBruteForceCPU::Init(Body* newBody, BruteForce* newSimulation) {
+void TaskBruteForceCPU::Init(std::vector<Body*>* newBodyArray, BruteForce* newSimulation) {
 
 	// Set references to body and simulation
-	body_ = newBody;
+	bodyArray_ = newBodyArray;
 	simulation_ = newSimulation;
 }
 
 
 void TaskBruteForceCPU::Run() {
 
-	// run method for calculating force on body
-	simulation_->CalculateForceOnBody(body_);
+	for (auto body : *bodyArray_) {
+
+		// run method for calculating force on body
+		simulation_->CalculateForceOnBody(body);
+	}
 }
 

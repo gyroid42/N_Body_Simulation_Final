@@ -29,12 +29,15 @@ struct SimulationSettings {
 	bool timingSteps;
 
 	bool varyBodies;
-	int bodyCount[20];
+	int bodyCount;
+	int bodyCountList[20];
 
 
 	int maxSteps;
 	float dt;
 
+
+	float theta;
 
 	// what to measure
 	bool dataTimeSteps;
@@ -57,25 +60,27 @@ struct SimulationSettings {
 		maxCollisionDepth = MAX_COLLISION_DEPTH;
 		threadCount = NUM_OF_THREADS;
 
-		bodyCount[0] = 100;
-		bodyCount[1] = 200;
-		bodyCount[2] = 400;
-		bodyCount[3] = 600;
-		bodyCount[4] = 800;
-		bodyCount[5] = 1000;
-		bodyCount[6] = 1500;
-		bodyCount[7] = 2000;
-		bodyCount[8] = 2500;
-		bodyCount[9] = 3000;
-		bodyCount[10] = 4000;
-		bodyCount[11] = 5000;
-		bodyCount[12] = 6000;
-		bodyCount[13] = 8000;
-		bodyCount[14] = 10000;
-		bodyCount[15] = 12000;
-		bodyCount[16] = 14000;
-		bodyCount[17] = 16000;
-		bodyCount[18] = 18000;
-		bodyCount[19] = 20000;
+		bodyCount = NUM_RAND_BODIES;
+
+		bodyCountList[0] = 100;
+		bodyCountList[1] = 200;
+		bodyCountList[2] = 400;
+		bodyCountList[3] = 600;
+		bodyCountList[4] = 800;
+		bodyCountList[5] = 1000;
+		bodyCountList[6] = 1500;
+		bodyCountList[7] = 2000;
+		bodyCountList[8] = 2500;
+		bodyCountList[9] = 3000;
+		bodyCountList[10] = 4000;
+		bodyCountList[11] = 5000;
+		bodyCountList[12] = 6000;
+		bodyCountList[13] = 8000;
+		bodyCountList[14] = 10000;
+		bodyCountList[15] = 12000;
+		bodyCountList[16] = 14000;
+		bodyCountList[17] = 16000;
+		bodyCountList[18] = 18000;
+		bodyCountList[19] = 20000;
 	}
 };

@@ -11,6 +11,7 @@
 #include "TaskCollisionCheckNode.h"
 #include "TaskCollisionCheckTree.h"
 #include "ThreadFarm.h"
+#include "CollisionEvent.h"
 
 int OctreeNode::maxListSize = 0;
 
@@ -255,7 +256,7 @@ void OctreeNode::Insert(Body* body, int& depthCounter) {
 
 
 
-void OctreeNode::UpdateForceOnBody(Body* body) {
+void OctreeNode::UpdateForceOnBody(Body* body, float& theta) {
 
 	// If this node is external then add force due to this node since no more child nodes to check
 	if (totalMass_ != 0.0f) {
@@ -269,7 +270,7 @@ void OctreeNode::UpdateForceOnBody(Body* body) {
 		}
 
 		// check if distance and length is appropriate to use this node
-		else if ((partition_.HalfLength() * 2.0f) / PhysicsUtil::DistanceTo(centerOfMass_, body->Position()) < 1.0f) {
+		else if ((partition_.HalfLength() * 2.0f) / PhysicsUtil::DistanceTo(centerOfMass_, body->Position()) < theta) {
 
 			body->AddForce(centerOfMass_, totalMass_);
 		}
@@ -281,7 +282,7 @@ void OctreeNode::UpdateForceOnBody(Body* body) {
 
 				if (children_[i]) {
 
-					children_[i]->UpdateForceOnBody(body);
+					children_[i]->UpdateForceOnBody(body, theta);
 				}
 			}
 		}

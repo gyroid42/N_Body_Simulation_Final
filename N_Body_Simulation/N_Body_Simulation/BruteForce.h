@@ -10,6 +10,8 @@
 #include "ThreadFarm.h"
 #include "OctreeCollision.h"
 
+struct CollisionEvent;
+
 class BruteForce :
 	public Simulation
 {
@@ -29,7 +31,12 @@ public:
 	// calculates the force acting on a body
 	void CalculateForceOnBody(Body* body);
 
+	void CheckAllCollisions(std::vector<std::vector<Body*>*>* bodyArrays);
+	int CheckCollision(Body* body, CollisionEvent*& collisionEvents);
+
 private:
+
+	bool SphereToSphereCollision(Body* b1, Body* b2);
 
 
 	// TimeStep methods depending on whether multithreading is being used

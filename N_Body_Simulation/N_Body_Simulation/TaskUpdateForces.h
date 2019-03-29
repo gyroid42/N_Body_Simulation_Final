@@ -18,7 +18,7 @@ public:
 	TaskUpdateForces();
 	~TaskUpdateForces();
 
-	void Init(std::vector<Body*>* newBodyArray, OctreeNode* newRoot);
+	void Init(std::vector<Body*>* newBodyArray, OctreeNode* newRoot, float newTheta);
 
 	void Run();
 
@@ -29,5 +29,6 @@ private:
 	std::vector<Body*>* bodyArray_;
 	OctreeNode* root_;
 
+	float theta_;
 };
 

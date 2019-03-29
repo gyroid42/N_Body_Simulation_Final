@@ -3,6 +3,9 @@
 // include parent class
 #include "Task.h"
 
+// standard library includes
+#include <vector>
+
 // forward declarations
 class BruteForce;
 class Body;
@@ -15,14 +18,14 @@ public:
 	TaskBruteForceCPU();
 	~TaskBruteForceCPU();
 
-	void Init(Body* newBody, BruteForce* newSimulation);
+	void Init(std::vector<Body*>* newBodyArray, BruteForce* newSimulation);
 
 	void Run();
 
 private:
 
 	// references to body and simulation
-	Body* body_;
+	std::vector<Body*>* bodyArray_;
 	BruteForce* simulation_;
 };
 
