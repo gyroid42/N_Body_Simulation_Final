@@ -20,7 +20,11 @@ public:
 	TaskCollisionCheckNode();
 	~TaskCollisionCheckNode();
 
+#if BENCHMARKING
+	void Init(OctreeNode* newNode, Channel<int>* newCheckCountChannel, Channel<CollisionEvent*>* newCollisionEventsChannel, Body* newAncestorList[MAX_COLLISION_DEPTH]);
+#else
 	void Init(OctreeNode* newNode, Channel<CollisionEvent*>* newCollisionEventsChannel, Body* newAncestorList[MAX_COLLISION_DEPTH]);
+#endif
 
 	void Run();
 
@@ -34,5 +38,9 @@ private:
 
 	// channel to output collisions found
 	Channel<CollisionEvent*>* collisionEventsChannel_;
+
+#if BENCHMARKING
+	Channel<int>* checkCountChannel_;
+#endif
 };
 

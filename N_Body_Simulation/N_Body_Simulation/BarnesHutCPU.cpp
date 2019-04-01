@@ -157,6 +157,11 @@ void BarnesHutCPU::TimeStepSingle(float dt) {
 void BarnesHutCPU::TimeStepMulti(float dt) {
 
 
+#if BENCHMARKING
+	Channel<int> forceCalcChannel;
+	Channel<int> checkCountChannel;
+#endif
+
 	the_clock::time_point timeStart;
 	the_clock::time_point timeEnd;
 
@@ -230,11 +235,20 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 
 	}
 
+
+
+
+
 	// Add an UpdateForces task for each body
 	for (int i = 0; i < limit; i++) {
 
 		TaskUpdateForces* newTask = new TaskUpdateForces();
+
+#if BENCHMARKING
+		newTask->Init(&forceCalcChannel, bodyArrays.at(i), &tree, settings_.theta);
+#else
 		newTask->Init(bodyArrays.at(i), &tree, settings_.theta);
+#endif
 		farm_->AddTask(newTask);
 	}
 
@@ -256,6 +270,27 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 		timeStart = the_clock::now();
 
 	}
+
+
+#if BENCHMARKING
+
+	int totalForceCalcs = 0;
+
+
+	// for each task created
+	for (int i = 0; i < bodyArrays.size(); i++) {
+
+		// add number of force calculations performed in task to total
+		totalForceCalcs += forceCalcChannel.read();
+	}
+
+	numForceCalculations_.push_back(totalForceCalcs);
+
+	timeStart = the_clock::now();
+
+#endif
+
+
 
 	//integrate each body
 	for (auto body : bodies_) {
@@ -281,8 +316,12 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 	if (settings_.collision) {
 
 		// Detect collision using parallel algorithm
-		tree.CollisionCheckParallel(farm_, bodies_.size() / settings_.threadCount);
 
+#if BENCHMARKING
+		int collisionTasksCreated = tree.CollisionCheckParallel(farm_, bodies_.size() / settings_.threadCount, &checkCountChannel);
+#else
+		tree.CollisionCheckParallel(farm_, bodies_.size() / settings_.threadCount);
+#endif
 
 
 		if (settings_.timingSteps) {
@@ -299,6 +338,23 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 			timeStart = the_clock::now();
 
 		}
+
+
+#if BENCHMARKING
+		int totalChecks = 0;
+
+
+		// for each task created
+		for (int i = 0; i < collisionTasksCreated; i++) {
+
+			// add number of force calculations performed in task to total
+			totalChecks += checkCountChannel.read();
+		}
+
+		numCollisionChecks_.push_back(totalChecks);
+
+		timeStart = the_clock::now();
+#endif
 
 	}
 

@@ -3,9 +3,12 @@
 // include parent class
 #include "Task.h"
 
-
 // standard library includes
 #include <vector>
+
+// include my classes
+#include "Channel.h"
+#include "SETTINGS.h"
 
 // forward declaration
 class OctreeNode;
@@ -18,7 +21,11 @@ public:
 	TaskUpdateForces();
 	~TaskUpdateForces();
 
+#if BENCHMARKING
+	void Init(Channel<int>* newCalcCountChannel, std::vector<Body*>* newBodyArray, OctreeNode* newRoot, float newTheta);
+#else
 	void Init(std::vector<Body*>* newBodyArray, OctreeNode* newRoot, float newTheta);
+#endif
 
 	void Run();
 
@@ -30,5 +37,9 @@ private:
 	OctreeNode* root_;
 
 	float theta_;
+
+#if BENCHMARKING
+	Channel<int>* calcCountChannel_;
+#endif
 };
 

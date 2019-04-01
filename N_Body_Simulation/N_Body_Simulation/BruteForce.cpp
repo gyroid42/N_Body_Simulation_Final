@@ -190,11 +190,19 @@ void BruteForce::TimeStepMulti(float dt) {
 		arrayBegin = arrayEnd;
 	}
 
+#if BENCHMARKING
+	Channel<int> calcCountChannel;
+#endif
+
 	// Add a BruteForceCPU task for each body to the thread farm
 	for (int i = 0; i < bodyArrays.size(); i++) {
 
 		TaskBruteForceCPU* newTask = new TaskBruteForceCPU();
+#if BENCHMARKING
+		newTask->Init(&calcCountChannel, bodyArrays.at(i), this);
+#else
 		newTask->Init(bodyArrays.at(i), this);
+#endif
 		farm_->AddTask(newTask);
 	}
 	
@@ -215,6 +223,23 @@ void BruteForce::TimeStepMulti(float dt) {
 
 		start = the_clock::now();
 	}
+
+#if BENCHMARKING
+	int totalForceCalcs = 0;
+
+
+	// for each task created
+	for (int i = 0; i < bodyArrays.size(); i++) {
+
+		// add number of force calculations performed in task to total
+		totalForceCalcs += calcCountChannel.read();
+	}
+
+	numForceCalculations_.push_back(totalForceCalcs);
+
+	start = the_clock::now();
+#endif
+
 
 	// Add an integration task for each body to the thread farm
 	for (auto body : bodies_) {
@@ -259,13 +284,56 @@ void BruteForce::CalculateForceOnBody(Body* body1) {
 			PhysicsUtil::AddForcesBetween(body1, body2);
 		}
 	}
+}
 
+void BruteForce::CalculateForceOnBody(Body* body1, int& totalForceCalcs) {
+
+	// Reset the force on the body
+	body1->ResetForce();
+
+	// Loop for all the other bodies and the force due to them
+	for (auto body2 : bodies_) {
+
+		if (body1 != body2) {
+
+			PhysicsUtil::AddForcesBetween(body1, body2);
+		}
+	}
+
+	totalForceCalcs += bodies_.size() - 1;
 }
 
 
-int BruteForce::CheckCollision(Body* b1, CollisionEvent*& collisionEvents) {
 
-	int totalChecks = 0;
+void BruteForce::CheckCollision(Body* b1, CollisionEvent*& collisionEvents) {
+
+
+	for (auto b2 : bodies_) {
+
+		// don't check collision if bodies are the same
+		if (b1 == b2) {
+
+			break;
+		}
+
+		// Check collision using bounding spheres
+		if (SphereToSphereCollision(b1, b2)) {
+
+			// collision has happened so create a collision event
+			CollisionEvent* newCollision = new CollisionEvent(b1, b2);
+
+			if (collisionEvents) {
+
+				newCollision->next = collisionEvents;
+			}
+
+			collisionEvents = newCollision;
+		}
+	}
+}
+
+void BruteForce::CheckCollision(Body* b1, CollisionEvent*& collisionEvents, int& totalChecks) {
+
 
 	for (auto b2 : bodies_) {
 
@@ -291,8 +359,6 @@ int BruteForce::CheckCollision(Body* b1, CollisionEvent*& collisionEvents) {
 			collisionEvents = newCollision;
 		}
 	}
-
-	return totalChecks;
 }
 
 
@@ -311,7 +377,10 @@ void BruteForce::CheckAllCollisions(std::vector<std::vector<Body*>*>* bodyArrays
 
 	the_clock::time_point end;
 	the_clock::time_point start;
+
+#if BENCHMARKING
 	Channel<int> checkCountChannel;
+#endif
 
 	if (settings_.timingSteps) {
 
@@ -323,7 +392,12 @@ void BruteForce::CheckAllCollisions(std::vector<std::vector<Body*>*>* bodyArrays
 	for (int i = 0; i < bodyArrays->size(); i++) {
 
 		TaskDirectCollision* newTask = new TaskDirectCollision();
+
+#if BENCHMARKING
 		newTask->Init(&collisionEventChannel, &checkCountChannel, bodyArrays->at(i), this);
+#else
+		newTask->Init(&collisionEventChannel, bodyArrays->at(i), this);
+#endif
 		farm_->AddTask(newTask);
 	}
 
@@ -394,7 +468,9 @@ void BruteForce::CheckAllCollisions(std::vector<std::vector<Body*>*>* bodyArrays
 		//std::cout << "collision time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
 	}
 
+#if BENCHMARKING
 	int totalCollisionChecks = 0;
+
 
 	// for each task created
 	for (int i = 0; i < bodyArrays->size(); i++) {
@@ -404,4 +480,5 @@ void BruteForce::CheckAllCollisions(std::vector<std::vector<Body*>*>* bodyArrays
 	}
 
 	numCollisionChecks_.push_back(totalCollisionChecks);
+#endif
 }

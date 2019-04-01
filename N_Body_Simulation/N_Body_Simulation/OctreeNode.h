@@ -9,6 +9,7 @@
 // my class includes
 #include "Partition.h"
 #include "Channel.h"
+#include "SETTINGS.h"
 
 // forward declarations
 class Body;
@@ -27,8 +28,11 @@ public:
 	void Insert(Body* body, int& depthCounter);
 
 
+
 	// Update the force on a given body by traversing the tree
+	void UpdateForceOnBody(Body* body, float& theta, int& totalForceCalcs);
 	void UpdateForceOnBody(Body* body, float& theta);
+
 
 
 	// Merges two Octrees together
@@ -45,10 +49,14 @@ public:
 
 	// Starts collision checks
 	void CollisionCheckParallel(ThreadFarm* farm, int bodyNumPerTask);
+	int CollisionCheckParallel(ThreadFarm* farm, int bodyNumPerTask, Channel<int>* checkCountChannel);
 
 	// checks collision in all the nodes
-	void CheckAllCollision(Body* ancestorList[], CollisionEvent*& collisionEvents, unsigned short int depth);
-	void CheckCollisionSingleNode(Body* ancestorList[], CollisionEvent*& collisionEvents, unsigned short int depth);
+	void CheckAllCollision(Body* ancestorList[], CollisionEvent*& collisionEvents);
+	void CheckAllCollision(Body* ancestorList[], CollisionEvent*& collisionEvents, int& totalChecks);
+	void CheckCollisionSingleNode(Body* ancestorList[], CollisionEvent*& collisionEvents);
+	void CheckCollisionSingleNode(Body* ancestorList[], CollisionEvent*& collisionEvents, int& totalChecks);
+
 
 	// Check Collision between 2 bodies
 	bool TestCollision(Body* b1, Body* b2);
@@ -79,7 +87,7 @@ private:
 	// Sphere to sphere collision test
 	bool SphereToSphereCollision(Body* b1, Body* b2);
 
-	int CollisionCreateTasks(Body* ancestorList[], ThreadFarm* farm, int bodyNumPerTask, Channel<CollisionEvent*>* collisionEventChannel);
+	int CollisionCreateTasks(Body* ancestorList[], ThreadFarm* farm, int bodyNumPerTask, Channel<CollisionEvent*>* collisionEventChannel, Channel<int>* checkCountChannel = nullptr);
 
 	// Partitioned space this node contains
 	Partition partition_;

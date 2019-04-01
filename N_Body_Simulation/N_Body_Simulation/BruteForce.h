@@ -30,9 +30,13 @@ public:
 
 	// calculates the force acting on a body
 	void CalculateForceOnBody(Body* body);
+	void CalculateForceOnBody(Body* body, int& totalForceCalcs);
+
 
 	void CheckAllCollisions(std::vector<std::vector<Body*>*>* bodyArrays);
-	int CheckCollision(Body* body, CollisionEvent*& collisionEvents);
+	void CheckCollision(Body* body, CollisionEvent*& collisionEvents);
+	void CheckCollision(Body* body, CollisionEvent*& collisionEvents, int& totalChecks);
+
 
 private:
 

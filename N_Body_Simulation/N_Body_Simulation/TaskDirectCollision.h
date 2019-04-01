@@ -8,6 +8,7 @@
 
 // include my classes
 #include "Channel.h"
+#include "SETTINGS.h"
 
 // forward declarations
 class BruteForce;
@@ -22,8 +23,12 @@ public:
 	TaskDirectCollision();
 	~TaskDirectCollision();
 
-
+#if BENCHMARKING
 	void Init(Channel<CollisionEvent*>* newCollisionEventChannel, Channel<int>* newCheckCountChannel, std::vector<Body*>* newBodyArray, BruteForce* newSimulation);
+#else
+	void Init(Channel<CollisionEvent*>* newCollisionEventChannel, std::vector<Body*>* newBodyArray, BruteForce* newSimulation);
+#endif
+
 	void Run();
 
 private:
@@ -34,6 +39,9 @@ private:
 
 	// channel to output collisions found
 	Channel<CollisionEvent*>* collisionEventChannel_;
+
+#if BENCHMARKING
 	Channel<int>* checkCountChannel_;
+#endif
 };
 

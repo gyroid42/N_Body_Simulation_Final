@@ -74,7 +74,7 @@ void Application::Init(Input* newInput) {
 
 	simulation_->Init();
 	simulation_->NewSettings(newSimSettings);
-	simulation_->Reset(simMode_);
+	simulation_->Reset();
 	simSettings_ = simulation_->Settings();
 
 	UpdateUIText();
@@ -107,7 +107,7 @@ void Application::CheckInput(float frameTime) {
 	// Reset the simulation when 'r' is pressed
 	if (input_->OnKeyPressed('r')) {
 
-		simulation_->Reset(simMode_);
+		simulation_->Reset();
 	}
 
 
