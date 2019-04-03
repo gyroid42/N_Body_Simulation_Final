@@ -69,19 +69,25 @@ void Benchmarker::CreateSimulationSettings() {
 	test1.dt = 1.0f / 15.0f;
 	test1.integrationMethod = Semi_Implicit_Euler;
 	test1.multiThreading = true;
-	test1.threadCount = 12;
+	test1.threadCount = 10;
 	test1.timingSteps = true;
 	test1.simMethod = Barnes_Hut;
 	test1.simMode = Random_Bodies;
 	test1.simName = "I'm testing poop";
-	test1.varyBodies = false;
-	test1.bodyCount = 100;
+	test1.varyBodies = true;
+	test1.bodyCount = 1000;
 	test1.varyMultiThreading = true;
 	test1.maxSteps = 100;
 	test1.partitionSize = 10000.0f;
 	test1.theta = 1.0f;
 
 	benchmarkSettingsList_.push_back(test1);
+
+	SimulationSettings test2;
+	test2 = test1;
+
+	test2.simName = "I'm testing poop 2";
+	benchmarkSettingsList_.push_back(test2);
 }
 
 
@@ -130,8 +136,8 @@ void Benchmarker::MainLoop() {
 				if (outputBook_) {
 
 					std::string testName = currentSettings.simName
-						+ " thread " + std::to_string(currentSettings.threadCount)
-						+ " bodyCount " + std::to_string(currentSettings.bodyCount);
+						+ " T " + std::to_string(currentSettings.threadCount)
+						+ " B " + std::to_string(currentSettings.bodyCount);
 
 					libxl::Sheet* sheet = outputBook_->addSheet(testName.c_str());
 
