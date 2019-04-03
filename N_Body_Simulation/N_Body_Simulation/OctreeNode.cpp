@@ -911,7 +911,7 @@ int OctreeNode::CollisionCreateTasks(Body* ancestorList[], ThreadFarm* farm, int
 			else {
 
 				// too many bodies, create tasks in child
-				tasksCreated += child->CollisionCreateTasks(ancestorList, farm, bodyNumPerTask, collisionEventChannel);
+				tasksCreated += child->CollisionCreateTasks(ancestorList, farm, bodyNumPerTask, collisionEventChannel, checkCountChannel);
 			}
 		}
 	}

@@ -307,7 +307,7 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 		integrationTimes_.push_back(std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeStart).count());
 
 #endif
-//		std::cout << "integrate time = " << std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() << std::endl;
+		//std::cout << "integrate time = " << std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() << std::endl;
 
 		timeStart = the_clock::now();
 

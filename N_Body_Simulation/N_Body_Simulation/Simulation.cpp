@@ -62,7 +62,7 @@ bool Simulation::GenerateRandom() {
 	std::default_random_engine re;
 
 
-	for (int i = 0; i < NUM_RAND_BODIES; i++) {
+	for (int i = 0; i < settings_.bodyCount; i++) {
 
 		// create new body
 		Body* newAsteroid = new Body();

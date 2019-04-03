@@ -219,7 +219,7 @@ void BruteForce::TimeStepMulti(float dt) {
 
 		forceCalcTimes_.push_back(std::chrono::duration_cast<std::chrono::microseconds>(end - start).count());
 #endif
-		//std::cout << "force time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
+		std::cout << "force time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
 
 		start = the_clock::now();
 	}
@@ -258,7 +258,7 @@ void BruteForce::TimeStepMulti(float dt) {
 
 		integrationTimes_.push_back(std::chrono::duration_cast<std::chrono::microseconds>(end - start).count());
 #endif
-		//std::cout << "integrate time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
+		std::cout << "integrate time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
 	}
 
 	if (settings_.collision) {

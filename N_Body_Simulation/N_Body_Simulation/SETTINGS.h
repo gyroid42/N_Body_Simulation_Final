@@ -6,18 +6,18 @@
 
 
 #define ADD_RANDOM_BODIES	true
-#define NUM_RAND_BODIES		1000
+#define NUM_RAND_BODIES		1500
 #define RANDOM_BODY_MAX_X	4280.0f
 #define RANDOM_BODY_MAX_Y	4720.0f
 #define RANDOM_BODY_MAX_Z	4720.0f
 #define RANDOM_BODY_MASS	1.0E13f
 
-#define ADD_ORBIT_BODIES	true
+#define ADD_ORBIT_BODIES	false
 
 
 #define TEST_SIMULATION		false
 
-#define PARTITION_SIZE		50000
+#define PARTITION_SIZE		20000
 
 #define PLACE_BODY_MASS 1.0E15f
 
@@ -33,7 +33,7 @@ constexpr auto INTERPOLATE_BETWEEN_FRAMES = true;
 // methods: 0 = BruteForce, 1 = BarnesHutCPU
 //#define SIMULATION_METHOD	1
 
-#define COLLISION			true
+#define COLLISION			false
 
 #define MAX_COLLISION_DEPTH	50
 
@@ -41,12 +41,14 @@ constexpr auto INTERPOLATE_BETWEEN_FRAMES = true;
 #define COLLISION_REACTION	0
 
 #define MULTITHREADING		true
-#define NUM_OF_THREADS		8
+#define NUM_OF_THREADS		12
 
 
 
 #define TIMING_STEPS		true
 
+
+#define DEFAULT_THETA		1.0f
 
 
 #define BENCHMARKING		true

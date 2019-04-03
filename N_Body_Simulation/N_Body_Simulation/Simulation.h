@@ -42,6 +42,19 @@ public:
 
 	inline int BodyCount() { return bodies_.size(); }
 
+
+#if BENCHMARKING
+
+	inline std::vector<int> GetForceCalcTimes() { return forceCalcTimes_; }
+	inline std::vector<int> GetCollisionCheckTimes() { return collisionCheckTimes_; }
+	inline std::vector<int> GetIntegrationTimes() { return integrationTimes_; }
+
+	inline std::vector<int> GetNumForceCalcs() { return numForceCalculations_; }
+	inline std::vector<int> GetNumCollisionChecks() { return numCollisionChecks_; }
+
+#endif
+
+
 protected:
 
 	// Cleans up all the resources the bodies use

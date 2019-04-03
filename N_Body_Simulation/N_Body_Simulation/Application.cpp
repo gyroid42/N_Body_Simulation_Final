@@ -58,6 +58,8 @@ void Application::Init(Input* newInput) {
 	simMode_ = Random_Bodies;
 
 	SimulationSettings newSimSettings;
+	newSimSettings.collision = COLLISION;
+	newSimSettings.simMethod = Barnes_Hut;
 
 	// Create and start simulation
 	switch (newSimSettings.simMethod) {
@@ -72,8 +74,8 @@ void Application::Init(Input* newInput) {
 		break;
 	}
 
-	simulation_->Init();
 	simulation_->NewSettings(newSimSettings);
+	simulation_->Init();
 	simulation_->Reset();
 	simSettings_ = simulation_->Settings();
 

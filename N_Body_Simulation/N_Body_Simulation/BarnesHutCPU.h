@@ -26,6 +26,15 @@ public:
 	// called each physics step
 	void TimeStep(float dt);
 
+
+
+#if BENCHMARKING
+
+	inline std::vector<int> GetInsertTimes() { return insertTimes_; }
+	inline std::vector<int> GetSortTimes() { return sortTimes_; }
+
+#endif
+
 protected:
 
 	// override PartitionSpace and CalculateForceOnBody from BarnesHut

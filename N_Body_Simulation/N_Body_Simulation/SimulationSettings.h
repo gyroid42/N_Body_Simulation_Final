@@ -6,6 +6,8 @@
 
 struct SimulationSettings {
 
+	std::string simName;
+
 	int numRandBodies;
 	float maxRandX;
 	float maxRandY;
@@ -45,7 +47,7 @@ struct SimulationSettings {
 	bool dataCollisionChecks;
 
 
-	SimulationSettings(SIMULATION_METHOD newSimMethod = Barnes_Hut, INTEGRATION_METHOD newIntegrationMethod = Verlet, bool newCollision = true, bool newMultiThreading = true, bool newTimingSteps = true) {
+	SimulationSettings(SIMULATION_METHOD newSimMethod = Barnes_Hut, INTEGRATION_METHOD newIntegrationMethod = Verlet, bool newCollision = true, bool newMultiThreading = MULTITHREADING, bool newTimingSteps = true) {
 		simMethod = newSimMethod;
 		integrationMethod = newIntegrationMethod;
 		collision = newCollision;
@@ -59,6 +61,7 @@ struct SimulationSettings {
 		partitionSize = PARTITION_SIZE;
 		maxCollisionDepth = MAX_COLLISION_DEPTH;
 		threadCount = NUM_OF_THREADS;
+		theta = DEFAULT_THETA;
 
 		bodyCount = NUM_RAND_BODIES;
 

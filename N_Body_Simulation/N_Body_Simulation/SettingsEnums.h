@@ -3,7 +3,8 @@
 enum INTEGRATION_METHOD {
 	Semi_Implicit_Euler,
 	Verlet,
-	Explicit_Euler
+	Explicit_Euler,
+	Runge_Kutta
 };
 
 enum SIMULATION_METHOD {
@@ -14,5 +15,8 @@ enum SIMULATION_METHOD {
 
 enum SIMULATION_MODE {
 	Random_Bodies,
-	Two_Body_Orbit
+	Two_Body_Orbit,
+	Even_Distribution,
+	Clustered_Distribution,
+	Asteroids
 };
