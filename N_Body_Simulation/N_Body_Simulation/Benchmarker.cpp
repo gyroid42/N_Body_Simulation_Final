@@ -70,7 +70,7 @@ void Benchmarker::CreateSimulationSettings() {
 	test1.dt = 1.0f / 15.0f;
 	test1.integrationMethod = Verlet;
 	test1.multiThreading = true;
-	test1.threadCount = 1;
+	test1.threadCount = 8;
 	test1.timingSteps = true;
 	test1.simMethod = Barnes_Hut;
 	test1.simMode = Random_Bodies;
@@ -197,7 +197,7 @@ void Benchmarker::MainLoop() {
 			}
 
 			// loop for each body count in body count list
-			for (int bodyCountIndex = 0; bodyCountIndex < 5; bodyCountIndex++) {
+			for (int bodyCountIndex = 0; bodyCountIndex < 10; bodyCountIndex++) {
 
 				// update body count for current simulation
 				if (currentSettings.varyBodies) {

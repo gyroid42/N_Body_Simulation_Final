@@ -65,25 +65,15 @@ struct SimulationSettings {
 
 		bodyCount = NUM_RAND_BODIES;
 
-		bodyCountList[0] = 100;
-		bodyCountList[1] = 200;
-		bodyCountList[2] = 400;
-		bodyCountList[3] = 600;
-		bodyCountList[4] = 800;
-		bodyCountList[5] = 1000;
-		bodyCountList[6] = 1500;
-		bodyCountList[7] = 2000;
-		bodyCountList[8] = 2500;
-		bodyCountList[9] = 3000;
-		bodyCountList[10] = 4000;
-		bodyCountList[11] = 5000;
-		bodyCountList[12] = 6000;
-		bodyCountList[13] = 8000;
-		bodyCountList[14] = 10000;
-		bodyCountList[15] = 12000;
-		bodyCountList[16] = 14000;
-		bodyCountList[17] = 16000;
-		bodyCountList[18] = 18000;
-		bodyCountList[19] = 20000;
+		bodyCountList[0] = 1000;
+		bodyCountList[1] = 2000;
+		bodyCountList[2] = 3000;
+		bodyCountList[3] = 4000;
+		bodyCountList[4] = 5000;
+		bodyCountList[5] = 6000;
+		bodyCountList[6] = 8000;
+		bodyCountList[7] = 10000;
+		bodyCountList[8] = 12500;
+		bodyCountList[9] = 15000;
 	}
 };
