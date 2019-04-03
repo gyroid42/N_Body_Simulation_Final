@@ -131,6 +131,7 @@
     <ClCompile Include="BruteForce.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Channel.cpp" />
+    <ClCompile Include="SortVector.cpp" />
     <ClCompile Include="TaskCollisionCheckNode.cpp" />
     <ClCompile Include="TaskCollisionCheckTree.cpp" />
     <ClCompile Include="Input.cpp" />
@@ -145,6 +146,7 @@
     <ClCompile Include="TaskBruteForceCPU.cpp" />
     <ClCompile Include="TaskDirectCollision.cpp" />
     <ClCompile Include="TaskInsertBody.cpp" />
+    <ClCompile Include="TaskIntegration.cpp" />
     <ClCompile Include="TaskUpdateForces.cpp" />
     <ClCompile Include="ThreadFarm.cpp" />
   </ItemGroup>
@@ -160,6 +162,7 @@
     <ClInclude Include="CollisionEvent.h" />
     <ClInclude Include="SettingsEnums.h" />
     <ClInclude Include="SimulationSettings.h" />
+    <ClInclude Include="SortVector.h" />
     <ClInclude Include="TaskCollisionCheckNode.h" />
     <ClInclude Include="TaskCollisionCheckTree.h" />
     <ClInclude Include="Input.h" />
@@ -174,6 +177,7 @@
     <ClInclude Include="TaskBruteForceCPU.h" />
     <ClInclude Include="TaskDirectCollision.h" />
     <ClInclude Include="TaskInsertBody.h" />
+    <ClInclude Include="TaskIntegration.h" />
     <ClInclude Include="TaskUpdateForces.h" />
     <ClInclude Include="TextUI.h" />
     <ClInclude Include="ThreadFarm.h" />

@@ -13,6 +13,7 @@
 #include "OctreeCollision.h"
 #include "TaskCollisionCheckNode.h"
 #include "TaskCollisionCheckTree.h"
+#include "TaskIntegration.h"
 
 
 // testing
@@ -293,10 +294,15 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 
 
 	//integrate each body
-	for (auto body : bodies_) {
+	for (int i = 0; i < bodyArrays.size(); i++) {
 
-		std::invoke(body->Integrate, *body, dt);
+		TaskIntegration* newTask = new TaskIntegration();
+		newTask->Init(bodyArrays.at(i), dt);
+		farm_->AddTask(newTask);
 	}
+
+
+	farm_->WaitUntilTasksFinished();
 
 
 	if (settings_.timingSteps) {

@@ -10,6 +10,7 @@
 #include "Input.h"
 #include "BarnesHutCPU.h"
 #include "BruteForce.h"
+#include "SortVector.h"
 
 
 Benchmarker::Benchmarker() :
@@ -49,7 +50,7 @@ void Benchmarker::Init(Input* newInput) {
 
 	input_ = newInput;
 
-	outputBook_ = xlCreateBook();
+	outputBook_ = nullptr;
 
 	std::cout << "Creating test scenarios..." << std::endl;
 
@@ -67,15 +68,15 @@ void Benchmarker::CreateSimulationSettings() {
 	SimulationSettings test1;
 	test1.collision = true;
 	test1.dt = 1.0f / 15.0f;
-	test1.integrationMethod = Semi_Implicit_Euler;
+	test1.integrationMethod = Verlet;
 	test1.multiThreading = true;
-	test1.threadCount = 10;
+	test1.threadCount = 1;
 	test1.timingSteps = true;
 	test1.simMethod = Barnes_Hut;
 	test1.simMode = Random_Bodies;
-	test1.simName = "I'm testing poop";
+	test1.simName = "Test 1";
 	test1.varyBodies = true;
-	test1.bodyCount = 1000;
+	test1.bodyCount = 100;
 	test1.varyMultiThreading = true;
 	test1.maxSteps = 100;
 	test1.partitionSize = 10000.0f;
@@ -86,7 +87,7 @@ void Benchmarker::CreateSimulationSettings() {
 	SimulationSettings test2;
 	test2 = test1;
 
-	test2.simName = "I'm testing poop 2";
+	test2.simName = "Test 2";
 	benchmarkSettingsList_.push_back(test2);
 }
 
@@ -100,17 +101,107 @@ void Benchmarker::MainLoop() {
 	// run a simulation for each setting
 	for (auto currentSettings : benchmarkSettingsList_) {
 
+		outputBook_ = xlCreateBook();
 
 		std::cout << std::endl << "running " << currentSettings.simName << " test..." << std::endl;
 
 		// loop for each thread count in range (1, 2, 4, 6, 8, 10, 12...)
-		for (; currentSettings.threadCount <= std::thread::hardware_concurrency(); (currentSettings.threadCount == 1) ? currentSettings.threadCount++ : currentSettings.threadCount += 2) {
+		for (; currentSettings.threadCount <= std::thread::hardware_concurrency(); (currentSettings.threadCount % 2) ? currentSettings.threadCount++ : currentSettings.threadCount += 2) {
+
+
+			std::string testName = currentSettings.simName
+				+ " T_" + std::to_string(currentSettings.threadCount);
+
+			libxl::Sheet* currentSheet = nullptr;
+
+			if (outputBook_) {
+
+				currentSheet = outputBook_->addSheet(testName.c_str());
+
+				if (currentSheet) {
+
+					// write settings list
+					currentSheet->writeStr(6, 2, "Settings");
+
+					currentSheet->writeStr(8, 2, "Method");
+					switch (currentSettings.simMethod) {
+					case Direct:
+						currentSheet->writeStr(8, 3, "Direct");
+						break;
+					case Barnes_Hut:
+						currentSheet->writeStr(8, 3, "Barnes-Hut");
+						break;
+					default:
+						currentSheet->writeStr(8, 3, "Error");
+						break;
+					}
+
+
+					currentSheet->writeStr(9, 2, "Mode");
+					switch (currentSettings.simMode) {
+					case Random_Bodies:
+						currentSheet->writeStr(9, 3, "Random");
+						break;
+					case Two_Body_Orbit:
+						currentSheet->writeStr(9, 3, "Two_Body_Orbit");
+						break;
+					case Even_Distribution:
+						currentSheet->writeStr(9, 3, "Even Distribution");
+						break;
+					case Clustered_Distribution:
+						currentSheet->writeStr(9, 3, "Clustered Distribution");
+						break;
+					case Asteroids:
+						currentSheet->writeStr(9, 3, "Asteroids");
+						break;
+					default:
+						currentSheet->writeStr(9, 3, "Error");
+						break;
+					}
+
+					currentSheet->writeStr(10, 2, "Integration");
+					switch (currentSettings.integrationMethod) {
+					case Semi_Implicit_Euler:
+						currentSheet->writeStr(10, 3, "Semi-Implicit Euler");
+						break;
+					case Explicit_Euler:
+						currentSheet->writeStr(10, 3, "Explicit Euler");
+						break;
+					case Verlet:
+						currentSheet->writeStr(10, 3, "Verlet");
+						break;
+					case Runge_Kutta:
+						currentSheet->writeStr(10, 3, "4th Order Runge-Kutta");
+						break;
+					default:
+						currentSheet->writeStr(10, 3, "Error");
+						break;
+					}
+
+					currentSheet->writeStr(12, 2, "Total Steps");
+					currentSheet->writeNum(12, 3, currentSettings.maxSteps);
+
+
+					currentSheet->writeStr(14, 2, "Threads");
+					currentSheet->writeNum(14, 3, currentSettings.threadCount);
+
+					currentSheet->writeStr(15, 2, "Collision");
+					currentSheet->writeBool(15, 3, currentSettings.collision);
+
+					currentSheet->writeStr(16, 2, "Time Step");
+					currentSheet->writeNum(16, 3, currentSettings.dt);
+
+					currentSheet->writeStr(17, 2, "Theta");
+					currentSheet->writeNum(17, 3, currentSettings.theta);
+				}
+			}
 
 			// loop for each body count in body count list
-			for (int bodyCountIndex = 0; bodyCountIndex < 20; bodyCountIndex++) {
+			for (int bodyCountIndex = 0; bodyCountIndex < 5; bodyCountIndex++) {
 
 				// update body count for current simulation
 				if (currentSettings.varyBodies) {
+
 					currentSettings.bodyCount = currentSettings.bodyCountList[bodyCountIndex];
 				}
 
@@ -135,132 +226,107 @@ void Benchmarker::MainLoop() {
 
 				if (outputBook_) {
 
-					std::string testName = currentSettings.simName
-						+ " T " + std::to_string(currentSettings.threadCount)
-						+ " B " + std::to_string(currentSettings.bodyCount);
 
-					libxl::Sheet* sheet = outputBook_->addSheet(testName.c_str());
-
-					if (sheet) {
-						// write settings list
-						sheet->writeStr(6, 2, "Settings");
-
-						sheet->writeStr(8, 2, "Method");
-						switch (currentSettings.simMethod) {
-						case Direct:
-							sheet->writeStr(8, 3, "Direct");
-							break;
-						case Barnes_Hut:
-							sheet->writeStr(8, 3, "Barnes-Hut");
-							break;
-						default:
-							sheet->writeStr(8, 3, "Error");
-							break;
-						}
+					if (currentSheet) {
+						
 
 
-						sheet->writeStr(9, 2, "Mode");
-						switch (currentSettings.simMode) {
-						case Random_Bodies:
-							sheet->writeStr(9, 3, "Random");
-							break;
-						case Two_Body_Orbit:
-							sheet->writeStr(9, 3, "Two_Body_Orbit");
-							break;
-						case Even_Distribution:
-							sheet->writeStr(9, 3, "Even Distribution");
-							break;
-						case Clustered_Distribution:
-							sheet->writeStr(9, 3, "Clustered Distribution");
-							break;
-						case Asteroids:
-							sheet->writeStr(9, 3, "Asteroids");
-							break;
-						default:
-							sheet->writeStr(9, 3, "Error");
-							break;
-						}
 
-						sheet->writeStr(10, 2, "Integration");
-						switch (currentSettings.integrationMethod) {
-						case Semi_Implicit_Euler:
-							sheet->writeStr(10, 3, "Semi-Implicit Euler");
-							break;
-						case Explicit_Euler:
-							sheet->writeStr(10, 3, "Explicit Euler");
-							break;
-						case Verlet:
-							sheet->writeStr(10, 3, "Verlet");
-							break;
-						case Runge_Kutta:
-							sheet->writeStr(10, 3, "4th Order Runge-Kutta");
-							break;
-						default:
-							sheet->writeStr(10, 3, "Error");
-							break;
-						}
+						currentSheet->writeStr(4, 5 + bodyCountIndex * 11, "Num Bodies");
+						currentSheet->writeNum(5, 5 + bodyCountIndex * 11, currentSettings.bodyCount);
 
-						sheet->writeStr(12, 2, "Total Steps");
-						sheet->writeNum(12, 3, currentSettings.maxSteps);
 
-						sheet->writeStr(13, 2, "Num Bodies");
-						sheet->writeNum(13, 3, currentSettings.bodyCount);
-
-						sheet->writeStr(14, 2, "Threads");
-						sheet->writeNum(14, 3, currentSettings.threadCount);
-
-						sheet->writeStr(15, 2, "Collision");
-						sheet->writeBool(15, 3, currentSettings.collision);
-
-						sheet->writeStr(16, 2, "Time Step");
-						sheet->writeNum(16, 3, currentSettings.dt);
-
-						sheet->writeStr(17, 2, "Theta");
-						sheet->writeNum(17, 3, currentSettings.theta);
+						currentSheet->writeStr(9, 5 + bodyCountIndex * 11, "Lowest");
+						currentSheet->writeStr(10, 5 + bodyCountIndex * 11, "Q1");
+						currentSheet->writeStr(11, 5 + bodyCountIndex * 11, "Median");
+						currentSheet->writeStr(12, 5 + bodyCountIndex * 11, "Q3");
+						currentSheet->writeStr(13, 5 + bodyCountIndex * 11, "Highest");
 
 
 						// Label table
 
 						// time step count
-						sheet->writeStr(8, 5, "Time Step");
+						currentSheet->writeStr(15, 5 + bodyCountIndex * 11, "Time Step");
 						for (int i = 0; i < currentSettings.maxSteps; i++) {
 
-							sheet->writeNum(9 + i, 5, i);
+							currentSheet->writeNum(16 + i, 5 + bodyCountIndex * 11, i);
 						}
 
 #if BENCHMARKING
 
 						// Timing labels
-						sheet->writeStr(6, 6, "Timing");
+						currentSheet->writeStr(6, 6 + bodyCountIndex * 11, "Timing");
 
 
-						sheet->writeStr(8, 6, "Force Time");
+						// FORCE CALC TIME
+
+						// raw data
+						currentSheet->writeStr(15, 6 + bodyCountIndex * 11, "Force Time");
 
 						std::vector<int> forceCalcTimes = simulation_->GetForceCalcTimes();
 						for (int i = 0; i < forceCalcTimes.size(); i++) {
 
-							sheet->writeNum(9 + i, 6, forceCalcTimes.at(i));
+							currentSheet->writeNum(16 + i, 6 + bodyCountIndex * 11, forceCalcTimes.at(i));
 						}
 
+						// averages
+						currentSheet->writeStr(8, 6 + bodyCountIndex * 11, "Force Time");
+
+						std::vector<int> orderedForceCalcTimes = Sort(forceCalcTimes);
+						currentSheet->writeNum(9, 6 + bodyCountIndex * 11, orderedForceCalcTimes.at(0));
+						currentSheet->writeNum(10, 6 + bodyCountIndex * 11, orderedForceCalcTimes.at(orderedForceCalcTimes.size() / 4));
+						currentSheet->writeNum(11, 6 + bodyCountIndex * 11, orderedForceCalcTimes.at(orderedForceCalcTimes.size() / 2));
+						currentSheet->writeNum(12, 6 + bodyCountIndex * 11, orderedForceCalcTimes.at((orderedForceCalcTimes.size() * 3) / 4));
+						currentSheet->writeNum(13, 6 + bodyCountIndex * 11, orderedForceCalcTimes.at(orderedForceCalcTimes.size() - 1));
+
+						
 
 
-						sheet->writeStr(8, 7, "Collision Check Time");
+						// COLLISION CHECK TIME
+
+						// raw data
+						currentSheet->writeStr(15, 7 + bodyCountIndex * 11, "Collision Check Time");
 
 						std::vector<int> collisionCheckTimes = simulation_->GetCollisionCheckTimes();
 						for (int i = 0; i < collisionCheckTimes.size(); i++) {
 
-							sheet->writeNum(9 + i, 7, collisionCheckTimes.at(i));
+							currentSheet->writeNum(16 + i, 7 + bodyCountIndex * 11, collisionCheckTimes.at(i));
 						}
 
+						// averages
+						currentSheet->writeStr(8, 7 + bodyCountIndex * 11, "Collision Check Time");
+
+						std::vector<int> orderedCollisionCheckTimes = Sort(collisionCheckTimes);
+						currentSheet->writeNum(9, 7 + bodyCountIndex * 11, orderedCollisionCheckTimes.at(0));
+						currentSheet->writeNum(10, 7 + bodyCountIndex * 11, orderedCollisionCheckTimes.at(orderedCollisionCheckTimes.size() / 4));
+						currentSheet->writeNum(11, 7 + bodyCountIndex * 11, orderedCollisionCheckTimes.at(orderedCollisionCheckTimes.size() / 2));
+						currentSheet->writeNum(12, 7 + bodyCountIndex * 11, orderedCollisionCheckTimes.at((orderedCollisionCheckTimes.size() * 3) / 4));
+						currentSheet->writeNum(13, 7 + bodyCountIndex * 11, orderedCollisionCheckTimes.at(orderedCollisionCheckTimes.size() - 1));
 
 
-						sheet->writeStr(8, 8, "Integration Time");
+
+
+						// INTEGRATION TIME
+
+						// raw data
+						currentSheet->writeStr(15, 8 + bodyCountIndex * 11, "Integration Time");
 
 						std::vector<int> integrationTimes = simulation_->GetIntegrationTimes();
 						for (int i = 0; i < integrationTimes.size(); i++) {
 
-							sheet->writeNum(9 + i, 8, integrationTimes.at(i));
+							currentSheet->writeNum(16 + i, 8 + bodyCountIndex * 11, integrationTimes.at(i));
 						}
+
+
+						// averages
+						currentSheet->writeStr(8, 8 + bodyCountIndex * 11, "Integration Time");
+
+						std::vector<int> orderedIntegrationTimes = Sort(integrationTimes);
+						currentSheet->writeNum(9, 8 + bodyCountIndex * 11, orderedIntegrationTimes.at(0));
+						currentSheet->writeNum(10, 8 + bodyCountIndex * 11, orderedIntegrationTimes.at(orderedIntegrationTimes.size() / 4));
+						currentSheet->writeNum(11, 8 + bodyCountIndex * 11, orderedIntegrationTimes.at(orderedIntegrationTimes.size() / 2));
+						currentSheet->writeNum(12, 8 + bodyCountIndex * 11, orderedIntegrationTimes.at((orderedIntegrationTimes.size() * 3) / 4));
+						currentSheet->writeNum(13, 8 + bodyCountIndex * 11, orderedIntegrationTimes.at(orderedIntegrationTimes.size() - 1));
 
 
 
@@ -268,48 +334,103 @@ void Benchmarker::MainLoop() {
 						if (currentSettings.simMethod == Barnes_Hut) {
 
 
-							sheet->writeStr(8, 9, "Insert Time");
+							// INSERT TIME
+
+							// raw data
+							currentSheet->writeStr(15, 9 + bodyCountIndex * 11, "Insert Time");
 
 							std::vector<int> insertTimes = ((BarnesHutCPU*)simulation_)->GetInsertTimes();
 							for (int i = 0; i < insertTimes.size(); i++) {
 
-								sheet->writeNum(9 + i, 9, insertTimes.at(i));
+								currentSheet->writeNum(16 + i, 9 + bodyCountIndex * 11, insertTimes.at(i));
 							}
 
 
+							// averages
+							currentSheet->writeStr(8, 9 + bodyCountIndex * 11, "Insert Time");
 
-							sheet->writeStr(8, 10, "Sort Time");
+							std::vector<int> orderedInsertTimes = Sort(insertTimes);
+							currentSheet->writeNum(9, 9 + bodyCountIndex * 11, orderedInsertTimes.at(0));
+							currentSheet->writeNum(10, 9 + bodyCountIndex * 11, orderedInsertTimes.at(orderedInsertTimes.size() / 4));
+							currentSheet->writeNum(11, 9 + bodyCountIndex * 11, orderedInsertTimes.at(orderedInsertTimes.size() / 2));
+							currentSheet->writeNum(12, 9 + bodyCountIndex * 11, orderedInsertTimes.at((orderedInsertTimes.size() * 3) / 4));
+							currentSheet->writeNum(13, 9 + bodyCountIndex * 11, orderedInsertTimes.at(orderedInsertTimes.size() - 1));
+
+
+
+
+							// SORT TIME
+
+							// raw data
+							currentSheet->writeStr(15, 10 + bodyCountIndex * 11, "Sort Time");
 
 							std::vector<int> sortTimes = ((BarnesHutCPU*)simulation_)->GetSortTimes();
 							for (int i = 0; i < sortTimes.size(); i++) {
 
-								sheet->writeNum(9 + i, 10, sortTimes.at(i));
+								currentSheet->writeNum(16 + i, 10 + bodyCountIndex * 11, sortTimes.at(i));
 							}
 
+
+							// averages
+							currentSheet->writeStr(8, 10 + bodyCountIndex * 11, "Sort Time");
+
+							std::vector<int> orderedSortTimes = Sort(sortTimes);
+							currentSheet->writeNum(9, 10 + bodyCountIndex * 11, orderedSortTimes.at(0));
+							currentSheet->writeNum(10, 10 + bodyCountIndex * 11, orderedSortTimes.at(orderedSortTimes.size() / 4));
+							currentSheet->writeNum(11, 10 + bodyCountIndex * 11, orderedSortTimes.at(orderedSortTimes.size() / 2));
+							currentSheet->writeNum(12, 10 + bodyCountIndex * 11, orderedSortTimes.at((orderedSortTimes.size() * 3) / 4));
+							currentSheet->writeNum(13, 10 + bodyCountIndex * 11, orderedSortTimes.at(orderedSortTimes.size() - 1));
 						}
 
 
 
-						sheet->writeStr(6, 12, "Num Operations");
+						currentSheet->writeStr(6, 12 + bodyCountIndex * 11, "Num Operations");
 
 
-						sheet->writeStr(8, 12, "Num Force Calculations");
+						// NUM OF FORCE CALCS
+
+						// raw data
+						currentSheet->writeStr(15, 12 + bodyCountIndex * 11, "Num Force Calculations");
 						std::vector<int> numForceCalcs = simulation_->GetNumForceCalcs();
 						for (int i = 0; i < numForceCalcs.size(); i++) {
 
-							sheet->writeNum(9 + i, 12, numForceCalcs.at(i));
+							currentSheet->writeNum(16 + i, 12 + bodyCountIndex * 11, numForceCalcs.at(i));
 						}
 
 
+						// averages
+						currentSheet->writeStr(8, 12 + bodyCountIndex * 11, "Num Force Calculations");
 
-						sheet->writeStr(8, 13, "Num Collision Checks");
+						std::vector<int> orderedNumForceCalcs = Sort(numForceCalcs);
+						currentSheet->writeNum(9, 12 + bodyCountIndex * 11, orderedNumForceCalcs.at(0));
+						currentSheet->writeNum(10, 12 + bodyCountIndex * 11, orderedNumForceCalcs.at(orderedNumForceCalcs.size() / 4));
+						currentSheet->writeNum(11, 12 + bodyCountIndex * 11, orderedNumForceCalcs.at(orderedNumForceCalcs.size() / 2));
+						currentSheet->writeNum(12, 12 + bodyCountIndex * 11, orderedNumForceCalcs.at((orderedNumForceCalcs.size() * 3) / 4));
+						currentSheet->writeNum(13, 12 + bodyCountIndex * 11, orderedNumForceCalcs.at(orderedNumForceCalcs.size() - 1));
+
+
+
+
+						// NUM OF COLLISION CHECKS
+
+						// raw data
+						currentSheet->writeStr(15, 13 + bodyCountIndex * 11, "Num Collision Checks");
 						std::vector<int> numCollisionChecks = simulation_->GetNumCollisionChecks();
 						for (int i = 0; i < numCollisionChecks.size(); i++) {
 
-							sheet->writeNum(9 + i, 13, numCollisionChecks.at(i));
+							currentSheet->writeNum(16 + i, 13 + bodyCountIndex * 11, numCollisionChecks.at(i));
 						}
 
 
+						// averages
+						currentSheet->writeStr(8, 13 + bodyCountIndex * 11, "Num Collision Checks");
+
+						std::vector<int> orderedNumCollisionChecks = Sort(numCollisionChecks);
+						currentSheet->writeNum(9, 13 + bodyCountIndex * 11, orderedNumCollisionChecks.at(0));
+						currentSheet->writeNum(10, 13 + bodyCountIndex * 11, orderedNumCollisionChecks.at(orderedNumCollisionChecks.size() / 4));
+						currentSheet->writeNum(11, 13 + bodyCountIndex * 11, orderedNumCollisionChecks.at(orderedNumCollisionChecks.size() / 2));
+						currentSheet->writeNum(12, 13 + bodyCountIndex * 11, orderedNumCollisionChecks.at((orderedNumCollisionChecks.size() * 3) / 4));
+						currentSheet->writeNum(13, 13 + bodyCountIndex * 11, orderedNumCollisionChecks.at(orderedNumCollisionChecks.size() - 1));
 
 #endif
 					}
@@ -342,29 +463,34 @@ void Benchmarker::MainLoop() {
 			}
 
 		}
+
+		std::cout << "saving results..." << std::endl;
+
+		if (outputBook_) {
+
+			std::string fileName = currentSettings.simName + ".xls";
+
+			outputBook_->save(fileName.c_str());
+			outputBook_->release();
+			outputBook_ = nullptr;
+
+			std::cout << "saving complete" << std::endl << std::endl;
+		}
+		else {
+
+			std::cout << "save failed" << std::endl;
+			std::cout << "press any key to continue";
+			_getch();
+			std::cout << std::endl << std::endl;
+		}
+
 	}
 
 
 	std::cout << std::endl << "all testing completed!" << std::endl << std::endl;
 
 
-	std::cout << "saving results..." << std::endl;
-
-	if (outputBook_) {
-
-		outputBook_->save("Results.xls");
-		outputBook_->release();
-		outputBook_ = nullptr;
-
-		std::cout << "saving complete" << std::endl << std::endl;
-	}
-	else {
-
-		std::cout << "save failed" << std::endl;
-		std::cout << "press any key to continue";
-		_getch();
-		std::cout << std::endl << std::endl;
-	}
+	
 }
 
 

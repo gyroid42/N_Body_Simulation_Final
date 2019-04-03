@@ -10,6 +10,7 @@
 #include "PhysicsUtil.h"
 #include "Channel.h"
 #include "CollisionEvent.h"
+#include "TaskIntegration.h"
 
 
 // testing
@@ -111,7 +112,7 @@ void BruteForce::TimeStepSingle(float dt) {
 
 		end = the_clock::now();
 
-		std::cout << "force time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
+		//std::cout << "force time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
 
 		start = the_clock::now();
 	}
@@ -127,7 +128,7 @@ void BruteForce::TimeStepSingle(float dt) {
 
 		end = the_clock::now();
 
-		std::cout << "integrate time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
+		//std::cout << "integrate time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
 
 		start = the_clock::now();
 	}
@@ -154,7 +155,7 @@ void BruteForce::TimeStepSingle(float dt) {
 
 			end = the_clock::now();
 
-			std::cout << "Collision Test time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
+			//std::cout << "Collision Test time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
 
 
 		}
@@ -219,7 +220,7 @@ void BruteForce::TimeStepMulti(float dt) {
 
 		forceCalcTimes_.push_back(std::chrono::duration_cast<std::chrono::microseconds>(end - start).count());
 #endif
-		std::cout << "force time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
+		//std::cout << "force time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
 
 		start = the_clock::now();
 	}
@@ -242,11 +243,16 @@ void BruteForce::TimeStepMulti(float dt) {
 
 
 	// Add an integration task for each body to the thread farm
-	for (auto body : bodies_) {
+	//integrate each body
+	for (int i = 0; i < bodyArrays.size(); i++) {
 
-		std::invoke(body->Integrate, *body, dt);
-
+		TaskIntegration* newTask = new TaskIntegration();
+		newTask->Init(bodyArrays.at(i), dt);
+		farm_->AddTask(newTask);
 	}
+
+
+	farm_->WaitUntilTasksFinished();
 
 
 	if (settings_.timingSteps) {
@@ -258,7 +264,7 @@ void BruteForce::TimeStepMulti(float dt) {
 
 		integrationTimes_.push_back(std::chrono::duration_cast<std::chrono::microseconds>(end - start).count());
 #endif
-		std::cout << "integrate time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
+		//std::cout << "integrate time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
 	}
 
 	if (settings_.collision) {
