@@ -3,6 +3,7 @@
 
 // std library includes
 #include <iostream>
+#include <conio.h>
 
 // My class includes
 #include "Simulation.h"
@@ -43,11 +44,20 @@ Benchmarker::~Benchmarker()
 
 void Benchmarker::Init(Input* newInput) {
 
+
+	std::cout << "Initialising Benchmarker..." << std::endl;
+
 	input_ = newInput;
 
 	outputBook_ = xlCreateBook();
 
+	std::cout << "Creating test scenarios..." << std::endl;
+
 	CreateSimulationSettings();
+
+	std::cout << "Finished creating test scenarios" << std::endl;
+
+	std::cout << "Finished initialising" << std::endl;
 }
 
 
@@ -79,8 +89,13 @@ void Benchmarker::CreateSimulationSettings() {
 void Benchmarker::MainLoop() {
 
 
+	std::cout << std::endl << std::endl << "Starting Benchmarking" << std::endl;
+
 	// run a simulation for each setting
 	for (auto currentSettings : benchmarkSettingsList_) {
+
+
+		std::cout << std::endl << "running " << currentSettings.simName << " test..." << std::endl;
 
 		// loop for each thread count in range (1, 2, 4, 6, 8, 10, 12...)
 		for (; currentSettings.threadCount <= std::thread::hardware_concurrency(); (currentSettings.threadCount == 1) ? currentSettings.threadCount++ : currentSettings.threadCount += 2) {
@@ -93,6 +108,8 @@ void Benchmarker::MainLoop() {
 					currentSettings.bodyCount = currentSettings.bodyCountList[bodyCountIndex];
 				}
 
+				std::cout << "running for " << currentSettings.bodyCount << " bodies with " << currentSettings.threadCount << " threads..." << std::endl;
+
 				
 				StartSimulation(&currentSettings);
 
@@ -104,7 +121,11 @@ void Benchmarker::MainLoop() {
 				}
 
 
+				std::cout << "finished test" << std::endl;
+
 				// write results into excel spreadsheet
+
+				std::cout << "writing results to output file..." << std::endl;
 
 				if (outputBook_) {
 
@@ -286,6 +307,20 @@ void Benchmarker::MainLoop() {
 
 #endif
 					}
+					else {
+						
+						std::cout << "writing results failed, sheet doesn't exist" << std::endl;
+						std::cout << "press any key to continue";
+						_getch();
+						std::cout << std::endl << std::endl;
+					}
+				}
+				else {
+
+					std::cout << "writing results failed, book doesn't exist" << std::endl;
+					std::cout << "press any key to continue";
+					_getch();
+					std::cout << std::endl << std::endl;
 				}
 
 
@@ -303,11 +338,26 @@ void Benchmarker::MainLoop() {
 		}
 	}
 
+
+	std::cout << std::endl << "all testing completed!" << std::endl << std::endl;
+
+
+	std::cout << "saving results..." << std::endl;
+
 	if (outputBook_) {
 
 		outputBook_->save("Results.xls");
 		outputBook_->release();
 		outputBook_ = nullptr;
+
+		std::cout << "saving complete" << std::endl << std::endl;
+	}
+	else {
+
+		std::cout << "save failed" << std::endl;
+		std::cout << "press any key to continue";
+		_getch();
+		std::cout << std::endl << std::endl;
 	}
 }
 

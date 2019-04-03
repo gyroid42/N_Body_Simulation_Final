@@ -8,6 +8,9 @@
 #endif
 
 
+#include <conio.h>
+#include <iostream>
+
 // glut includes
 #include <GL\glut.h>
 #include <GL\GL.h>
@@ -221,6 +224,12 @@ int main(int argc, char *argv[])
 	
 	benchmarker.Init(input);
 	benchmarker.MainLoop();
+
+	std::cout << "Benchmarking finished" << std::endl;
+
+	std::cout << "press any key to exit...";
+
+	_getch();
 
 #else
 
