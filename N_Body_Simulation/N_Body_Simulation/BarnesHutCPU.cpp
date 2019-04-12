@@ -373,25 +373,28 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 		bodyArrays.at(i) = nullptr;
 	}
 
-	// Construct new ordered bodies list
 
-	// clear bodieslist
-	bodies_.clear();
+	if (settings_.orderBodies) {
+		// Construct new ordered bodies list
 
-	// get new list from partition tree
-	tree.GetOrderedElementsList(bodies_);
+		// clear bodieslist
+		bodies_.clear();
 
-	if (settings_.timingSteps) {
+		// get new list from partition tree
+		tree.GetOrderedElementsList(bodies_);
 
-		timeEnd = the_clock::now();
+		if (settings_.timingSteps) {
+
+			timeEnd = the_clock::now();
 
 #if BENCHMARKING
 
-		sortTimes_.push_back(std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeStart).count());
+			sortTimes_.push_back(std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeStart).count());
 
 #endif
-		//std::cout << "sorting time = " << std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() << std::endl;
+			//std::cout << "sorting time = " << std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() << std::endl;
 
+		}
 	}
 	
 	//std::cout << OctreeNode::maxListSize << std::endl;

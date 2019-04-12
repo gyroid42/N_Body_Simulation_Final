@@ -47,6 +47,8 @@ struct SimulationSettings {
 	bool dataCollisionChecks;
 
 
+	bool orderBodies;
+
 	SimulationSettings(SIMULATION_METHOD newSimMethod = Barnes_Hut, INTEGRATION_METHOD newIntegrationMethod = Verlet, bool newCollision = true, bool newMultiThreading = MULTITHREADING, bool newTimingSteps = true) {
 		simMethod = newSimMethod;
 		integrationMethod = newIntegrationMethod;

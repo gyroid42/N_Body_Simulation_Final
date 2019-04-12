@@ -110,7 +110,9 @@
     <ClCompile Include="SortVector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TaskIntegration.cpp" />
+    <ClCompile Include="TaskIntegration.cpp">
+      <Filter>Source Files\Simulation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -201,7 +203,7 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="TaskIntegration.h">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Simulation</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

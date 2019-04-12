@@ -64,13 +64,18 @@ void Benchmarker::Init(Input* newInput) {
 
 void Benchmarker::CreateSimulationSettings() {
 
+
+
+
+
+
 	
 	SimulationSettings test1;
 	test1.collision = true;
 	test1.dt = 1.0f / 15.0f;
 	test1.integrationMethod = Verlet;
 	test1.multiThreading = true;
-	test1.threadCount = 8;
+	test1.threadCount = 10;
 	test1.timingSteps = true;
 	test1.simMethod = Barnes_Hut;
 	test1.simMode = Random_Bodies;
@@ -81,6 +86,7 @@ void Benchmarker::CreateSimulationSettings() {
 	test1.maxSteps = 100;
 	test1.partitionSize = 10000.0f;
 	test1.theta = 1.0f;
+	test1.orderBodies = true;
 
 	benchmarkSettingsList_.push_back(test1);
 
@@ -88,7 +94,7 @@ void Benchmarker::CreateSimulationSettings() {
 	test2 = test1;
 
 	test2.simName = "Test 2";
-	benchmarkSettingsList_.push_back(test2);
+	//benchmarkSettingsList_.push_back(test2);
 }
 
 
@@ -104,6 +110,92 @@ void Benchmarker::MainLoop() {
 		outputBook_ = xlCreateBook();
 
 		std::cout << std::endl << "running " << currentSettings.simName << " test..." << std::endl;
+
+		libxl::Sheet* summarySheet = nullptr;
+
+		if (outputBook_) {
+
+			summarySheet = outputBook_->addSheet(std::string(currentSettings.simName + " Summary").c_str());
+
+			if (summarySheet) {
+
+				// write settings list
+				summarySheet->writeStr(6, 2, "Settings");
+
+				summarySheet->writeStr(8, 2, "Method");
+				switch (currentSettings.simMethod) {
+				case Direct:
+					summarySheet->writeStr(8, 3, "Direct");
+					break;
+				case Barnes_Hut:
+					summarySheet->writeStr(8, 3, "Barnes-Hut");
+					break;
+				default:
+					summarySheet->writeStr(8, 3, "Error");
+					break;
+				}
+
+
+				summarySheet->writeStr(9, 2, "Mode");
+				switch (currentSettings.simMode) {
+				case Random_Bodies:
+					summarySheet->writeStr(9, 3, "Random");
+					break;
+				case Two_Body_Orbit:
+					summarySheet->writeStr(9, 3, "Two_Body_Orbit");
+					break;
+				case Even_Distribution:
+					summarySheet->writeStr(9, 3, "Even Distribution");
+					break;
+				case Clustered_Distribution:
+					summarySheet->writeStr(9, 3, "Clustered Distribution");
+					break;
+				case Asteroids:
+					summarySheet->writeStr(9, 3, "Asteroids");
+					break;
+				default:
+					summarySheet->writeStr(9, 3, "Error");
+					break;
+				}
+
+				summarySheet->writeStr(10, 2, "Integration");
+				switch (currentSettings.integrationMethod) {
+				case Semi_Implicit_Euler:
+					summarySheet->writeStr(10, 3, "Semi-Implicit Euler");
+					break;
+				case Explicit_Euler:
+					summarySheet->writeStr(10, 3, "Explicit Euler");
+					break;
+				case Verlet:
+					summarySheet->writeStr(10, 3, "Verlet");
+					break;
+				case Runge_Kutta:
+					summarySheet->writeStr(10, 3, "4th Order Runge-Kutta");
+					break;
+				default:
+					summarySheet->writeStr(10, 3, "Error");
+					break;
+				}
+
+				summarySheet->writeStr(12, 2, "Total Steps");
+				summarySheet->writeNum(12, 3, currentSettings.maxSteps);
+
+
+				summarySheet->writeStr(14, 2, "Threads");
+				summarySheet->writeNum(14, 3, currentSettings.threadCount);
+
+				summarySheet->writeStr(15, 2, "Collision");
+				summarySheet->writeBool(15, 3, currentSettings.collision);
+
+				summarySheet->writeStr(16, 2, "Time Step");
+				summarySheet->writeNum(16, 3, currentSettings.dt);
+
+				summarySheet->writeStr(17, 2, "Theta");
+				summarySheet->writeNum(17, 3, currentSettings.theta);
+			}
+		}
+
+		int threadIndex = 0;
 
 		// loop for each thread count in range (1, 2, 4, 6, 8, 10, 12...)
 		for (; currentSettings.threadCount <= std::thread::hardware_concurrency(); (currentSettings.threadCount % 2) ? currentSettings.threadCount++ : currentSettings.threadCount += 2) {
@@ -197,7 +289,7 @@ void Benchmarker::MainLoop() {
 			}
 
 			// loop for each body count in body count list
-			for (int bodyCountIndex = 0; bodyCountIndex < 10; bodyCountIndex++) {
+			for (int bodyCountIndex = 0; bodyCountIndex < 3; bodyCountIndex++) {
 
 				// update body count for current simulation
 				if (currentSettings.varyBodies) {
@@ -227,8 +319,11 @@ void Benchmarker::MainLoop() {
 				if (outputBook_) {
 
 
+					int forceMedian = 0, collisionMedian = 0, integrationMedian = 0, insertMedian = 0, sortMedian = 0;
+					int numForceCalcMedian = 0, numCollisionCheckMedian = 0;
+
 					if (currentSheet) {
-						
+
 
 
 
@@ -279,7 +374,7 @@ void Benchmarker::MainLoop() {
 						currentSheet->writeNum(12, 6 + bodyCountIndex * 11, orderedForceCalcTimes.at((orderedForceCalcTimes.size() * 3) / 4));
 						currentSheet->writeNum(13, 6 + bodyCountIndex * 11, orderedForceCalcTimes.at(orderedForceCalcTimes.size() - 1));
 
-						
+						forceMedian = orderedForceCalcTimes.at(orderedForceCalcTimes.size() / 2);
 
 
 						// COLLISION CHECK TIME
@@ -304,6 +399,7 @@ void Benchmarker::MainLoop() {
 						currentSheet->writeNum(13, 7 + bodyCountIndex * 11, orderedCollisionCheckTimes.at(orderedCollisionCheckTimes.size() - 1));
 
 
+						collisionMedian = orderedCollisionCheckTimes.at(orderedCollisionCheckTimes.size() / 2);
 
 
 						// INTEGRATION TIME
@@ -328,7 +424,7 @@ void Benchmarker::MainLoop() {
 						currentSheet->writeNum(12, 8 + bodyCountIndex * 11, orderedIntegrationTimes.at((orderedIntegrationTimes.size() * 3) / 4));
 						currentSheet->writeNum(13, 8 + bodyCountIndex * 11, orderedIntegrationTimes.at(orderedIntegrationTimes.size() - 1));
 
-
+						integrationMedian = orderedIntegrationTimes.at(orderedIntegrationTimes.size() / 2);
 
 
 						if (currentSettings.simMethod == Barnes_Hut) {
@@ -357,6 +453,8 @@ void Benchmarker::MainLoop() {
 							currentSheet->writeNum(13, 9 + bodyCountIndex * 11, orderedInsertTimes.at(orderedInsertTimes.size() - 1));
 
 
+							insertMedian = orderedInsertTimes.at(orderedInsertTimes.size() / 2);
+
 
 
 							// SORT TIME
@@ -380,6 +478,10 @@ void Benchmarker::MainLoop() {
 							currentSheet->writeNum(11, 10 + bodyCountIndex * 11, orderedSortTimes.at(orderedSortTimes.size() / 2));
 							currentSheet->writeNum(12, 10 + bodyCountIndex * 11, orderedSortTimes.at((orderedSortTimes.size() * 3) / 4));
 							currentSheet->writeNum(13, 10 + bodyCountIndex * 11, orderedSortTimes.at(orderedSortTimes.size() - 1));
+
+
+							sortMedian = orderedSortTimes.at(orderedSortTimes.size() / 2);
+
 						}
 
 
@@ -409,6 +511,8 @@ void Benchmarker::MainLoop() {
 						currentSheet->writeNum(13, 12 + bodyCountIndex * 11, orderedNumForceCalcs.at(orderedNumForceCalcs.size() - 1));
 
 
+						numForceCalcMedian = orderedNumForceCalcs.at(orderedNumForceCalcs.size() / 2);
+
 
 
 						// NUM OF COLLISION CHECKS
@@ -432,15 +536,89 @@ void Benchmarker::MainLoop() {
 						currentSheet->writeNum(12, 13 + bodyCountIndex * 11, orderedNumCollisionChecks.at((orderedNumCollisionChecks.size() * 3) / 4));
 						currentSheet->writeNum(13, 13 + bodyCountIndex * 11, orderedNumCollisionChecks.at(orderedNumCollisionChecks.size() - 1));
 
+
+						numCollisionCheckMedian = orderedNumCollisionChecks.at(orderedNumCollisionChecks.size() / 2);
+
+
 #endif
 					}
 					else {
-						
-						std::cout << "writing results failed, sheet doesn't exist" << std::endl;
+
+						std::cout << "writing results failed, current sheet doesn't exist" << std::endl;
 						std::cout << "press any key to continue";
 						_getch();
 						std::cout << std::endl << std::endl;
 					}
+
+
+
+					if (summarySheet) {
+
+
+						summarySheet->writeStr(4 + bodyCountIndex * 12, 5, "Num Bodies");
+						summarySheet->writeNum(5 + bodyCountIndex * 12, 5, currentSettings.bodyCount);
+
+
+						summarySheet->writeStr(4 + bodyCountIndex * 12, 8, "Threads");
+						summarySheet->writeNum(5 + bodyCountIndex * 12, 8 + threadIndex * 2, currentSettings.threadCount);
+						summarySheet->writeStr(6 + bodyCountIndex * 12, 8 + threadIndex * 2, "t");
+						summarySheet->writeStr(6 + bodyCountIndex * 12, 9 + threadIndex * 2, "%");
+
+						summarySheet->writeStr(7 + bodyCountIndex * 12, 7, "Force");
+						summarySheet->writeStr(8 + bodyCountIndex * 12, 7, "Collision");
+						summarySheet->writeStr(9 + bodyCountIndex * 12, 7, "Integration");
+						summarySheet->writeStr(10 + bodyCountIndex * 12, 7, "Insert");
+						summarySheet->writeStr(11 + bodyCountIndex * 12, 7, "Sort");
+						summarySheet->writeStr(12 + bodyCountIndex * 12, 7, "Total");
+
+
+
+						// write total time
+						int totalTime = forceMedian + collisionMedian + integrationMedian + insertMedian + sortMedian;
+
+						summarySheet->writeNum(12 + bodyCountIndex * 12, 8 + threadIndex * 2, totalTime);
+						summarySheet->writeNum(12 + bodyCountIndex * 12, 9 + threadIndex * 2, 100 * totalTime / totalTime);
+
+						// Force calc time
+						summarySheet->writeNum(7 + bodyCountIndex * 12, 8 + threadIndex * 2, forceMedian);
+						summarySheet->writeNum(7 + bodyCountIndex * 12, 9 + threadIndex * 2, 100 * forceMedian / totalTime);
+
+						// Collision calc time
+						summarySheet->writeNum(8 + bodyCountIndex * 12, 8 + threadIndex * 2, collisionMedian);
+						summarySheet->writeNum(8 + bodyCountIndex * 12, 9 + threadIndex * 2, 100 * collisionMedian / totalTime);
+
+						// Integration calc time
+						summarySheet->writeNum(9 + bodyCountIndex * 12, 8 + threadIndex * 2, integrationMedian);
+						summarySheet->writeNum(9 + bodyCountIndex * 12, 9 + threadIndex * 2, 100 * integrationMedian / totalTime);
+
+						// insert calc time
+						summarySheet->writeNum(10 + bodyCountIndex * 12, 8 + threadIndex * 2, insertMedian);
+						summarySheet->writeNum(10 + bodyCountIndex * 12, 9 + threadIndex * 2, 100 * insertMedian / totalTime);
+
+						// sort calc time
+						summarySheet->writeNum(11 + bodyCountIndex * 12, 8 + threadIndex * 2, sortMedian);
+						summarySheet->writeNum(11 + bodyCountIndex * 12, 9 + threadIndex * 2, 100 * sortMedian / totalTime);
+
+
+
+						// write num Force Calcs
+						summarySheet->writeStr(7 + bodyCountIndex * 12, 5, "Num Force Calc");
+						summarySheet->writeNum(8 + bodyCountIndex * 12, 5, numForceCalcMedian);
+
+						// write num Collision Check
+						summarySheet->writeStr(10 + bodyCountIndex * 12, 5, "Num Collision Check");
+						summarySheet->writeNum(11 + bodyCountIndex * 12, 5, numCollisionCheckMedian);
+
+					}
+					else {
+
+						std::cout << "writing results failed, summary sheet doesn't exist" << std::endl;
+						std::cout << "press any key to continue";
+						_getch();
+						std::cout << std::endl << std::endl;
+					}
+
+
 				}
 				else {
 
@@ -462,6 +640,7 @@ void Benchmarker::MainLoop() {
 				break;
 			}
 
+			threadIndex++;
 		}
 
 		std::cout << "saving results..." << std::endl;
