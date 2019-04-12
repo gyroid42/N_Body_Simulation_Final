@@ -58,6 +58,9 @@ void Body::Init(sf::Vector3f newPos, sf::Vector3f newVel, float newMass, INTEGRA
 	case Verlet:
 		Integrate = &Body::Integrate_VerletStart;
 		break;
+	case Velocity_Verlet:
+		Integrate = &Body::Integrate_VelVerletStart;
+		break;
 	default:
 		Integrate = &Body::Integrate_SemiImplicitEuler;
 		break;
@@ -121,8 +124,10 @@ void Body::Integrate_SemiImplicitEuler(float dt) {
 	// set previous state before integrating
 	prevStates_[0] = currentState_;
 
+	acceleration_ = force_ / mass_;
+
 	// calculate velocity then position linearly
-	currentState_.velocity_ += (force_ / mass_) * dt;
+	currentState_.velocity_ += acceleration_ * dt;
 	currentState_.position_ += currentState_.velocity_ * dt;
 }
 
@@ -152,6 +157,33 @@ void Body::Integrate_VerletStart(float dt) {
 		Integrate = &Body::Integrate_Verlet;
 	}
 }
+
+
+
+void Body::Integrate_VelocityVerlet(float dt) {
+
+	prevStates_[0] = currentState_;
+
+	sf::Vector3f halfVel = currentState_.velocity_ + 0.5f * dt * acceleration_;
+	currentState_.position_ += dt * halfVel;
+
+	acceleration_ = force_ / mass_;
+	currentState_.velocity_ = halfVel + 0.5f * dt * acceleration_;
+}
+
+
+void Body::Integrate_VelVerletStart(float dt) {
+
+	Integrate_SemiImplicitEuler(dt);
+
+	initialCounter_++;
+
+	if (initialCounter_ >= 2) {
+
+		Integrate = &Body::Integrate_VelocityVerlet;
+	}
+}
+
 
 
 State Body::InterpolateState(float alpha) {

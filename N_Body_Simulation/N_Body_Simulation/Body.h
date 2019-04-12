@@ -72,6 +72,9 @@ public:
 	void Integrate_Verlet(float dt);
 	void Integrate_VerletStart(float dt);
 
+	void Integrate_VelVerletStart(float dt);
+	void Integrate_VelocityVerlet(float dt);
+
 
 	// Interpolates between the previous state and current state
 	State InterpolateState(float alpha);
@@ -119,6 +122,7 @@ private:
 
 	// Force acting on the body this physics step
 	sf::Vector3f force_;
+	sf::Vector3f acceleration_;
 
 	// Total Mass of the body
 	float mass_;

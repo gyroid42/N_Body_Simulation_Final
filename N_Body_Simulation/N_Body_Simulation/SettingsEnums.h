@@ -3,6 +3,7 @@
 enum INTEGRATION_METHOD {
 	Semi_Implicit_Euler,
 	Verlet,
+	Velocity_Verlet,
 	Explicit_Euler,
 	Runge_Kutta
 };
