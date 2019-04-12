@@ -62,6 +62,9 @@ protected:
 
 	// Simulation Mode generators
 	bool GenerateRandom();
+	bool GenerateGrid();
+	bool GenerateClusters();
+	bool GenerateAsteroidBelt();
 
 	// number of bodies currently in the simulation
 	int bodyCount_;

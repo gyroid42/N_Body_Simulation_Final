@@ -87,32 +87,148 @@ bool Simulation::GenerateRandom() {
 	if (ADD_ORBIT_BODIES) {
 
 		Body* planet = new Body();
-		planet->Init(sf::Vector3f(0.0f, 0.0f, 0.0f), sf::Vector3f(40.0f, 40.0f, 40.0f), 1.0E17f, settings_.integrationMethod);
+		planet->Init(sf::Vector3f(0.0f, 0.0f, 0.0f), sf::Vector3f(0.0f, 0.0f, 0.0f), 1.0E17f, settings_.integrationMethod);
 		planet->SetColour(sf::Vector3f(1.0f, 0.0f, 0.0f));
 		bodies_.push_back(planet);
 
 		Body* satelite = new Body();
-		satelite->Init(sf::Vector3f(0.0f, 0.0f, -100.0f), sf::Vector3f(40.0f, -258.3215f + 40.0f, 40.0f), 100, settings_.integrationMethod);
+		satelite->Init(sf::Vector3f(0.0f, 0.0f, -100.0f), sf::Vector3f(0.0f, -258.3215f + 0.0f, 0.0f), 100, settings_.integrationMethod);
 		satelite->SetColour(sf::Vector3f(0.0f, 0.5f, 0.5f));
 		bodies_.push_back(satelite);
 
 		Body* satelite2 = new Body();
-		satelite2->Init(sf::Vector3f(-300.0f, 0.0f, 0.0f), sf::Vector3f(40.0f, -149.14199f + 40.0f, 40.0f), 100, settings_.integrationMethod);
+		satelite2->Init(sf::Vector3f(-300.0f, 0.0f, 0.0f), sf::Vector3f(0.0f, -149.14199f + 0.0f, 0.0f), 100, settings_.integrationMethod);
 		satelite2->SetColour(sf::Vector3f(0.0f, 0.5f, 0.5f));
 		bodies_.push_back(satelite2);
 
 
 		Body* satelite3 = new Body();
-		satelite3->Init(sf::Vector3f(0.0f, -1005.0f, 0.0f), sf::Vector3f(-115.5249f + 40.0f, 40.0f, 40.0f), 100, settings_.integrationMethod);
+		satelite3->Init(sf::Vector3f(0.0f, -1005.0f, 0.0f), sf::Vector3f(-115.5249f + 0.0f, 0.0f, 0.0f), 100, settings_.integrationMethod);
 		satelite3->SetColour(sf::Vector3f(0.0f, 0.5f, 0.5f));
 		bodies_.push_back(satelite3);
 
 		Body* satelite4 = new Body();
-		satelite4->Init(sf::Vector3f(0.0f, -1000.0f, 0.0f), sf::Vector3f(81.68843f + 40.0f, 40.0f, 40.0f), 100, settings_.integrationMethod);
+		satelite4->Init(sf::Vector3f(0.0f, -1000.0f, 0.0f), sf::Vector3f(81.68843f + 0.0f, 0.0f, 0.0f), 100, settings_.integrationMethod);
 		satelite4->SetColour(sf::Vector3f(0.0f, 0.5f, 0.5f));
 		bodies_.push_back(satelite4);
 
 	}
+
+	return true;
+}
+
+
+
+bool Simulation::GenerateGrid() {
+
+
+	int gridLength = std::cbrtf((float)settings_.bodyCount);
+	int remainder = settings_.bodyCount % (gridLength * gridLength * gridLength);
+
+	float spacing = (settings_.partitionSize - 4000.0f) / (float)gridLength;
+
+	sf::Vector3f startPos(2000.0f, 2000.0f, 2000.0f);
+
+	for (int x = 0; x < gridLength; x++) {
+
+		for (int y = 0; y < gridLength; y++) {
+
+			for (int z = 0; z < gridLength + (remainder > 0) ? 1 : 0; z++) {
+
+				// create new body
+				Body* newBody = new Body();
+
+				// generate random position
+				sf::Vector3f bodyPos(x, y, z);
+
+				bodyPos *= spacing;
+				bodyPos += startPos;
+
+				// Initialise the new body
+				newBody->Init(bodyPos, sf::Vector3f(0.0f, 0.0f, 0.0f), settings_.randBodyMass, settings_.integrationMethod);
+
+				// Set default colour
+				newBody->SetColour(sf::Vector3f(0.0f, 0.0f, 1.0f));
+
+				// Add to bodies list
+				bodies_.push_back(newBody);
+			}
+
+			remainder--;
+		}
+	}
+
+
+	return true;
+}
+
+
+bool Simulation::GenerateClusters() {
+
+	
+	// split the number of bodies into 8
+	int numBodiesCluster = settings_.bodyCount / 8;
+
+	int remainder = settings_.bodyCount % (numBodiesCluster);
+
+	sf::Vector3f clusterStartPos(2000.0f, 2000.0f, 2000.0f);
+	float clusterSpacing = 4000.0f;
+
+
+	int bodyGridLength = std::cbrtf((float)numBodiesCluster);
+	float bodySpacing = 2000.0f / (float)bodyGridLength;
+
+	for (int i = 0; i < 8; i++) {
+
+
+		bool extraBody = ((remainder > 0) ? true : false);
+		remainder--;
+
+		sf::Vector3f offset;
+
+		offset.x = ((i & 1) ? clusterSpacing : 0.0f);
+		offset.y = ((i & 2) ? clusterSpacing : 0.0f);
+		offset.z = ((i & 4) ? clusterSpacing : 0.0f);
+
+		sf::Vector3f startPos = clusterStartPos + offset;
+
+		for (int x = 0; x < bodyGridLength; x++) {
+
+			for (int y = 0; y < bodyGridLength; y++) {
+
+				for (int z = 0; z < bodyGridLength + ((extraBody) ? 1 : 0); z++) {
+
+					// create new body
+					Body* newBody = new Body();
+
+					// generate random position
+					sf::Vector3f bodyPos(x, y, z);
+
+					bodyPos *= bodySpacing;
+					bodyPos += startPos;
+
+					// Initialise the new body
+					newBody->Init(bodyPos, sf::Vector3f(0.0f, 0.0f, 0.0f), settings_.randBodyMass, settings_.integrationMethod);
+
+					// Set default colour
+					newBody->SetColour(sf::Vector3f(0.0f, 0.0f, 1.0f));
+
+					// Add to bodies list
+					bodies_.push_back(newBody);
+				}
+
+				extraBody = false;
+			}
+		}
+	}
+
+	return true;
+}
+
+
+bool Simulation::GenerateAsteroidBelt() {
+
+
 
 	return true;
 }
@@ -129,6 +245,12 @@ bool Simulation::GenerateSimulation(SIMULATION_MODE simMode) {
 		break;
 	case Two_Body_Orbit:
 		//result = GenerateTwoBodyOrbit();
+		break;
+	case Even_Distribution:
+		result = GenerateGrid();
+		break;
+	case Clustered_Distribution:
+		result = GenerateClusters();
 		break;
 	default:
 		result = GenerateRandom();

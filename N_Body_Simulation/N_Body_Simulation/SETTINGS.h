@@ -12,12 +12,12 @@
 #define RANDOM_BODY_MAX_Z	4720.0f
 #define RANDOM_BODY_MASS	1.0E13f
 
-#define ADD_ORBIT_BODIES	false
+#define ADD_ORBIT_BODIES	true
 
 
 #define TEST_SIMULATION		false
 
-#define PARTITION_SIZE		20000
+#define PARTITION_SIZE		10000
 
 #define PLACE_BODY_MASS 1.0E15f
 
@@ -51,4 +51,4 @@ constexpr auto INTERPOLATE_BETWEEN_FRAMES = true;
 #define DEFAULT_THETA		1.0f
 
 
-#define BENCHMARKING		true
+#define BENCHMARKING		false

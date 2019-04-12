@@ -55,11 +55,13 @@ void Application::Init(Input* newInput) {
 	camera_.Init(input_);
 
 
-	simMode_ = Random_Bodies;
 
 	SimulationSettings newSimSettings;
 	newSimSettings.collision = COLLISION;
 	newSimSettings.simMethod = Barnes_Hut;
+	newSimSettings.integrationMethod = Verlet;
+	newSimSettings.simMode = Clustered_Distribution;
+	newSimSettings.bodyCount = 1020;
 
 	// Create and start simulation
 	switch (newSimSettings.simMethod) {
@@ -78,6 +80,10 @@ void Application::Init(Input* newInput) {
 	simulation_->Init();
 	simulation_->Reset();
 	simSettings_ = simulation_->Settings();
+
+
+	simMode_ = simSettings_->simMode;
+
 
 	UpdateUIText();
 
@@ -120,6 +126,9 @@ void Application::CheckInput(float frameTime) {
 			simMode_ = Two_Body_Orbit;
 			break;
 		case Two_Body_Orbit:
+			simMode_ = Even_Distribution;
+			break;
+		case Even_Distribution:
 			simMode_ = Random_Bodies;
 			break;
 		default:
@@ -262,6 +271,12 @@ void Application::UpdateSimModeText() {
 		break;
 	case Two_Body_Orbit:
 		sprintf_s(textUI_.simMode, "Simulation Mode = 2-Body Orbit");
+		break;
+	case Even_Distribution:
+		sprintf_s(textUI_.simMode, "Simulation Mode = Even Distribution");
+		break;
+	case Clustered_Distribution:
+		sprintf_s(textUI_.simMode, "Simulation Mode = Cluster Distribution");
 		break;
 	default:
 		sprintf_s(textUI_.simMode, "Simulation Mode = UNKNOWN");
