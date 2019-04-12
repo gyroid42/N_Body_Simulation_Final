@@ -68,7 +68,10 @@ public:
 
 	// Integration Methods
 	void (Body::*Integrate)(float);
+
 	void Integrate_SemiImplicitEuler(float dt);
+	void Integrate_ExplicitEuler(float dt);
+
 	void Integrate_Verlet(float dt);
 	void Integrate_VerletStart(float dt);
 

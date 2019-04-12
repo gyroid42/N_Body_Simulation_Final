@@ -55,6 +55,9 @@ void Body::Init(sf::Vector3f newPos, sf::Vector3f newVel, float newMass, INTEGRA
 	case Semi_Implicit_Euler:
 		Integrate = &Body::Integrate_SemiImplicitEuler;
 		break;
+	case Explicit_Euler:
+		Integrate = &Body::Integrate_ExplicitEuler;
+		break;
 	case Verlet:
 		Integrate = &Body::Integrate_VerletStart;
 		break;
@@ -118,6 +121,17 @@ void Body::ResetForce() {
 	force_.z = 0.0f;
 }
 
+
+void Body::Integrate_ExplicitEuler(float dt) {
+
+	prevStates_[0] = currentState_;
+
+	acceleration_ = force_ / mass_;
+
+	currentState_.position_ += currentState_.velocity_ * dt;
+	currentState_.velocity_ += acceleration_ * dt;
+	
+}
 
 void Body::Integrate_SemiImplicitEuler(float dt) {
 
