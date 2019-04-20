@@ -234,6 +234,24 @@ bool Simulation::GenerateAsteroidBelt() {
 }
 
 
+bool Simulation::GenerateTwoBodyOrbit() {
+
+
+	// create planet
+	Body* planet = new Body();
+	planet->Init(sf::Vector3f(0.0f, 0.0f, 0.0f), sf::Vector3f(0.0f, 0.0f, 0.0f), settings_.planetMass, settings_.integrationMethod);
+	planet->SetName("planet");
+	bodies_.push_back(planet);
+
+	// create satellite
+	Body* satellite = new Body();
+	satellite->Init(settings_.orbitStartPos, settings_.orbitStartVel, settings_.satelliteMass, settings_.integrationMethod);
+	satellite->SetName("satellite");
+	bodies_.push_back(satellite);
+
+}
+
+
 bool Simulation::GenerateSimulation(SIMULATION_MODE simMode) {
 
 
@@ -244,7 +262,7 @@ bool Simulation::GenerateSimulation(SIMULATION_MODE simMode) {
 		result = GenerateRandom();
 		break;
 	case Two_Body_Orbit:
-		//result = GenerateTwoBodyOrbit();
+		result = GenerateTwoBodyOrbit();
 		break;
 	case Even_Distribution:
 		result = GenerateGrid();
@@ -304,5 +322,21 @@ void Simulation::Render(float alpha) {
 		
 	}
 }
+
+
+
+Body* Simulation::GetBody(std::string bodyName) {
+
+	for (auto body : bodies_) {
+
+		if (body->Name() == bodyName) {
+
+			return body;
+		}
+	}
+
+	return nullptr;
+}
+
 
 

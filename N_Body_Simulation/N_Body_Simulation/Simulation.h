@@ -43,6 +43,8 @@ public:
 	inline int BodyCount() { return bodies_.size(); }
 
 
+	Body* GetBody(std::string bodyName);
+
 #if BENCHMARKING
 
 	inline std::vector<int> GetForceCalcTimes() { return forceCalcTimes_; }
@@ -65,6 +67,7 @@ protected:
 	bool GenerateGrid();
 	bool GenerateClusters();
 	bool GenerateAsteroidBelt();
+	bool GenerateTwoBodyOrbit();
 
 	// number of bodies currently in the simulation
 	int bodyCount_;
