@@ -52,3 +52,7 @@ constexpr auto INTERPOLATE_BETWEEN_FRAMES = true;
 
 
 #define BENCHMARKING		true
+
+// 0 = performance, 1 = accuracy
+#define TESTING_FOR			1
+

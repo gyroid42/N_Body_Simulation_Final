@@ -120,7 +120,9 @@ void BruteForce::TimeStepSingle(float dt) {
 	// Loop for each body and integrate it
 	for (auto body : bodies_) {
 
-		body->Integrate_SemiImplicitEuler(dt);
+		//body->Integrate_SemiImplicitEuler(dt);
+		std::invoke(body->Integrate, *body, dt);
+
 	}
 
 

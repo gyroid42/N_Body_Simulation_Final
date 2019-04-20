@@ -123,6 +123,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AccuracyTester.cpp" />
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="BarnesHut.cpp" />
     <ClCompile Include="BarnesHutCPU.cpp" />
@@ -151,6 +152,7 @@
     <ClCompile Include="ThreadFarm.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AccuracyTester.h" />
     <ClInclude Include="Application.h" />
     <ClInclude Include="BarnesHut.h" />
     <ClInclude Include="BarnesHutCPU.h" />

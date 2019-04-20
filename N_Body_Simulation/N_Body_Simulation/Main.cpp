@@ -20,6 +20,7 @@
 // my class includes
 #include "Application.h"
 #include "Benchmarker.h"
+#include "AccuracyTester.h"
 #include "Input.h"
 #include "SETTINGS.h"
 
@@ -220,10 +221,18 @@ int main(int argc, char *argv[])
 
 #if BENCHMARKING
 
+#if TESTING_FOR == 0
 	Benchmarker benchmarker;
 	
 	benchmarker.Init(input);
 	benchmarker.MainLoop();
+
+#elif TESTING_FOR == 1
+	AccuracyTester accuracyTester;
+
+	accuracyTester.Init(input);
+	accuracyTester.MainLoop();
+#endif
 
 	std::cout << "Benchmarking finished" << std::endl;
 

@@ -3,6 +3,8 @@
 #include "SETTINGS.h"
 #include "SettingsEnums.h"
 
+#include <SFML/System/Vector3.hpp>
+
 
 struct SimulationSettings {
 
@@ -41,13 +43,20 @@ struct SimulationSettings {
 
 	float theta;
 
-	// what to measure
-	bool dataTimeSteps;
-	bool dataForceCalculations;
-	bool dataCollisionChecks;
 
 
 	bool orderBodies;
+
+
+	int numPeriods;
+	float periodLength;
+	int stepsPerPeriod;
+
+	sf::Vector3f orbitStartPos;
+	sf::Vector3f orbitStartVel;
+	float satelliteMass;
+	float planetMass;
+
 
 	SimulationSettings(SIMULATION_METHOD newSimMethod = Barnes_Hut, INTEGRATION_METHOD newIntegrationMethod = Verlet, bool newCollision = true, bool newMultiThreading = MULTITHREADING, bool newTimingSteps = true) {
 		simMethod = newSimMethod;
