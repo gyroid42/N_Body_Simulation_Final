@@ -67,34 +67,129 @@ void Benchmarker::CreateSimulationSettings() {
 	// varying integration
 
 
+	SimulationSettings varyIntegration1;
+
+	varyIntegration1.simName = "SemiEuler_Direct";
+
+	varyIntegration1.collision = false;
+
+	varyIntegration1.integrationMethod = Semi_Implicit_Euler;
+
+	varyIntegration1.simMethod = Direct;
+	varyIntegration1.theta = 1.0f;
+	varyIntegration1.orderBodies = true;
+
+	varyIntegration1.simMode = Even_Distribution;
+	varyIntegration1.varyBodies = true;
+	varyIntegration1.bodyCount = 2000;
+
+	varyIntegration1.dt = 1.0f / 15.0f;
 
 
+	varyIntegration1.threadCount = 2;
+	varyIntegration1.multiThreading = true;
+	varyIntegration1.varyMultiThreading = true;
+
+	varyIntegration1.timingSteps = true;
 
 	
-	SimulationSettings test1;
-	test1.collision = true;
-	test1.dt = 1.0f / 15.0f;
-	test1.integrationMethod = Verlet;
-	test1.multiThreading = true;
-	test1.threadCount = 10;
-	test1.timingSteps = true;
-	test1.simMethod = Barnes_Hut;
-	test1.simMode = Random_Bodies;
-	test1.simName = "Test 1";
-	test1.varyBodies = true;
-	test1.bodyCount = 100;
-	test1.varyMultiThreading = true;
-	test1.maxSteps = 100;
-	test1.partitionSize = 10000.0f;
-	test1.theta = 1.0f;
-	test1.orderBodies = true;
+	varyIntegration1.maxSteps = 100;
+	varyIntegration1.partitionSize = 10000.0f;
 
-	benchmarkSettingsList_.push_back(test1);
 
-	SimulationSettings test2;
-	test2 = test1;
+	//benchmarkSettingsList_.push_back(varyIntegration1);
 
-	test2.simName = "Test 2";
+	varyIntegration1.threadCount = 1;
+
+
+	SimulationSettings varyIntegration4 = varyIntegration1;
+	varyIntegration4.simName = "SemiEuler_Barnes";
+	varyIntegration4.integrationMethod = Semi_Implicit_Euler;
+	varyIntegration4.simMethod = Barnes_Hut;
+
+	//benchmarkSettingsList_.push_back(varyIntegration4);
+
+	SimulationSettings varyIntegration5 = varyIntegration1;
+	varyIntegration5.simName = "ExplicitEuler_Barnes";
+	varyIntegration5.integrationMethod = Explicit_Euler;
+	varyIntegration5.simMethod = Barnes_Hut;
+
+	//benchmarkSettingsList_.push_back(varyIntegration5);
+
+	SimulationSettings varyIntegration6 = varyIntegration1;
+	varyIntegration6.simName = "Verlet_Barnes";
+	varyIntegration6.integrationMethod = Verlet;
+	varyIntegration6.simMethod = Barnes_Hut;
+
+	//benchmarkSettingsList_.push_back(varyIntegration6);
+
+	// vary theta and distribution
+	int i = 5;
+	for (float newTheta = 1.0f; newTheta <= 2.0f; newTheta += 0.2f) {
+
+		SimulationSettings varyTheta1 = varyIntegration1;
+		varyTheta1.simName = "EvenDis_Theta";
+		varyTheta1.simName += std::to_string(i);
+		varyTheta1.simMethod = Barnes_Hut;
+		varyTheta1.theta = newTheta;
+		varyTheta1.simMode = Even_Distribution;
+
+		//benchmarkSettingsList_.push_back(varyTheta1);
+
+		i++;
+	}
+
+	// vary theta and distribution
+	i = 0;
+	for (float newTheta = 0.6f; newTheta <= 2.0f; newTheta += 0.2f) {
+
+		SimulationSettings varyTheta1 = varyIntegration1;
+		varyTheta1.simName = "ClusterDis_Theta";
+		varyTheta1.simName += std::to_string(i);
+		varyTheta1.simMethod = Barnes_Hut;
+		varyTheta1.theta = newTheta;
+		varyTheta1.simMode = Clustered_Distribution;
+
+		//benchmarkSettingsList_.push_back(varyTheta1);
+
+		i++;
+	}
+
+
+	SimulationSettings noSort = varyIntegration1;
+	noSort.simName = "No_Sort";
+	noSort.simMethod = Barnes_Hut;
+	noSort.orderBodies = false;
+
+	benchmarkSettingsList_.push_back(noSort);
+
+
+	// collision stuffs
+	SimulationSettings collisionDirect = varyIntegration1;
+	collisionDirect.simName = "CollisionDirect";
+	collisionDirect.collision = true;
+	collisionDirect.simMode = Even_Distribution;
+
+	benchmarkSettingsList_.push_back(collisionDirect);
+
+	SimulationSettings collisionBarnes1 = varyIntegration1;
+	collisionBarnes1.simName = "Collision_Barnes_Even";
+	collisionBarnes1.collision = true;
+	collisionBarnes1.simMethod = Barnes_Hut;
+	collisionBarnes1.simMode = Even_Distribution;
+
+	benchmarkSettingsList_.push_back(collisionBarnes1);
+
+	SimulationSettings collisionBarnes2 = varyIntegration1;
+	collisionBarnes2.simName = "Collision_Barnes_Cluster";
+	collisionBarnes2.collision = true;
+	collisionBarnes2.simMethod = Barnes_Hut;
+	collisionBarnes2.simMode = Clustered_Distribution;
+
+	benchmarkSettingsList_.push_back(collisionBarnes2);
+
+	
+
 	//benchmarkSettingsList_.push_back(test2);
 }
 
@@ -290,7 +385,7 @@ void Benchmarker::MainLoop() {
 			}
 
 			// loop for each body count in body count list
-			for (int bodyCountIndex = 0; bodyCountIndex < 3; bodyCountIndex++) {
+			for (int bodyCountIndex = 0; bodyCountIndex < 10; bodyCountIndex++) {
 
 				// update body count for current simulation
 				if (currentSettings.varyBodies) {
@@ -378,31 +473,32 @@ void Benchmarker::MainLoop() {
 						forceMedian = orderedForceCalcTimes.at(orderedForceCalcTimes.size() / 2);
 
 
-						// COLLISION CHECK TIME
+						if (currentSettings.collision) {
+							// COLLISION CHECK TIME
 
-						// raw data
-						currentSheet->writeStr(15, 7 + bodyCountIndex * 11, "Collision Check Time");
+							// raw data
+							currentSheet->writeStr(15, 7 + bodyCountIndex * 11, "Collision Check Time");
 
-						std::vector<int> collisionCheckTimes = simulation_->GetCollisionCheckTimes();
-						for (int i = 0; i < collisionCheckTimes.size(); i++) {
+							std::vector<int> collisionCheckTimes = simulation_->GetCollisionCheckTimes();
+							for (int i = 0; i < collisionCheckTimes.size(); i++) {
 
-							currentSheet->writeNum(16 + i, 7 + bodyCountIndex * 11, collisionCheckTimes.at(i));
+								currentSheet->writeNum(16 + i, 7 + bodyCountIndex * 11, collisionCheckTimes.at(i));
+							}
+
+							// averages
+							currentSheet->writeStr(8, 7 + bodyCountIndex * 11, "Collision Check Time");
+
+							std::vector<int> orderedCollisionCheckTimes = Sort(collisionCheckTimes);
+							currentSheet->writeNum(9, 7 + bodyCountIndex * 11, orderedCollisionCheckTimes.at(0));
+							currentSheet->writeNum(10, 7 + bodyCountIndex * 11, orderedCollisionCheckTimes.at(orderedCollisionCheckTimes.size() / 4));
+							currentSheet->writeNum(11, 7 + bodyCountIndex * 11, orderedCollisionCheckTimes.at(orderedCollisionCheckTimes.size() / 2));
+							currentSheet->writeNum(12, 7 + bodyCountIndex * 11, orderedCollisionCheckTimes.at((orderedCollisionCheckTimes.size() * 3) / 4));
+							currentSheet->writeNum(13, 7 + bodyCountIndex * 11, orderedCollisionCheckTimes.at(orderedCollisionCheckTimes.size() - 1));
+
+
+							collisionMedian = orderedCollisionCheckTimes.at(orderedCollisionCheckTimes.size() / 2);
+
 						}
-
-						// averages
-						currentSheet->writeStr(8, 7 + bodyCountIndex * 11, "Collision Check Time");
-
-						std::vector<int> orderedCollisionCheckTimes = Sort(collisionCheckTimes);
-						currentSheet->writeNum(9, 7 + bodyCountIndex * 11, orderedCollisionCheckTimes.at(0));
-						currentSheet->writeNum(10, 7 + bodyCountIndex * 11, orderedCollisionCheckTimes.at(orderedCollisionCheckTimes.size() / 4));
-						currentSheet->writeNum(11, 7 + bodyCountIndex * 11, orderedCollisionCheckTimes.at(orderedCollisionCheckTimes.size() / 2));
-						currentSheet->writeNum(12, 7 + bodyCountIndex * 11, orderedCollisionCheckTimes.at((orderedCollisionCheckTimes.size() * 3) / 4));
-						currentSheet->writeNum(13, 7 + bodyCountIndex * 11, orderedCollisionCheckTimes.at(orderedCollisionCheckTimes.size() - 1));
-
-
-						collisionMedian = orderedCollisionCheckTimes.at(orderedCollisionCheckTimes.size() / 2);
-
-
 						// INTEGRATION TIME
 
 						// raw data
@@ -458,31 +554,32 @@ void Benchmarker::MainLoop() {
 
 
 
-							// SORT TIME
+							if (currentSettings.orderBodies) {
+								// SORT TIME
 
-							// raw data
-							currentSheet->writeStr(15, 10 + bodyCountIndex * 11, "Sort Time");
+								// raw data
+								currentSheet->writeStr(15, 10 + bodyCountIndex * 11, "Sort Time");
 
-							std::vector<int> sortTimes = ((BarnesHutCPU*)simulation_)->GetSortTimes();
-							for (int i = 0; i < sortTimes.size(); i++) {
+								std::vector<int> sortTimes = ((BarnesHutCPU*)simulation_)->GetSortTimes();
+								for (int i = 0; i < sortTimes.size(); i++) {
 
-								currentSheet->writeNum(16 + i, 10 + bodyCountIndex * 11, sortTimes.at(i));
+									currentSheet->writeNum(16 + i, 10 + bodyCountIndex * 11, sortTimes.at(i));
+								}
+
+
+								// averages
+								currentSheet->writeStr(8, 10 + bodyCountIndex * 11, "Sort Time");
+
+								std::vector<int> orderedSortTimes = Sort(sortTimes);
+								currentSheet->writeNum(9, 10 + bodyCountIndex * 11, orderedSortTimes.at(0));
+								currentSheet->writeNum(10, 10 + bodyCountIndex * 11, orderedSortTimes.at(orderedSortTimes.size() / 4));
+								currentSheet->writeNum(11, 10 + bodyCountIndex * 11, orderedSortTimes.at(orderedSortTimes.size() / 2));
+								currentSheet->writeNum(12, 10 + bodyCountIndex * 11, orderedSortTimes.at((orderedSortTimes.size() * 3) / 4));
+								currentSheet->writeNum(13, 10 + bodyCountIndex * 11, orderedSortTimes.at(orderedSortTimes.size() - 1));
+
+
+								sortMedian = orderedSortTimes.at(orderedSortTimes.size() / 2);
 							}
-
-
-							// averages
-							currentSheet->writeStr(8, 10 + bodyCountIndex * 11, "Sort Time");
-
-							std::vector<int> orderedSortTimes = Sort(sortTimes);
-							currentSheet->writeNum(9, 10 + bodyCountIndex * 11, orderedSortTimes.at(0));
-							currentSheet->writeNum(10, 10 + bodyCountIndex * 11, orderedSortTimes.at(orderedSortTimes.size() / 4));
-							currentSheet->writeNum(11, 10 + bodyCountIndex * 11, orderedSortTimes.at(orderedSortTimes.size() / 2));
-							currentSheet->writeNum(12, 10 + bodyCountIndex * 11, orderedSortTimes.at((orderedSortTimes.size() * 3) / 4));
-							currentSheet->writeNum(13, 10 + bodyCountIndex * 11, orderedSortTimes.at(orderedSortTimes.size() - 1));
-
-
-							sortMedian = orderedSortTimes.at(orderedSortTimes.size() / 2);
-
 						}
 
 
@@ -515,32 +612,32 @@ void Benchmarker::MainLoop() {
 						numForceCalcMedian = orderedNumForceCalcs.at(orderedNumForceCalcs.size() / 2);
 
 
+						if (currentSettings.collision) {
+							// NUM OF COLLISION CHECKS
 
-						// NUM OF COLLISION CHECKS
+							// raw data
+							currentSheet->writeStr(15, 13 + bodyCountIndex * 11, "Num Collision Checks");
+							std::vector<int> numCollisionChecks = simulation_->GetNumCollisionChecks();
+							for (int i = 0; i < numCollisionChecks.size(); i++) {
 
-						// raw data
-						currentSheet->writeStr(15, 13 + bodyCountIndex * 11, "Num Collision Checks");
-						std::vector<int> numCollisionChecks = simulation_->GetNumCollisionChecks();
-						for (int i = 0; i < numCollisionChecks.size(); i++) {
+								currentSheet->writeNum(16 + i, 13 + bodyCountIndex * 11, numCollisionChecks.at(i));
+							}
 
-							currentSheet->writeNum(16 + i, 13 + bodyCountIndex * 11, numCollisionChecks.at(i));
+
+							// averages
+							currentSheet->writeStr(8, 13 + bodyCountIndex * 11, "Num Collision Checks");
+
+							std::vector<int> orderedNumCollisionChecks = Sort(numCollisionChecks);
+							currentSheet->writeNum(9, 13 + bodyCountIndex * 11, orderedNumCollisionChecks.at(0));
+							currentSheet->writeNum(10, 13 + bodyCountIndex * 11, orderedNumCollisionChecks.at(orderedNumCollisionChecks.size() / 4));
+							currentSheet->writeNum(11, 13 + bodyCountIndex * 11, orderedNumCollisionChecks.at(orderedNumCollisionChecks.size() / 2));
+							currentSheet->writeNum(12, 13 + bodyCountIndex * 11, orderedNumCollisionChecks.at((orderedNumCollisionChecks.size() * 3) / 4));
+							currentSheet->writeNum(13, 13 + bodyCountIndex * 11, orderedNumCollisionChecks.at(orderedNumCollisionChecks.size() - 1));
+
+
+							numCollisionCheckMedian = orderedNumCollisionChecks.at(orderedNumCollisionChecks.size() / 2);
+
 						}
-
-
-						// averages
-						currentSheet->writeStr(8, 13 + bodyCountIndex * 11, "Num Collision Checks");
-
-						std::vector<int> orderedNumCollisionChecks = Sort(numCollisionChecks);
-						currentSheet->writeNum(9, 13 + bodyCountIndex * 11, orderedNumCollisionChecks.at(0));
-						currentSheet->writeNum(10, 13 + bodyCountIndex * 11, orderedNumCollisionChecks.at(orderedNumCollisionChecks.size() / 4));
-						currentSheet->writeNum(11, 13 + bodyCountIndex * 11, orderedNumCollisionChecks.at(orderedNumCollisionChecks.size() / 2));
-						currentSheet->writeNum(12, 13 + bodyCountIndex * 11, orderedNumCollisionChecks.at((orderedNumCollisionChecks.size() * 3) / 4));
-						currentSheet->writeNum(13, 13 + bodyCountIndex * 11, orderedNumCollisionChecks.at(orderedNumCollisionChecks.size() - 1));
-
-
-						numCollisionCheckMedian = orderedNumCollisionChecks.at(orderedNumCollisionChecks.size() / 2);
-
-
 #endif
 					}
 					else {
@@ -584,9 +681,12 @@ void Benchmarker::MainLoop() {
 						summarySheet->writeNum(7 + bodyCountIndex * 12, 8 + threadIndex * 2, forceMedian);
 						summarySheet->writeNum(7 + bodyCountIndex * 12, 9 + threadIndex * 2, 100 * forceMedian / totalTime);
 
-						// Collision calc time
-						summarySheet->writeNum(8 + bodyCountIndex * 12, 8 + threadIndex * 2, collisionMedian);
-						summarySheet->writeNum(8 + bodyCountIndex * 12, 9 + threadIndex * 2, 100 * collisionMedian / totalTime);
+						if (currentSettings.collision) {
+
+							// Collision calc time
+							summarySheet->writeNum(8 + bodyCountIndex * 12, 8 + threadIndex * 2, collisionMedian);
+							summarySheet->writeNum(8 + bodyCountIndex * 12, 9 + threadIndex * 2, 100 * collisionMedian / totalTime);
+						}
 
 						// Integration calc time
 						summarySheet->writeNum(9 + bodyCountIndex * 12, 8 + threadIndex * 2, integrationMedian);
@@ -596,20 +696,24 @@ void Benchmarker::MainLoop() {
 						summarySheet->writeNum(10 + bodyCountIndex * 12, 8 + threadIndex * 2, insertMedian);
 						summarySheet->writeNum(10 + bodyCountIndex * 12, 9 + threadIndex * 2, 100 * insertMedian / totalTime);
 
-						// sort calc time
-						summarySheet->writeNum(11 + bodyCountIndex * 12, 8 + threadIndex * 2, sortMedian);
-						summarySheet->writeNum(11 + bodyCountIndex * 12, 9 + threadIndex * 2, 100 * sortMedian / totalTime);
+						if (currentSettings.orderBodies) {
 
+							// sort calc time
+							summarySheet->writeNum(11 + bodyCountIndex * 12, 8 + threadIndex * 2, sortMedian);
+							summarySheet->writeNum(11 + bodyCountIndex * 12, 9 + threadIndex * 2, 100 * sortMedian / totalTime);
+						}
 
 
 						// write num Force Calcs
 						summarySheet->writeStr(7 + bodyCountIndex * 12, 5, "Num Force Calc");
 						summarySheet->writeNum(8 + bodyCountIndex * 12, 5, numForceCalcMedian);
 
-						// write num Collision Check
-						summarySheet->writeStr(10 + bodyCountIndex * 12, 5, "Num Collision Check");
-						summarySheet->writeNum(11 + bodyCountIndex * 12, 5, numCollisionCheckMedian);
+						if (currentSettings.collision) {
 
+							// write num Collision Check
+							summarySheet->writeStr(10 + bodyCountIndex * 12, 5, "Num Collision Check");
+							summarySheet->writeNum(11 + bodyCountIndex * 12, 5, numCollisionCheckMedian);
+						}
 					}
 					else {
 

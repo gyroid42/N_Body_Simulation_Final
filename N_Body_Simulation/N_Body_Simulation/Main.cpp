@@ -64,7 +64,7 @@ float GetFrameTime() {
 	return (float)cycles / (float)clock_frequency;
 }
 
-void Render() {
+void MainLoop() {
 
 	// Get time this frame
 	float frameTime = GetFrameTime();
@@ -193,9 +193,9 @@ void Setup() {
 	glClearColor(0.0f, 1.0f, 1.0f, 1.0f);
 
 	// setup glut functions
-	glutDisplayFunc(Render);
+	glutDisplayFunc(MainLoop);
 	glutReshapeFunc(Resize);
-	glutIdleFunc(Render);
+	glutIdleFunc(MainLoop);
 
 
 	// input callback functions

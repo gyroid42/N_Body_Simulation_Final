@@ -51,4 +51,4 @@ constexpr auto INTERPOLATE_BETWEEN_FRAMES = true;
 #define DEFAULT_THETA		1.0f
 
 
-#define BENCHMARKING		false
+#define BENCHMARKING		true
