@@ -249,6 +249,8 @@ bool Simulation::GenerateTwoBodyOrbit() {
 	satellite->SetName("satellite");
 	bodies_.push_back(satellite);
 
+
+	return true;
 }
 
 

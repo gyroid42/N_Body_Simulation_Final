@@ -62,15 +62,72 @@ void AccuracyTester::Init(Input* newInput) {
 
 void AccuracyTester::CreateSimulationSettings() {
 
+	// create base settings
 
-	SimulationSettings meh;
-	meh.simName = "meh";
-	meh.satelliteMass = 100.0f;
-	meh.planetMass = 1.45E+22f;
-	meh.orbitStartPos = sf::Vector3f(1.0E+7f, 0.0f, 0.0f);
+	// vary number of steps per orbit from 20 to 100
+	// adding 10 each time
 
-	simSettings_.push_back(meh);
+	// timestep = period time / number of steps
 
+	SimulationSettings orbit;
+	orbit.simName = "Verlet_Orbit_Steps";
+	orbit.collision = false;
+	orbit.integrationMethod = Verlet;
+	orbit.simMethod = Direct;
+	orbit.simMode = Two_Body_Orbit;
+	orbit.threadCount = 1;
+	orbit.multiThreading = false;
+	
+	orbit.planetMass = 1.0E+17f;
+	orbit.satelliteMass = 100.0f;
+	orbit.orbitStartPos = sf::Vector3f(2000.0f, 0.0f, 0.0f);
+
+	float orbitDistance = PhysicsUtil::VectorLength(orbit.orbitStartPos);
+
+	orbit.orbitStartVel = sf::Vector3f(0.0f, sqrtf(PhysicsUtil::G * orbit.planetMass / orbitDistance), 0.0f);
+
+	orbit.numPeriods = 100;
+	orbit.periodLength = 2.0f * PhysicsUtil::pi * orbitDistance * sqrtf(orbitDistance) / sqrtf(PhysicsUtil::G * orbit.planetMass);
+
+
+	for (int numSteps = 10; numSteps <= 200; numSteps += 10) {
+
+		SimulationSettings newOrbit = orbit;
+		newOrbit.simName += std::to_string(numSteps);
+		newOrbit.stepsPerPeriod = numSteps;
+		newOrbit.dt = newOrbit.periodLength / (float)numSteps;
+		
+
+		simSettings_.push_back(newOrbit);
+	}
+
+	orbit.simName = "Semi_Orbit_Steps";
+	orbit.integrationMethod = Semi_Implicit_Euler;
+
+	for (int numSteps = 10; numSteps <= 200; numSteps += 10) {
+
+		SimulationSettings newOrbit = orbit;
+		newOrbit.simName += std::to_string(numSteps);
+		newOrbit.stepsPerPeriod = numSteps;
+		newOrbit.dt = newOrbit.periodLength / (float)numSteps;
+
+
+		simSettings_.push_back(newOrbit);
+	}
+
+	orbit.simName = "Explicit_Orbit_Steps";
+	orbit.integrationMethod = Explicit_Euler;
+
+	for (int numSteps = 10; numSteps <= 200; numSteps += 10) {
+
+		SimulationSettings newOrbit = orbit;
+		newOrbit.simName += std::to_string(numSteps);
+		newOrbit.stepsPerPeriod = numSteps;
+		newOrbit.dt = newOrbit.periodLength / (float)numSteps;
+
+
+		simSettings_.push_back(newOrbit);
+	}
 }
 
 
@@ -84,6 +141,8 @@ void AccuracyTester::MainLoop() {
 		outputBook_ = xlCreateBook();
 
 		std::cout << std::endl << "running " << currentSettings.simName << " test..." << std::endl;
+
+		StartSimulation(&currentSettings);
 
 		libxl::Sheet* currentSheet = nullptr;
 		
@@ -199,16 +258,12 @@ void AccuracyTester::MainLoop() {
 				currentSheet->writeStr(10, 6, "Distance From Solution");
 				currentSheet->writeStr(10, 7, "Orbit Distance");
 				currentSheet->writeStr(10, 8, "Distance From Actual Orbit");
-				currentSheet->writeFormula(11, 8, "=H12-J6");
+				currentSheet->writeFormula(11, 8, "=H12-$J$6");
 				currentSheet->writeStr(10, 9, "Energy");
 				currentSheet->writeStr(10, 10, "Delta Energy");
-				currentSheet->writeFormula(11, 8, "=J12-H9");
+				currentSheet->writeFormula(11, 10, "=J12-$H$9");
 			}
 		}
-
-		std::string fileName = currentSettings.simName + ".xls";
-
-		outputBook_->save(fileName.c_str());
 
 
 		// for each period
@@ -242,7 +297,7 @@ void AccuracyTester::MainLoop() {
 					currentSheet->writeNum(11 + period, 6, PhysicsUtil::VectorLength(distanceVector));
 
 
-					currentSheet->writeNum(11 + period, 7, PhysicsUtil::VectorLength(satellite->Position));
+					currentSheet->writeNum(11 + period, 7, PhysicsUtil::VectorLength(satellite->Position()));
 
 					// calculate energy
 					float kineticEnergy = 0.5f * satellite->Mass() * PhysicsUtil::VectorLengthSqr(satellite->Velocity());
@@ -259,19 +314,31 @@ void AccuracyTester::MainLoop() {
 
 			// get orbit distance
 
-			
+			std::cout << "Finished orbit" << std::endl;
+
 
 		}
 
-		// for number of time steps per period
-		// simulate a step
-		// end for
 
-		// add period and data to current sheet
+		std::cout << "saving results..." << std::endl;
 
-		// end for
+		if (outputBook_) {
 
+			std::string fileName = currentSettings.simName + ".xls";
 
+			outputBook_->save(fileName.c_str());
+			outputBook_->release();
+			outputBook_ = nullptr;
+
+			std::cout << "saving complete" << std::endl << std::endl;
+		}
+		else {
+
+			std::cout << "save failed" << std::endl;
+			std::cout << "press any key to continue";
+			_getch();
+			std::cout << std::endl << std::endl;
+		}
 
 	}
 }
