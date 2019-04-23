@@ -53,6 +53,6 @@ constexpr auto INTERPOLATE_BETWEEN_FRAMES = true;
 
 #define BENCHMARKING		true
 
-// 0 = performance, 1 = accuracy
-#define TESTING_FOR			1
+// 0 = performance, 1 = accuracy, 2 = barnes hut accuracy test
+#define TESTING_FOR			2
 

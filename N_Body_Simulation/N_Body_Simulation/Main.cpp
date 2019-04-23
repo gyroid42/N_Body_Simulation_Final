@@ -21,6 +21,7 @@
 #include "Application.h"
 #include "Benchmarker.h"
 #include "AccuracyTester.h"
+#include "BarnesHutAccuracyTester.h"
 #include "Input.h"
 #include "SETTINGS.h"
 
@@ -232,6 +233,13 @@ int main(int argc, char *argv[])
 
 	accuracyTester.Init(input);
 	accuracyTester.MainLoop();
+
+#elif TESTING_FOR == 2
+	BarnesHutAccuracyTester accuracyTester;
+
+	accuracyTester.Init(input);
+	accuracyTester.MainLoop();
+
 #endif
 
 	std::cout << "Benchmarking finished" << std::endl;

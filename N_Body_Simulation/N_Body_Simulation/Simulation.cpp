@@ -165,6 +165,8 @@ bool Simulation::GenerateGrid() {
 
 bool Simulation::GenerateClusters() {
 
+
+	int bodyIndex = 0;
 	
 	// split the number of bodies into 8
 	int numBodiesCluster = settings_.bodyCount / 8;
@@ -212,6 +214,10 @@ bool Simulation::GenerateClusters() {
 
 					// Set default colour
 					newBody->SetColour(sf::Vector3f(0.0f, 0.0f, 1.0f));
+
+					// Set body name
+					newBody->SetName(std::to_string(bodyIndex));
+					bodyIndex++;
 
 					// Add to bodies list
 					bodies_.push_back(newBody);
