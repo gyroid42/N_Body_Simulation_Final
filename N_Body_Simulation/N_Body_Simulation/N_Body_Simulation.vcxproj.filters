@@ -116,6 +116,9 @@
     <ClCompile Include="AccuracyTester.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="BarnesHutAccuracyTester.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -209,6 +212,9 @@
       <Filter>Source Files\Simulation</Filter>
     </ClInclude>
     <ClInclude Include="AccuracyTester.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BarnesHutAccuracyTester.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -126,6 +126,7 @@
     <ClCompile Include="AccuracyTester.cpp" />
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="BarnesHut.cpp" />
+    <ClCompile Include="BarnesHutAccuracyTester.cpp" />
     <ClCompile Include="BarnesHutCPU.cpp" />
     <ClCompile Include="Benchmarker.cpp" />
     <ClCompile Include="Body.cpp" />
@@ -155,6 +156,7 @@
     <ClInclude Include="AccuracyTester.h" />
     <ClInclude Include="Application.h" />
     <ClInclude Include="BarnesHut.h" />
+    <ClInclude Include="BarnesHutAccuracyTester.h" />
     <ClInclude Include="BarnesHutCPU.h" />
     <ClInclude Include="Benchmarker.h" />
     <ClInclude Include="Body.h" />
