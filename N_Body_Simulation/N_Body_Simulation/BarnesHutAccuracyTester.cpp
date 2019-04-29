@@ -64,7 +64,7 @@ void BarnesHutAccuracyTester::CreateSimulationSettings() {
 
 	SimulationSettings thetaTest;
 
-	thetaTest.simName = "BarnesHutAccuracy";
+	thetaTest.simName = "BarnesHutAccuracy2";
 
 	thetaTest.collision = false;
 
@@ -202,7 +202,7 @@ void BarnesHutAccuracyTester::MainLoop() {
 		StartSimulation(&currentSettings);
 
 
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < 10; i++) {
 
 			for (int timeStep = 0; timeStep < 10; timeStep++) {
 
@@ -232,7 +232,7 @@ void BarnesHutAccuracyTester::MainLoop() {
 
 		int testIndex = 0;
 
-		for (float newTheta = 0.6f; newTheta <= 2.0f; newTheta += 0.2f) {
+		for (float newTheta = 0.6f; newTheta <= 2.1f; newTheta += 0.2f) {
 
 			currentSettings.theta = newTheta;
 
@@ -251,12 +251,13 @@ void BarnesHutAccuracyTester::MainLoop() {
 			currentSheet->writeStr(9, 9 + 8 * testIndex, "Median");
 			currentSheet->writeStr(9, 10 + 8 * testIndex, "Q3");
 			currentSheet->writeStr(9, 11 + 8 * testIndex, "Max");
+			currentSheet->writeStr(9, 12 + 8 * testIndex, "Mean");
 
 
 
 			StartSimulation(&currentSettings);
 
-			for (int i = 0; i < 5; i++) {
+			for (int i = 0; i < 10; i++) {
 
 				for (int timeStep = 0; timeStep < 10; timeStep++) {
 
@@ -296,6 +297,16 @@ void BarnesHutAccuracyTester::MainLoop() {
 				currentSheet->writeNum(10 + i, 10 + 8 * testIndex, Q3);
 				currentSheet->writeNum(10 + i, 11 + 8 * testIndex, max);
 
+
+				float totalDistance = 0.0f;
+				for (auto distance : distanceSorted) {
+
+					totalDistance += distance;
+				}
+
+				float meanDistance = totalDistance / distanceSorted.size();
+
+				currentSheet->writeNum(10 + i, 12 + 8 * testIndex, meanDistance);
 
 			}
 

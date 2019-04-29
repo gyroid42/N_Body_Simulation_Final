@@ -314,7 +314,7 @@ void AccuracyTester::MainLoop() {
 
 			// get orbit distance
 
-			std::cout << "Finished orbit" << std::endl;
+			//std::cout << "Finished orbit" << std::endl;
 
 
 		}

@@ -12,7 +12,7 @@
 #define RANDOM_BODY_MAX_Z	4720.0f
 #define RANDOM_BODY_MASS	1.0E13f
 
-#define ADD_ORBIT_BODIES	true
+#define ADD_ORBIT_BODIES	false
 
 
 #define TEST_SIMULATION		false
@@ -41,7 +41,7 @@ constexpr auto INTERPOLATE_BETWEEN_FRAMES = true;
 #define COLLISION_REACTION	0
 
 #define MULTITHREADING		true
-#define NUM_OF_THREADS		8
+#define NUM_OF_THREADS		12
 
 
 
@@ -51,7 +51,7 @@ constexpr auto INTERPOLATE_BETWEEN_FRAMES = true;
 #define DEFAULT_THETA		1.0f
 
 
-#define BENCHMARKING		true
+#define BENCHMARKING		false
 
 // 0 = performance, 1 = accuracy, 2 = barnes hut accuracy test
 #define TESTING_FOR			2

@@ -228,6 +228,38 @@ bool Simulation::GenerateClusters() {
 		}
 	}
 
+
+
+	if (ADD_ORBIT_BODIES) {
+
+		Body* planet = new Body();
+		planet->Init(sf::Vector3f(500.0f, 500.0f, 500.0f), sf::Vector3f(50.0f, 50.0f, 50.0f), 1.0E17f, settings_.integrationMethod);
+		planet->SetColour(sf::Vector3f(1.0f, 0.0f, 0.0f));
+		bodies_.push_back(planet);
+
+		Body* satelite = new Body();
+		satelite->Init(sf::Vector3f(500.0f, 500.0f, 400.0f), sf::Vector3f(50.0f, -258.3215f + 50.0f, 50.0f), 100, settings_.integrationMethod);
+		satelite->SetColour(sf::Vector3f(0.0f, 0.5f, 0.5f));
+		bodies_.push_back(satelite);
+
+		Body* satelite2 = new Body();
+		satelite2->Init(sf::Vector3f(200.0f, 500.0f, 500.0f), sf::Vector3f(50.0f, -149.14199f + 50.0f, 50.0f), 100, settings_.integrationMethod);
+		satelite2->SetColour(sf::Vector3f(0.0f, 0.5f, 0.5f));
+		bodies_.push_back(satelite2);
+
+
+		Body* satelite3 = new Body();
+		satelite3->Init(sf::Vector3f(500.0f, -505.0f, 500.0f), sf::Vector3f(-115.5249f + 50.0f, 50.0f, 50.0f), 100, settings_.integrationMethod);
+		satelite3->SetColour(sf::Vector3f(0.0f, 0.5f, 0.5f));
+		bodies_.push_back(satelite3);
+
+		Body* satelite4 = new Body();
+		satelite4->Init(sf::Vector3f(500.0f, -500.0f, 500.0f), sf::Vector3f(81.68843f + 50.0f, 50.0f, 50.0f), 100, settings_.integrationMethod);
+		satelite4->SetColour(sf::Vector3f(0.0f, 0.5f, 0.5f));
+		bodies_.push_back(satelite4);
+
+	}
+
 	return true;
 }
 

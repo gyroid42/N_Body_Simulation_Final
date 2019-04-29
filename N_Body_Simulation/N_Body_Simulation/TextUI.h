@@ -9,7 +9,7 @@ struct TextUI {
 	char bodyCount[40];
 	char simMode[40];
 	char simMethod[40];
-	char integrationMethod[40];
+	char integrationMethod[60];
 	char multiThreading[40];
 	char collision[40];
 	char timingSteps[40];

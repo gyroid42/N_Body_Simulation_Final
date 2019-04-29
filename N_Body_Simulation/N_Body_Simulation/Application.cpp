@@ -59,9 +59,9 @@ void Application::Init(Input* newInput) {
 	SimulationSettings newSimSettings;
 	newSimSettings.collision = COLLISION;
 	newSimSettings.simMethod = Barnes_Hut;
-	newSimSettings.integrationMethod = Verlet;
-	newSimSettings.simMode = Clustered_Distribution;
-	newSimSettings.bodyCount = 1020;
+	newSimSettings.integrationMethod = Semi_Implicit_Euler;
+	newSimSettings.simMode = Random_Bodies;
+	newSimSettings.bodyCount = 1500;
 
 	// Create and start simulation
 	switch (newSimSettings.simMethod) {
