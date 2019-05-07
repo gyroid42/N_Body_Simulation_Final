@@ -76,6 +76,8 @@ void BarnesHutCPU::CleanUp() {
 void BarnesHutCPU::TimeStep(float dt) {
 
 
+	Simulation::TimeStep(dt);
+
 	// Call the TimeStep method being used
 	(this->*timeStepFunc_)(dt);
 
@@ -377,6 +379,7 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 	if (settings_.orderBodies) {
 		// Construct new ordered bodies list
 
+		std::unique_lock<std::mutex> lock(bodyListMutex_);
 		// clear bodieslist
 		bodies_.clear();
 

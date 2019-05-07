@@ -348,13 +348,14 @@ bool Simulation::Reset() {
 // Virtual method
 void Simulation::TimeStep(float dt) {
 
-
+	ShiftBodyStates();
 	
 }
 
 
 void Simulation::Render(float alpha) {
 
+	std::unique_lock<std::mutex> lock(bodyListMutex_);
 	// loop for each body and draw it
 	for (auto body : bodies_) {
 
@@ -378,5 +379,16 @@ Body* Simulation::GetBody(std::string bodyName) {
 	return nullptr;
 }
 
+
+
+void Simulation::ShiftBodyStates() {
+
+	std::unique_lock<std::mutex> lock(bodyListMutex_);
+	for (auto body : bodies_) {
+
+		body->ShiftStates();
+	}
+
+}
 
 

@@ -7,12 +7,15 @@
 #include "Simulation.h"
 #include "BruteForce.h"
 #include "BarnesHutCPU.h"
+#include "Semaphore.h"
 
 
 Application::Application() :
 	simulation_(nullptr),
 	input_(nullptr),
-	simSettings_(nullptr)
+	simSettings_(nullptr),
+	physicsThread_(nullptr),
+	timeStepCounter_(nullptr)
 {
 }
 
@@ -32,6 +35,14 @@ Application::~Application()
 		delete simulation_;
 		simulation_ = nullptr;
 	}
+
+	if (physicsThread_) {
+
+		running_ = false;
+		timeStepCounter_->Signal();
+		physicsThread_->join();
+		
+	}
 }
 
 
@@ -42,6 +53,8 @@ void Application::Init(Input* newInput) {
 
 	// get reference to input
 	input_ = newInput;
+
+	running_ = true;
 
 	// OpenGL settings
 	glShadeModel(GL_SMOOTH);
@@ -62,6 +75,8 @@ void Application::Init(Input* newInput) {
 	newSimSettings.integrationMethod = Semi_Implicit_Euler;
 	newSimSettings.simMode = Random_Bodies;
 	newSimSettings.bodyCount = 1500;
+	newSimSettings.dt = 1.0f / 15.0f;
+	newSimSettings.theta = 1.6f;
 
 	// Create and start simulation
 	switch (newSimSettings.simMethod) {
@@ -87,11 +102,25 @@ void Application::Init(Input* newInput) {
 
 	UpdateUIText();
 
+	timeAccumulator_ = 0.0f;
+	timeStepCounter_ = new Semaphore();
+
+	physicsThread_ = new std::thread(std::mem_fun(&Application::FixedUpdate), this, simSettings_->dt);
+
 }
 
 
 bool Application::Update(float frameTime) {
 
+
+	timeAccumulator_ += frameTime;
+
+	while (timeAccumulator_ >= simSettings_->dt) {
+
+
+		timeStepCounter_->Signal();
+		timeAccumulator_ -= simSettings_->dt;
+	}
 
 	// Check user input
 	CheckInput(frameTime);
@@ -106,6 +135,23 @@ bool Application::Update(float frameTime) {
 	input_->Update();
 
 	return true;
+}
+
+
+
+void Application::FixedUpdate(float dt) {
+
+
+	while (running_) {
+
+		timeStepCounter_->Wait();
+
+		if (!running_) {
+
+			break;
+		}
+		simulation_->TimeStep(dt);
+	}
 }
 
 
@@ -149,7 +195,7 @@ void Application::CheckInput(float frameTime) {
 bool Application::SimulationStep(float t, float dt) {
 
 	// do a time step in the simulation
-	simulation_->TimeStep(dt);
+	simulation_->TimeStep(dt * SIMULATION_SPEED);
 
 	return true;
 }

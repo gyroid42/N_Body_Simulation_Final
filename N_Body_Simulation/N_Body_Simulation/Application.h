@@ -1,6 +1,9 @@
 #pragma once
 
 
+// Include standard library
+#include <thread>
+
 // Include Glut stuffs
 #include <GL\glut.h>
 #include <GL\GL.h>
@@ -15,6 +18,7 @@
 // Forward Declarations
 class Simulation;
 class Input;
+class Semaphore;
 
 struct SimulationSettings;
 
@@ -31,6 +35,9 @@ public:
 
 	// Update called each frame
 	bool Update(float frameTime);
+
+	// Fixed Update called at fixed interval of time
+	void FixedUpdate(float dt);
 
 	// SimulationStep called each time a physics step happens
 	bool SimulationStep(float t, float dt);
@@ -75,5 +82,13 @@ protected:
 	SIMULATION_MODE simMode_;
 
 	TextUI textUI_;
+
+
+	std::thread* physicsThread_;
+	Semaphore* timeStepCounter_;
+
+	float timeAccumulator_;
+
+	bool running_;
 };
 

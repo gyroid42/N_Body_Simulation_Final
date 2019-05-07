@@ -35,14 +35,17 @@ void Body::Init(sf::Vector3f newPos, sf::Vector3f newVel, float newMass, INTEGRA
 	ResetForce();
 
 	// Update previous and current states
-	currentState_.position_ = newPos;
-	currentState_.velocity_ = newVel;
+	states_[0].position_ = newPos;
+	states_[0].velocity_ = newVel;
 
-	prevStates_[0].position_ = newPos;
-	prevStates_[0].velocity_ = newVel;
+	states_[1].position_ = newPos;
+	states_[1].velocity_ = newVel;
 
-	prevStates_[1].position_ = newPos;
-	prevStates_[1].velocity_ = newVel;
+	states_[2].position_ = newPos;
+	states_[2].velocity_ = newVel;
+
+	states_[3].position_ = newPos;
+	states_[3].velocity_ = newVel;
 
 	initialCounter_ = 0;
 
@@ -124,39 +127,39 @@ void Body::ResetForce() {
 
 void Body::Integrate_ExplicitEuler(float dt) {
 
-	prevStates_[0] = currentState_;
+	//states_[1] = states_[0];
 
 	acceleration_ = force_ / mass_;
 
-	currentState_.position_ += currentState_.velocity_ * dt;
-	currentState_.velocity_ += acceleration_ * dt;
+	states_[0].position_ += states_[0].velocity_ * dt;
+	states_[0].velocity_ += acceleration_ * dt;
 	
 }
 
 void Body::Integrate_SemiImplicitEuler(float dt) {
 
 	// set previous state before integrating
-	prevStates_[0] = currentState_;
+	//prevStates_[0] = currentState_;
 
 	acceleration_ = force_ / mass_;
 
 	// calculate velocity then position linearly
-	currentState_.velocity_ += acceleration_ * dt;
-	currentState_.position_ += currentState_.velocity_ * dt;
+	states_[0].velocity_ += acceleration_ * dt;
+	states_[0].position_ += states_[0].velocity_ * dt;
 }
 
 void Body::Integrate_Verlet(float dt) {
 
 
 	// set previous states from last frame
-	prevStates_[1] = prevStates_[0];
-	prevStates_[0] = currentState_;
+	//prevStates_[1] = prevStates_[0];
+	//prevStates_[0] = currentState_;
 
 	// get next position
-	currentState_.position_ = 2.0f * prevStates_[0].position_ - prevStates_[1].position_ + (force_ / mass_) * dt * dt;
+	states_[0].position_ = 2.0f * states_[1].position_ - states_[2].position_ + (force_ / mass_) * dt * dt;
 
 	// get next velocity
-	currentState_.velocity_ = (currentState_.position_ - prevStates_[1].position_) / (2.0f * dt);
+	states_[0].velocity_ = (states_[0].position_ - states_[2].position_) / (2.0f * dt);
 	
 }
 
@@ -176,13 +179,13 @@ void Body::Integrate_VerletStart(float dt) {
 
 void Body::Integrate_VelocityVerlet(float dt) {
 
-	prevStates_[0] = currentState_;
+	//prevStates_[0] = currentState_;
 
-	sf::Vector3f halfVel = currentState_.velocity_ + 0.5f * dt * acceleration_;
-	currentState_.position_ += dt * halfVel;
+	//sf::Vector3f halfVel = currentState_.velocity_ + 0.5f * dt * acceleration_;
+	//currentState_.position_ += dt * halfVel;
 
 	acceleration_ = force_ / mass_;
-	currentState_.velocity_ = halfVel + 0.5f * dt * acceleration_;
+	//currentState_.velocity_ = halfVel + 0.5f * dt * acceleration_;
 }
 
 
@@ -203,7 +206,14 @@ void Body::Integrate_VelVerletStart(float dt) {
 State Body::InterpolateState(float alpha) {
 
 	// Larps between the previous state and current state given alpha (0-1)
-	return (currentState_ * alpha) + (prevStates_[0] * (1.0f - alpha));
+	return (states_[1] * alpha) + (states_[2] * (1.0f - alpha));
+}
+
+
+void Body::ShiftStates() {
+
+	states_[2] = states_[1];
+	states_[1] = states_[0];
 }
 
 

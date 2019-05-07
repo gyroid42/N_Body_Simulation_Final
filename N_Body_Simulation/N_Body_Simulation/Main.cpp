@@ -76,6 +76,7 @@ void MainLoop() {
 		frameTime = kTargetFrameTime;
 	}
 
+	/*
 	// add frametime to accumulator
 	accumulator += frameTime;
 
@@ -89,6 +90,7 @@ void MainLoop() {
 		accumulator -= dt;
 		t += dt * SIMULATION_SPEED;
 	}
+	*/
 
 	// Update the application
 	app->Update(frameTime);

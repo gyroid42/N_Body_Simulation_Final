@@ -50,6 +50,7 @@ struct State {
 };
 
 
+
 class Body
 {
 public:
@@ -81,6 +82,7 @@ public:
 
 	// Interpolates between the previous state and current state
 	State InterpolateState(float alpha);
+	void ShiftStates();
 	//void Integrate_Verlet();
 
 
@@ -93,15 +95,15 @@ public:
 	
 	// Getters
 	inline float Mass() { return mass_; }
-	inline sf::Vector3f Position() { return currentState_.position_; }
+	inline sf::Vector3f Position() { return states_[1].position_; }
 	inline float ModelRadius() { return modelRadius_; }
-	inline State CurrentState() { return currentState_; }
+	inline State CurrentState() { return states_[1]; }
 	inline Body* NextBody() { return nextBody_; }
 	inline bool InsertedCollision() { return collisionTreeInserted_; }
 	inline bool DestroyFlag() { return destroy_; }
 	inline sf::Vector3f Force() { return force_; }
 	inline std::string Name() { return name_; }
-	inline sf::Vector3f Velocity() { return currentState_.velocity_; }
+	inline sf::Vector3f Velocity() { return states_[1].velocity_; }
 
 
 	// Setters
@@ -119,10 +121,12 @@ private:
 	int initialCounter_;
 
 	// State of body in the previous physics step
-	State prevStates_[2];
+	//State prevStates_[2];
 
 	// State of body in the current physics step
-	State currentState_;
+	//State currentState_;
+
+	State states_[4];
 
 
 	// Force acting on the body this physics step

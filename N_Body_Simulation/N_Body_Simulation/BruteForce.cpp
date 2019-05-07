@@ -74,7 +74,7 @@ void BruteForce::CleanUp() {
 
 void BruteForce::TimeStep(float dt) {
 
-
+	Simulation::TimeStep(dt);
 
 	// Call the TimeStep method being used
 	(this->*timeStepFunc_)(dt);
@@ -275,6 +275,22 @@ void BruteForce::TimeStepMulti(float dt) {
 		CheckAllCollisions(&bodyArrays);
 
 
+	}
+
+
+	std::unique_lock<std::mutex> lock(bodyListMutex_);
+	for (auto body = bodies_.begin(); body != bodies_.end();) {
+
+		if ((*body)->DestroyFlag()) {
+
+			delete (*body);
+			(*body) = nullptr;
+			bodies_.erase(body);
+		}
+		else {
+
+			body++;
+		}
 	}
 }
 

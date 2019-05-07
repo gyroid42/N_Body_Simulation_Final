@@ -2,6 +2,7 @@
 
 // standard library includes
 #include <vector>
+#include <mutex>
 
 // my class includes
 #include "SETTINGS.h"
@@ -11,6 +12,10 @@
 class Body;
 class Renderer;
 class Application;
+
+
+
+
 
 class Simulation
 {
@@ -69,13 +74,18 @@ protected:
 	bool GenerateAsteroidBelt();
 	bool GenerateTwoBodyOrbit();
 
+
+	void ShiftBodyStates();
+
 	// number of bodies currently in the simulation
 	int bodyCount_;
 
 	// list of all bodies in the simulation
 	std::vector<Body*> bodies_;
+	std::mutex bodyListMutex_;
 
 	SimulationSettings settings_;
+
 
 #if BENCHMARKING
 
