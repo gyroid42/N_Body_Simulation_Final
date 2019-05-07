@@ -380,6 +380,7 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 		// Construct new ordered bodies list
 
 		std::unique_lock<std::mutex> lock(bodyListMutex_);
+
 		// clear bodieslist
 		bodies_.clear();
 

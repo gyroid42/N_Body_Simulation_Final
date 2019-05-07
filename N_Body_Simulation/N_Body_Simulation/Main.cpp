@@ -76,10 +76,11 @@ void MainLoop() {
 		frameTime = kTargetFrameTime;
 	}
 
-	/*
+	
 	// add frametime to accumulator
 	accumulator += frameTime;
 
+	/*
 	// while the accumulator is larger than delta time a physics step needs to be calculated
 	while (accumulator >= dt) {
 

@@ -74,8 +74,8 @@ void Application::Init(Input* newInput) {
 	newSimSettings.simMethod = Barnes_Hut;
 	newSimSettings.integrationMethod = Semi_Implicit_Euler;
 	newSimSettings.simMode = Random_Bodies;
-	newSimSettings.bodyCount = 1500;
-	newSimSettings.dt = 1.0f / 15.0f;
+	newSimSettings.bodyCount = 2000;
+	newSimSettings.dt = 1.0f / 5.0f;
 	newSimSettings.theta = 1.6f;
 
 	// Create and start simulation
@@ -114,6 +114,7 @@ bool Application::Update(float frameTime) {
 
 
 	timeAccumulator_ += frameTime;
+
 
 	while (timeAccumulator_ >= simSettings_->dt) {
 
@@ -213,7 +214,7 @@ bool Application::Render(float alpha) {
 	camera_.SetGluLookAt();
 
 	// Render the simulation
-	simulation_->Render(alpha);
+	simulation_->Render(timeAccumulator_ / simSettings_->dt);
 
 	DisplayText(0.9f, 0.96f, 0.f, 0.f, 0.f, textUI_.fps);
 
@@ -262,7 +263,6 @@ void Application::Resize(int w, int h) {
 
 
 
-
 void Application::DisplayText(float x, float y, float r, float g, float b, char* string) {
 
 	// Get Lenth of string
@@ -301,7 +301,7 @@ void Application::UpdateUIText() {
 	UpdateSimMethodText();
 	UpdateIntegrationMethodText();
 
-	sprintf_s(textUI_.bodyCount, "Body Count = %d", simulation_->BodyCount());
+	//sprintf_s(textUI_.bodyCount, "Body Count = %d", simulation_->BodyCount());
 	sprintf_s(textUI_.multiThreading, "Multi-threading = %s", (simSettings_->multiThreading) ? "TRUE" : "FALSE");
 	sprintf_s(textUI_.collision, "Collision = %s", (simSettings_->collision) ? "TRUE" : "FALSE");
 	sprintf_s(textUI_.timingSteps, "Timing Steps = %s", (simSettings_->timingSteps) ? "TRUE" : "FALSE");

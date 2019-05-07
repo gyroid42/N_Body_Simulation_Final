@@ -6,10 +6,15 @@
 
 #include <random>
 #include <ctime>
+#include <iostream>
 
 #include <GL\glut.h>
 #include <GL\GL.h>
 #include <GL\GLU.h>
+
+#include <chrono>
+
+typedef std::chrono::steady_clock the_clock;
 
 
 Simulation::Simulation() :
@@ -87,28 +92,28 @@ bool Simulation::GenerateRandom() {
 	if (ADD_ORBIT_BODIES) {
 
 		Body* planet = new Body();
-		planet->Init(sf::Vector3f(0.0f, 0.0f, 0.0f), sf::Vector3f(0.0f, 0.0f, 0.0f), 1.0E17f, settings_.integrationMethod);
+		planet->Init(sf::Vector3f(0.0f, 0.0f, 0.0f), sf::Vector3f(50.0f, 50.0f, 50.0f), 1.0E17f, settings_.integrationMethod);
 		planet->SetColour(sf::Vector3f(1.0f, 0.0f, 0.0f));
 		bodies_.push_back(planet);
 
 		Body* satelite = new Body();
-		satelite->Init(sf::Vector3f(0.0f, 0.0f, -100.0f), sf::Vector3f(0.0f, -258.3215f + 0.0f, 0.0f), 100, settings_.integrationMethod);
+		satelite->Init(sf::Vector3f(0.0f, 0.0f, -100.0f), sf::Vector3f(50.0f, -258.3215f + 50.0f, 50.0f), 100, settings_.integrationMethod);
 		satelite->SetColour(sf::Vector3f(0.0f, 0.5f, 0.5f));
 		bodies_.push_back(satelite);
 
 		Body* satelite2 = new Body();
-		satelite2->Init(sf::Vector3f(-300.0f, 0.0f, 0.0f), sf::Vector3f(0.0f, -149.14199f + 0.0f, 0.0f), 100, settings_.integrationMethod);
+		satelite2->Init(sf::Vector3f(-300.0f, 0.0f, 0.0f), sf::Vector3f(50.0f, -149.14199f + 50.0f, 50.0f), 100, settings_.integrationMethod);
 		satelite2->SetColour(sf::Vector3f(0.0f, 0.5f, 0.5f));
 		bodies_.push_back(satelite2);
 
 
 		Body* satelite3 = new Body();
-		satelite3->Init(sf::Vector3f(0.0f, -1005.0f, 0.0f), sf::Vector3f(-115.5249f + 0.0f, 0.0f, 0.0f), 100, settings_.integrationMethod);
+		satelite3->Init(sf::Vector3f(0.0f, -1005.0f, 0.0f), sf::Vector3f(-115.5249f + 50.0f, 50.0f, 50.0f), 100, settings_.integrationMethod);
 		satelite3->SetColour(sf::Vector3f(0.0f, 0.5f, 0.5f));
 		bodies_.push_back(satelite3);
 
 		Body* satelite4 = new Body();
-		satelite4->Init(sf::Vector3f(0.0f, -1000.0f, 0.0f), sf::Vector3f(81.68843f + 0.0f, 0.0f, 0.0f), 100, settings_.integrationMethod);
+		satelite4->Init(sf::Vector3f(0.0f, -1000.0f, 0.0f), sf::Vector3f(81.68843f + 50.0f, 50.0f, 50.0f), 100, settings_.integrationMethod);
 		satelite4->SetColour(sf::Vector3f(0.0f, 0.5f, 0.5f));
 		bodies_.push_back(satelite4);
 
@@ -355,6 +360,11 @@ void Simulation::TimeStep(float dt) {
 
 void Simulation::Render(float alpha) {
 
+	the_clock::time_point timeStart;
+	the_clock::time_point timeEnd;
+
+	timeStart = the_clock::now();
+
 	std::unique_lock<std::mutex> lock(bodyListMutex_);
 	// loop for each body and draw it
 	for (auto body : bodies_) {
@@ -362,6 +372,11 @@ void Simulation::Render(float alpha) {
 		body->Draw(alpha);
 		
 	}
+
+	timeEnd = the_clock::now();
+
+	std::cout << "render time = " << std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() << std::endl;
+
 }
 
 

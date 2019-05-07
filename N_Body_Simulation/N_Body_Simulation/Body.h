@@ -95,15 +95,15 @@ public:
 	
 	// Getters
 	inline float Mass() { return mass_; }
-	inline sf::Vector3f Position() { return states_[1].position_; }
+	inline sf::Vector3f Position() { return states_[0].position_; }
 	inline float ModelRadius() { return modelRadius_; }
-	inline State CurrentState() { return states_[1]; }
+	inline State CurrentState() { return states_[0]; }
 	inline Body* NextBody() { return nextBody_; }
 	inline bool InsertedCollision() { return collisionTreeInserted_; }
 	inline bool DestroyFlag() { return destroy_; }
 	inline sf::Vector3f Force() { return force_; }
 	inline std::string Name() { return name_; }
-	inline sf::Vector3f Velocity() { return states_[1].velocity_; }
+	inline sf::Vector3f Velocity() { return states_[0].velocity_; }
 
 
 	// Setters

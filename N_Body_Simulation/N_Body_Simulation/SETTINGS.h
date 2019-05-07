@@ -12,7 +12,7 @@
 #define RANDOM_BODY_MAX_Z	4720.0f
 #define RANDOM_BODY_MASS	1.0E13f
 
-#define ADD_ORBIT_BODIES	true
+#define ADD_ORBIT_BODIES	false
 
 
 #define TEST_SIMULATION		false
