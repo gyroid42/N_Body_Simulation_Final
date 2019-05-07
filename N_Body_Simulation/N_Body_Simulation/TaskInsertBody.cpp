@@ -28,8 +28,7 @@ void TaskInsertBody::Run() {
 	
 	for (auto body : *bodyArray_) {
 		
-		int counter = 0;
-		root_->Insert(body, counter);
+		root_->Insert(body);
 	}
 
 	//if (bodyArray_) {

@@ -24,4 +24,15 @@ struct TextUI {
 	char maxCollisionTreeDepth[40];
 
 	char threadCount[40];
+
+
+
+
+	char calcTimeTitle[40];
+	char timeForInsertion[60];
+	char timeForForce[60];
+	char integrationTime[60];
+	char sortTime[60];
+	char collisionTime[60];
+	char renderTime[60];
 };

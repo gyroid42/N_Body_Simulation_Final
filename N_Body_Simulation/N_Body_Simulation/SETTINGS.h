@@ -12,7 +12,7 @@
 #define RANDOM_BODY_MAX_Z	4720.0f
 #define RANDOM_BODY_MASS	1.0E13f
 
-#define ADD_ORBIT_BODIES	false
+#define ADD_ORBIT_BODIES	true
 
 
 #define TEST_SIMULATION		false
@@ -22,7 +22,7 @@
 #define PLACE_BODY_MASS 1.0E15f
 
 constexpr auto STEPS_PER_SECOND = 15.0f;
-constexpr auto SIMULATION_SPEED = 1.0f;
+constexpr auto SIMULATION_SPEED = 2.0f;
 #define DAMPENING_FACTOR	0.0f//0125f
 
 constexpr auto INTERPOLATE_BETWEEN_FRAMES = true;

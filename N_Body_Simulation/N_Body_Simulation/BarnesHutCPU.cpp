@@ -101,8 +101,7 @@ void BarnesHutCPU::TimeStepSingle(float dt) {
 	// insert each body into the partition tree
 	for (auto body : bodies_) {
 
-		int counter = 0;
-		tree.Insert(body, counter);
+		tree.Insert(body);
 	}
 
 	if (settings_.timingSteps) {
@@ -110,7 +109,9 @@ void BarnesHutCPU::TimeStepSingle(float dt) {
 		end = the_clock::now();
 
 
-		std::cout << "insert time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
+		insertTime_ = (float)std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() / 1000.0f;
+
+		//std::cout << "insert time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
 
 		start = the_clock::now();
 
@@ -131,8 +132,9 @@ void BarnesHutCPU::TimeStepSingle(float dt) {
 
 		end = the_clock::now();
 
+		forceTime_ = (float)std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() / 1000.0f;
 
-		std::cout << "force time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
+		//std::cout << "force time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
 
 		start = the_clock::now();
 
@@ -149,8 +151,9 @@ void BarnesHutCPU::TimeStepSingle(float dt) {
 
 		end = the_clock::now();
 
+		integrationTime_ = (float)std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() / 1000.0f;
 
-		std::cout << "integrate time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
+		//std::cout << "integrate time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
 
 	}
 }
@@ -232,6 +235,8 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 		insertTimes_.push_back(std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeStart).count());
 #endif
 
+		insertTime_ = (float)std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeStart).count() / 1000.0f;
+
 		//std::cout << "insert time = " << std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() << std::endl;
 
 		timeStart = the_clock::now();
@@ -268,6 +273,9 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 		forceCalcTimes_.push_back(std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeStart).count());
 
 #endif
+
+		forceTime_ = (float)std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeStart).count() / 1000.0f;
+
 		//std::cout << "force time = " << std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() << std::endl;
 
 		timeStart = the_clock::now();
@@ -315,6 +323,9 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 		integrationTimes_.push_back(std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeStart).count());
 
 #endif
+
+		integrationTime_ = (float)std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeStart).count() / 1000.0f;
+
 		//std::cout << "integrate time = " << std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() << std::endl;
 
 		timeStart = the_clock::now();
@@ -341,6 +352,8 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 			collisionCheckTimes_.push_back(std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeStart).count());
 
 #endif
+			collisionTime_ = (float)std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeStart).count() / 1000.0f;
+
 			//std::cout << "Collision Test time = " << std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() << std::endl;
 
 			timeStart = the_clock::now();
@@ -396,6 +409,8 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 			sortTimes_.push_back(std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeStart).count());
 
 #endif
+			sortTime_ = (float)std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeStart).count() / 1000.0f;
+
 			//std::cout << "sorting time = " << std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() << std::endl;
 
 		}

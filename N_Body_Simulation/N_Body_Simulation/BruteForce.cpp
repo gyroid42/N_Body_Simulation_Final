@@ -112,6 +112,8 @@ void BruteForce::TimeStepSingle(float dt) {
 
 		end = the_clock::now();
 
+		forceTime_ = (float)std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() / 1000.0f;
+
 		//std::cout << "force time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
 
 		start = the_clock::now();
@@ -129,6 +131,8 @@ void BruteForce::TimeStepSingle(float dt) {
 	if (settings_.timingSteps) {
 
 		end = the_clock::now();
+
+		integrationTime_ = (float)std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() / 1000.0f;
 
 		//std::cout << "integrate time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
 
@@ -156,6 +160,8 @@ void BruteForce::TimeStepSingle(float dt) {
 
 
 			end = the_clock::now();
+
+			collisionTime_ = (float)std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() / 1000.0f;
 
 			//std::cout << "Collision Test time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
 
@@ -222,6 +228,8 @@ void BruteForce::TimeStepMulti(float dt) {
 
 		forceCalcTimes_.push_back(std::chrono::duration_cast<std::chrono::microseconds>(end - start).count());
 #endif
+		forceTime_ = (float)std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() / 1000.0f;
+
 		//std::cout << "force time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
 
 		start = the_clock::now();
@@ -266,6 +274,9 @@ void BruteForce::TimeStepMulti(float dt) {
 
 		integrationTimes_.push_back(std::chrono::duration_cast<std::chrono::microseconds>(end - start).count());
 #endif
+
+		integrationTime_ = (float)std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() / 1000.0f;
+
 		//std::cout << "integrate time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
 	}
 
@@ -277,21 +288,6 @@ void BruteForce::TimeStepMulti(float dt) {
 
 	}
 
-
-	std::unique_lock<std::mutex> lock(bodyListMutex_);
-	for (auto body = bodies_.begin(); body != bodies_.end();) {
-
-		if ((*body)->DestroyFlag()) {
-
-			delete (*body);
-			(*body) = nullptr;
-			bodies_.erase(body);
-		}
-		else {
-
-			body++;
-		}
-	}
 }
 
 
@@ -489,6 +485,9 @@ void BruteForce::CheckAllCollisions(std::vector<std::vector<Body*>*>* bodyArrays
 
 		collisionCheckTimes_.push_back(std::chrono::duration_cast<std::chrono::microseconds>(end - start).count());
 #endif
+
+		collisionTime_ = (float)std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() / 1000.0f;
+
 		//std::cout << "collision time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
 	}
 

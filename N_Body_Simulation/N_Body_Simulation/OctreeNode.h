@@ -25,7 +25,7 @@ public:
 	~OctreeNode();
 
 	// inserts a new body into the partition tree
-	void Insert(Body* body, int& depthCounter);
+	void Insert(Body* body);
 
 
 

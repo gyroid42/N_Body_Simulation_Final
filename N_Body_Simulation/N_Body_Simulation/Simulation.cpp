@@ -36,6 +36,13 @@ void Simulation::Init() {
 
 	// set body count to number of random bodies
 	bodyCount_ = settings_.numRandBodies;
+	insertTime_ = 0.0f;
+	forceTime_ = 0.0f;
+	integrationTime_ = 0.0f;
+	sortTime_ = 0.0f;
+	collisionTime_ = 0.0f;
+
+	bodyModel_.GenerateSphere(20.0f, 20.0f, 20.0f);
 }
 
 void Simulation::CleanUp() {
@@ -353,6 +360,24 @@ bool Simulation::Reset() {
 // Virtual method
 void Simulation::TimeStep(float dt) {
 
+
+	{
+		std::unique_lock<std::mutex> lock(bodyListMutex_);
+		for (auto body = bodies_.begin(); body != bodies_.end();) {
+
+			if ((*body)->DestroyFlag()) {
+
+				delete *body;
+				*body = nullptr;
+				bodies_.erase(body);
+			}
+			else {
+				body++;
+			}
+		}
+	}
+
+
 	ShiftBodyStates();
 	
 }
@@ -369,13 +394,18 @@ void Simulation::Render(float alpha) {
 	// loop for each body and draw it
 	for (auto body : bodies_) {
 
-		body->Draw(alpha);
+		bodyModel_.setColour(body->Colour());
+		bodyModel_.setPos(body->InterpolateState(alpha).position_);
+		bodyModel_.render();
+		//body->Draw(alpha);
 		
 	}
 
 	timeEnd = the_clock::now();
 
-	std::cout << "render time = " << std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() << std::endl;
+	renderTime_ = (float)std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeStart).count() / 1000.0f;
+
+	//std::cout << "render time = " << std::chrono::duration_cast<std::chrono::milliseconds>(timeEnd - timeStart).count() << std::endl;
 
 }
 

@@ -7,6 +7,7 @@
 // my class includes
 #include "SETTINGS.h"
 #include "SimulationSettings.h"
+#include "Model.h"
 
 // forward declarations
 class Body;
@@ -46,6 +47,12 @@ public:
 	inline void NewSettings(SimulationSettings newSettings) { settings_ = newSettings; }
 
 	inline int BodyCount() { return bodies_.size(); }
+	inline float RenderTime() { return renderTime_; }
+	inline float InsertTime() { return insertTime_; }
+	inline float ForceTime() { return forceTime_; }
+	inline float IntegrationTime() { return integrationTime_; }
+	inline float SortTime() { return sortTime_; }
+	inline float CollisionTime() { return collisionTime_; }
 
 
 	Body* GetBody(std::string bodyName);
@@ -80,12 +87,17 @@ protected:
 	// number of bodies currently in the simulation
 	int bodyCount_;
 
+	// computation times for each step
+	float insertTime_, forceTime_, integrationTime_, sortTime_, collisionTime_, renderTime_;
+
 	// list of all bodies in the simulation
 	std::vector<Body*> bodies_;
 	std::mutex bodyListMutex_;
 
 	SimulationSettings settings_;
 
+
+	Model bodyModel_;
 
 #if BENCHMARKING
 

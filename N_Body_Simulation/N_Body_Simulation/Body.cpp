@@ -146,6 +146,7 @@ void Body::Integrate_SemiImplicitEuler(float dt) {
 	// calculate velocity then position linearly
 	states_[0].velocity_ += acceleration_ * dt;
 	states_[0].position_ += states_[0].velocity_ * dt;
+
 }
 
 void Body::Integrate_Verlet(float dt) {

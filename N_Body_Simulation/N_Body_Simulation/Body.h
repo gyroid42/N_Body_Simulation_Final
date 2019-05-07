@@ -104,6 +104,7 @@ public:
 	inline sf::Vector3f Force() { return force_; }
 	inline std::string Name() { return name_; }
 	inline sf::Vector3f Velocity() { return states_[0].velocity_; }
+	inline sf::Vector3f Colour() { return colour_; }
 
 
 	// Setters

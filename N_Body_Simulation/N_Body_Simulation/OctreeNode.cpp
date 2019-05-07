@@ -116,13 +116,14 @@ void OctreeNode::AddBody(Body* body) {
 }
 
 
-void OctreeNode::Insert(Body* body, int& depthCounter) {
+void OctreeNode::Insert(Body* body) {
 
-	depthCounter++;
+	// if partition doesn't contain the body
+	// destroy the body and exit function
+	if (!partition_.Contains(body->Position())) {
 
-	if (depthCounter > 500) {
-
-		int poop = 0;
+		body->Destroy();
+		return;
 	}
 
 	// if no body here add new body
@@ -156,6 +157,8 @@ void OctreeNode::Insert(Body* body, int& depthCounter) {
 		centerOfMass_ = totalTimesCenter + bodyMassTimesPosition;
 		centerOfMass_ /= totalMass_;
 		numBodies_++;
+
+		bool foundPartition = false;
 
 		// loop for each octant in partition
 		for (int i = 0; i < 8; i++) {
@@ -194,7 +197,9 @@ void OctreeNode::Insert(Body* body, int& depthCounter) {
 				
 
 				// Insert body into octant found
-				children_[i]->Insert(body, depthCounter);
+				children_[i]->Insert(body);
+
+				foundPartition = true;
 
 				// exit the loop since we've found the octant the body belongs in
 				break;
@@ -237,7 +242,7 @@ void OctreeNode::Insert(Body* body, int& depthCounter) {
 				}
 				
 				// add body to the new node
-				children_[i]->Insert(body_, depthCounter);
+				children_[i]->Insert(body_);
 
 				// this node is no longer external
 				isExternal_ = false;
@@ -248,10 +253,9 @@ void OctreeNode::Insert(Body* body, int& depthCounter) {
 		}
 
 		// re-insert the body into this node
-		Insert(body, depthCounter);
+		Insert(body);
 	}
 
-	depthCounter--;
 }
 
 
@@ -463,9 +467,8 @@ void OctreeNode::Merge(OctreeNode* mergeTree) {
 						}
 					}
 
-					int counter = 0;
 
-					children_[i]->Insert(body_, counter);
+					children_[i]->Insert(body_);
 
 					// this node is no longer external
 					isExternal_ = false;
@@ -528,8 +531,7 @@ void OctreeNode::Merge(OctreeNode* mergeTree) {
 						}
 					}
 
-					int counter = 0;
-					children_[i]->Insert(body, counter);
+					children_[i]->Insert(body);
 
 					break;
 				}

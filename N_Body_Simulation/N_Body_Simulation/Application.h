@@ -3,6 +3,7 @@
 
 // Include standard library
 #include <thread>
+#include <mutex>
 
 // Include Glut stuffs
 #include <GL\glut.h>
@@ -56,9 +57,11 @@ protected:
 
 
 	void DisplayText(float x, float y, float r, float g, float b, char* string);
-
+	void DisplayText(float x, float y, sf::Vector3f colour, char* string);
+	void DisplayText(float x, float y, char* string);
 
 	void UpdateUIText();
+	void UpdateSimUIText();
 	void UpdateSimModeText();
 	void UpdateSimMethodText();
 	void UpdateIntegrationMethodText();
@@ -81,6 +84,8 @@ protected:
 
 	SIMULATION_MODE simMode_;
 
+	sf::Vector3f textColour_;
+	std::mutex simUI_Mutex_;
 	TextUI textUI_;
 
 

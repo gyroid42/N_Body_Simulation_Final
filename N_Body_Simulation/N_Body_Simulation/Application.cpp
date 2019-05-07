@@ -58,7 +58,8 @@ void Application::Init(Input* newInput) {
 
 	// OpenGL settings
 	glShadeModel(GL_SMOOTH);
-	glClearColor(0.39f, 0.58f, 93.0f, 1.0f);
+	//glClearColor(0.39f, 0.58f, 93.0f, 1.0f);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClearDepth(1.0f);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
@@ -70,13 +71,14 @@ void Application::Init(Input* newInput) {
 
 
 	SimulationSettings newSimSettings;
-	newSimSettings.collision = COLLISION;
+	newSimSettings.collision = false;
 	newSimSettings.simMethod = Barnes_Hut;
 	newSimSettings.integrationMethod = Semi_Implicit_Euler;
-	newSimSettings.simMode = Random_Bodies;
-	newSimSettings.bodyCount = 2000;
-	newSimSettings.dt = 1.0f / 5.0f;
+	newSimSettings.simMode = Clustered_Distribution;
+	newSimSettings.bodyCount = 100000;
+	newSimSettings.dt = 1.0f / 10.0f;
 	newSimSettings.theta = 1.6f;
+	newSimSettings.orderBodies = false;
 
 	// Create and start simulation
 	switch (newSimSettings.simMethod) {
@@ -101,6 +103,10 @@ void Application::Init(Input* newInput) {
 
 
 	UpdateUIText();
+	UpdateSimUIText();
+	//textColour_ = { 0.0f, 0.0f, 0.0f };
+	textColour_ = { 1.0f, 1.0f, 1.0f };
+
 
 	timeAccumulator_ = 0.0f;
 	timeStepCounter_ = new Semaphore();
@@ -130,8 +136,7 @@ bool Application::Update(float frameTime) {
 	camera_.Update(frameTime);
 
 	sprintf_s(textUI_.fps, "FPS: %4.2f", 1.0f / frameTime);
-	sprintf_s(textUI_.bodyCount, "Body Count = %d", simulation_->BodyCount());
-
+	sprintf_s(textUI_.renderTime, "Render Time: %4.2f", simulation_->RenderTime());
 
 	input_->Update();
 
@@ -152,6 +157,8 @@ void Application::FixedUpdate(float dt) {
 			break;
 		}
 		simulation_->TimeStep(dt);
+
+		UpdateSimUIText();
 	}
 }
 
@@ -216,21 +223,39 @@ bool Application::Render(float alpha) {
 	// Render the simulation
 	simulation_->Render(timeAccumulator_ / simSettings_->dt);
 
-	DisplayText(0.9f, 0.96f, 0.f, 0.f, 0.f, textUI_.fps);
+	DisplayText(0.9f, 0.96f, textUI_.fps);
 
-	DisplayText(-1.f, 0.96f, 0.f, 0.f, 0.f, textUI_.simMode);
+	DisplayText(-1.f, 0.96f, textUI_.simMode);
 
-	DisplayText(-1.f, 0.88f, 0.f, 0.f, 0.f, textUI_.simMethod);
-	DisplayText(-1.f, 0.84f, 0.f, 0.f, 0.f, textUI_.integrationMethod);
-	DisplayText(-1.f, 0.8f, 0.f, 0.f, 0.f, textUI_.timingSteps);
+	DisplayText(-1.f, 0.88f, textUI_.simMethod);
+	DisplayText(-1.f, 0.84f, textUI_.integrationMethod);
+	DisplayText(-1.f, 0.8f, textUI_.timingSteps);
 
-	DisplayText(-1.f, 0.72f, 0.f, 0.f, 0.f, textUI_.multiThreading);
-	DisplayText(-1.f, 0.68f, 0.f, 0.f, 0.f, textUI_.threadCount);
+	DisplayText(-1.f, 0.72f, textUI_.multiThreading);
+	DisplayText(-1.f, 0.68f, textUI_.threadCount);
 
-	DisplayText(-1.f, 0.60f, 0.f, 0.f, 0.f, textUI_.collision);
-	DisplayText(-1.f, 0.56f, 0.f, 0.f, 0.f, textUI_.maxCollisionTreeDepth);
-	DisplayText(-1.f, 0.48f, 0.f, 0.f, 0.f, textUI_.bodyCount);
+	DisplayText(-1.f, 0.60f, textUI_.collision);
+	DisplayText(-1.f, 0.56f, textUI_.maxCollisionTreeDepth);
 
+
+	{
+
+		std::unique_lock<std::mutex> lock(simUI_Mutex_);
+
+		DisplayText(-1.f, 0.48f, textUI_.bodyCount);
+
+
+		DisplayText(-1.f, 0.4f, textUI_.calcTimeTitle);
+		DisplayText(-1.f, 0.36f, textUI_.timeForInsertion);
+		DisplayText(-1.f, 0.32f, textUI_.timeForForce);
+		DisplayText(-1.f, 0.28f, textUI_.integrationTime);
+		DisplayText(-1.f, 0.24f, textUI_.sortTime);
+		DisplayText(-1.f, 0.20f, textUI_.collisionTime);
+
+
+	}
+
+	DisplayText(-1.f, 0.12f, textUI_.renderTime);
 
 	return true;
 }
@@ -294,6 +319,16 @@ void Application::DisplayText(float x, float y, float r, float g, float b, char*
 	glMatrixMode(GL_MODELVIEW);
 }
 
+void Application::DisplayText(float x, float y, sf::Vector3f colour, char* string) {
+
+	DisplayText(x, y, colour.x, colour.y, colour.z, string);
+}
+
+void Application::DisplayText(float x, float y, char* string) {
+
+	DisplayText(x, y, textColour_, string);
+}
+
 
 void Application::UpdateUIText() {
 
@@ -307,6 +342,22 @@ void Application::UpdateUIText() {
 	sprintf_s(textUI_.timingSteps, "Timing Steps = %s", (simSettings_->timingSteps) ? "TRUE" : "FALSE");
 	sprintf_s(textUI_.maxCollisionTreeDepth, "Max Collision Tree Depth = %d", simSettings_->maxCollisionDepth);
 	sprintf_s(textUI_.threadCount, "Thread Count = %d", simSettings_->threadCount);
+
+	sprintf_s(textUI_.calcTimeTitle, "Step Calculation Times");
+
+}
+
+void Application::UpdateSimUIText() {
+
+	std::unique_lock<std::mutex> lock(simUI_Mutex_);
+
+	sprintf_s(textUI_.bodyCount, "Body Count = %d", simulation_->BodyCount());
+	sprintf_s(textUI_.timeForInsertion, "Insert Time: %4.2f", simulation_->InsertTime());
+	sprintf_s(textUI_.timeForForce, "Force Time: %4.2f", simulation_->ForceTime());
+	sprintf_s(textUI_.integrationTime, "Integration Time: %4.2f", simulation_->IntegrationTime());
+	sprintf_s(textUI_.sortTime, "Sort Time: %4.2f", simulation_->SortTime());
+	sprintf_s(textUI_.collisionTime, "Collision Time: %4.2f", simulation_->CollisionTime());
+
 }
 
 void Application::UpdateSimModeText() {
