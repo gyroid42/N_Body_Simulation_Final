@@ -219,8 +219,10 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 
 		OctreeNode* mergeTree = mergeTreeChannel_.read();
 
-		// merge the tree;
-		tree.Merge(mergeTree);
+		if (mergeTree) {
+			// merge the tree;
+			tree.Merge(mergeTree);
+		}
 
 		delete mergeTree;
 	}

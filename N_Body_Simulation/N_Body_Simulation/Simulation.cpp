@@ -3,6 +3,7 @@
 
 #include "Body.h"
 #include "Application.h"
+#include "PhysicsUtil.h"
 
 #include <random>
 #include <ctime>
@@ -42,7 +43,7 @@ void Simulation::Init() {
 	sortTime_ = 0.0f;
 	collisionTime_ = 0.0f;
 
-	bodyModel_.GenerateSphere(20.0f, 20.0f, 20.0f);
+	bodyModel_.GenerateSphere(20.0f, 20.0f, 10.0f);
 }
 
 void Simulation::CleanUp() {
@@ -279,6 +280,38 @@ bool Simulation::GenerateClusters() {
 bool Simulation::GenerateAsteroidBelt() {
 
 
+	float planetMass = 5.0E+18f;
+	float asteroidMass = 1.5E+10f;
+
+	float radius = 3000.0f;
+	float offset = 300.0f;
+
+
+	// create planet
+	Body* planet = new Body();
+	planet->Init(sf::Vector3f(0.0f, 0.0f, 0.0f), sf::Vector3f(0.0f, 0.0f, 0.0f), planetMass, settings_.integrationMethod);
+	planet->SetColour(sf::Vector3f(0.5f, 0.5f, 0.0f));
+	bodies_.push_back(planet);
+
+
+	for (int i = 0; i < settings_.bodyCount; i++) {
+
+		float angle = ((float)i / (float)settings_.bodyCount) * PhysicsUtil::pi * 2.0f;
+		float displacement = (float)(rand() % (int)(2 * offset * 100)) / 100.0f - offset;
+		float x = sinf(angle) * radius + displacement;
+		displacement = (float)(rand() % (int)(2 * offset * 100)) / 100.0f - offset;
+		float y = displacement * 0.4f;
+		displacement = (float)(rand() % (int)(2 * offset * 100)) / 100.0f - offset;
+		float z = cosf(angle) * radius + displacement;
+
+		sf::Vector3f position = { x, y, z };
+		float velocity = sqrtf(PhysicsUtil::G * planetMass / PhysicsUtil::VectorLength(position));
+
+		Body* asteroid = new Body();
+		asteroid->Init(sf::Vector3f(x, y, z), sf::Vector3f(sinf(angle + PhysicsUtil::pi / 2.0f), 0.0f, cosf(angle + PhysicsUtil::pi / 2.0f)) * velocity, asteroidMass, settings_.integrationMethod);
+		asteroid->SetColour(sf::Vector3f(0.0f, 0.0f, 1.0f));
+		bodies_.push_back(asteroid);
+	}
 
 	return true;
 }
@@ -322,6 +355,9 @@ bool Simulation::GenerateSimulation(SIMULATION_MODE simMode) {
 	case Clustered_Distribution:
 		result = GenerateClusters();
 		break;
+	case Asteroids:
+		result = GenerateAsteroidBelt();
+		break;
 	default:
 		result = GenerateRandom();
 		break;
@@ -363,13 +399,14 @@ void Simulation::TimeStep(float dt) {
 
 	{
 		std::unique_lock<std::mutex> lock(bodyListMutex_);
+
 		for (auto body = bodies_.begin(); body != bodies_.end();) {
 
 			if ((*body)->DestroyFlag()) {
 
 				delete *body;
 				*body = nullptr;
-				bodies_.erase(body);
+				body = bodies_.erase(body);
 			}
 			else {
 				body++;
@@ -377,9 +414,8 @@ void Simulation::TimeStep(float dt) {
 		}
 	}
 
-
 	ShiftBodyStates();
-	
+
 }
 
 

@@ -74,10 +74,10 @@ void Application::Init(Input* newInput) {
 	newSimSettings.collision = false;
 	newSimSettings.simMethod = Barnes_Hut;
 	newSimSettings.integrationMethod = Semi_Implicit_Euler;
-	newSimSettings.simMode = Clustered_Distribution;
-	newSimSettings.bodyCount = 100000;
+	newSimSettings.simMode = Asteroids;
+	newSimSettings.bodyCount = 8000;
 	newSimSettings.dt = 1.0f / 10.0f;
-	newSimSettings.theta = 1.6f;
+	newSimSettings.theta = 1.0f;
 	newSimSettings.orderBodies = false;
 
 	// Create and start simulation
