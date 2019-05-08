@@ -293,6 +293,7 @@ bool Simulation::GenerateAsteroidBelt() {
 	planet->SetColour(sf::Vector3f(0.5f, 0.5f, 0.0f));
 	bodies_.push_back(planet);
 
+	sf::Vector3f colour = { 1.0f, 0.0f, 0.0f };
 
 	for (int i = 0; i < settings_.bodyCount; i++) {
 
@@ -309,7 +310,8 @@ bool Simulation::GenerateAsteroidBelt() {
 
 		Body* asteroid = new Body();
 		asteroid->Init(sf::Vector3f(x, y, z), sf::Vector3f(sinf(angle + PhysicsUtil::pi / 2.0f), 0.0f, cosf(angle + PhysicsUtil::pi / 2.0f)) * velocity, asteroidMass, settings_.integrationMethod);
-		asteroid->SetColour(sf::Vector3f(0.0f, 0.0f, 1.0f));
+		asteroid->SetColour(colour);
+		colour = { 0.0f, 0.0f, 1.0f };
 		bodies_.push_back(asteroid);
 	}
 
@@ -398,7 +400,7 @@ void Simulation::TimeStep(float dt) {
 
 
 	{
-		std::unique_lock<std::mutex> lock(bodyListMutex_);
+		//std::unique_lock<std::mutex> lock(bodyListMutex_);
 
 		for (auto body = bodies_.begin(); body != bodies_.end();) {
 
@@ -414,7 +416,6 @@ void Simulation::TimeStep(float dt) {
 		}
 	}
 
-	ShiftBodyStates();
 
 }
 

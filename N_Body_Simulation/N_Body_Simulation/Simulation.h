@@ -68,6 +68,8 @@ public:
 
 #endif
 
+	void ShiftBodyStates();
+
 
 protected:
 
@@ -82,7 +84,6 @@ protected:
 	bool GenerateTwoBodyOrbit();
 
 
-	void ShiftBodyStates();
 
 	// number of bodies currently in the simulation
 	int bodyCount_;

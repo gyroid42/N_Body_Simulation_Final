@@ -1,8 +1,8 @@
 #pragma once
 
 
-#define WINDOW_SIZE_X		1280
-#define WINDOW_SIZE_Y		720
+#define WINDOW_SIZE_X		1920
+#define WINDOW_SIZE_Y		1080
 
 
 #define ADD_RANDOM_BODIES	true
@@ -22,7 +22,7 @@
 #define PLACE_BODY_MASS 1.0E15f
 
 constexpr auto STEPS_PER_SECOND = 15.0f;
-constexpr auto SIMULATION_SPEED = 1.0f;
+constexpr auto SIMULATION_SPEED = 2.0f;
 #define DAMPENING_FACTOR	0.0f//0125f
 
 constexpr auto INTERPOLATE_BETWEEN_FRAMES = true;
@@ -41,7 +41,7 @@ constexpr auto INTERPOLATE_BETWEEN_FRAMES = true;
 #define COLLISION_REACTION	0
 
 #define MULTITHREADING		true
-#define NUM_OF_THREADS		12
+#define NUM_OF_THREADS		8
 
 
 

@@ -9,6 +9,12 @@
 #include "BarnesHutCPU.h"
 #include "Semaphore.h"
 
+#include <iostream>
+#include <chrono>
+#include <ctime>
+
+typedef std::chrono::system_clock the_clock;
+
 
 Application::Application() :
 	simulation_(nullptr),
@@ -72,13 +78,14 @@ void Application::Init(Input* newInput) {
 
 	SimulationSettings newSimSettings;
 	newSimSettings.collision = false;
-	newSimSettings.simMethod = Barnes_Hut;
+	newSimSettings.simMethod = Direct;
 	newSimSettings.integrationMethod = Semi_Implicit_Euler;
-	newSimSettings.simMode = Asteroids;
-	newSimSettings.bodyCount = 8000;
-	newSimSettings.dt = 1.0f / 10.0f;
+	newSimSettings.simMode = Clustered_Distribution;
+	newSimSettings.bodyCount = 5000;
+	newSimSettings.dt = 1.0f / 20.0f;
 	newSimSettings.theta = 1.0f;
 	newSimSettings.orderBodies = false;
+	newSimSettings.threadCount = 1;
 
 	// Create and start simulation
 	switch (newSimSettings.simMethod) {
@@ -111,7 +118,9 @@ void Application::Init(Input* newInput) {
 	timeAccumulator_ = 0.0f;
 	timeStepCounter_ = new Semaphore();
 
-	physicsThread_ = new std::thread(std::mem_fun(&Application::FixedUpdate), this, simSettings_->dt);
+	renderAccumulator_ = 0.0f;
+
+	//physicsThread_ = new std::thread(std::mem_fun(&Application::FixedUpdate), this, simSettings_->dt);
 
 }
 
@@ -120,12 +129,16 @@ bool Application::Update(float frameTime) {
 
 
 	timeAccumulator_ += frameTime;
+	renderAccumulator_ += frameTime;
 
 
 	while (timeAccumulator_ >= simSettings_->dt) {
 
 
-		timeStepCounter_->Signal();
+		//simulation_->ShiftBodyStates();
+
+
+		//timeStepCounter_->Signal();
 		timeAccumulator_ -= simSettings_->dt;
 	}
 
@@ -147,7 +160,7 @@ bool Application::Update(float frameTime) {
 
 void Application::FixedUpdate(float dt) {
 
-
+	
 	while (running_) {
 
 		timeStepCounter_->Wait();
@@ -203,7 +216,10 @@ void Application::CheckInput(float frameTime) {
 bool Application::SimulationStep(float t, float dt) {
 
 	// do a time step in the simulation
-	simulation_->TimeStep(dt * SIMULATION_SPEED);
+	simulation_->TimeStep(dt);
+
+	UpdateSimUIText();
+
 
 	return true;
 }
@@ -221,7 +237,12 @@ bool Application::Render(float alpha) {
 	camera_.SetGluLookAt();
 
 	// Render the simulation
-	simulation_->Render(timeAccumulator_ / simSettings_->dt);
+	//simulation_->Render(timeAccumulator_ / simSettings_->dt);
+	simulation_->Render(alpha);
+
+	if (renderAccumulator_ > 1.0f) {
+		int mejklre = 0;
+	}
 
 	DisplayText(0.9f, 0.96f, textUI_.fps);
 
@@ -409,6 +430,13 @@ void Application::UpdateIntegrationMethodText() {
 		sprintf_s(textUI_.integrationMethod, "Integration Method = UNKNOWN");
 		break;
 	}
+}
+
+
+void Application::ReduceAccumulator(float dt) {
+
+	std::unique_lock<std::mutex> lock(accMutex_);
+	renderAccumulator_ -= timeAccumulator_;
 }
 
 

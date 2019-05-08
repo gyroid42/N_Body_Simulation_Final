@@ -24,6 +24,8 @@ public:
 	inline void SetCounter(int newCount) { counter_ = newCount; }
 	inline void ReduceCounter(int amount = 1) { counter_ -= amount; }
 
+	inline int GetCounter() { return counter_; }
+
 private:
 
 	int counter_;

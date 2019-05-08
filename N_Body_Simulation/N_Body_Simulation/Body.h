@@ -95,15 +95,15 @@ public:
 	
 	// Getters
 	inline float Mass() { return mass_; }
-	inline sf::Vector3f Position() { return states_[0].position_; }
+	inline sf::Vector3f Position() { return currentState_.position_; }
 	inline float ModelRadius() { return modelRadius_; }
-	inline State CurrentState() { return states_[0]; }
+	inline State CurrentState() { return currentState_; }
 	inline Body* NextBody() { return nextBody_; }
 	inline bool InsertedCollision() { return collisionTreeInserted_; }
 	inline bool DestroyFlag() { return destroy_; }
 	inline sf::Vector3f Force() { return force_; }
 	inline std::string Name() { return name_; }
-	inline sf::Vector3f Velocity() { return states_[0].velocity_; }
+	inline sf::Vector3f Velocity() { return currentState_.velocity_; }
 	inline sf::Vector3f Colour() { return colour_; }
 
 
@@ -122,12 +122,12 @@ private:
 	int initialCounter_;
 
 	// State of body in the previous physics step
-	//State prevStates_[2];
+	State prevStates_[2];
 
 	// State of body in the current physics step
-	//State currentState_;
+	State currentState_;
 
-	State states_[4];
+	//State states_[4];
 
 
 	// Force acting on the body this physics step

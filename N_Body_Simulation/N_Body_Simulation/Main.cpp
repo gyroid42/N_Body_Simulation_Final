@@ -80,7 +80,7 @@ void MainLoop() {
 	// add frametime to accumulator
 	accumulator += frameTime;
 
-	/*
+	
 	// while the accumulator is larger than delta time a physics step needs to be calculated
 	while (accumulator >= dt) {
 
@@ -91,7 +91,7 @@ void MainLoop() {
 		accumulator -= dt;
 		t += dt * SIMULATION_SPEED;
 	}
-	*/
+	
 
 	// Update the application
 	app->Update(frameTime);

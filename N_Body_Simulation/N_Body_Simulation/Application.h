@@ -50,6 +50,9 @@ public:
 	// Resizes the screen when the user resizes the window
 	void Resize(int w, int h);
 
+
+	void ReduceAccumulator(float dt);
+
 protected:
 
 	// Method to check user input
@@ -93,6 +96,9 @@ protected:
 	Semaphore* timeStepCounter_;
 
 	float timeAccumulator_;
+
+	float renderAccumulator_;
+	std::mutex accMutex_;
 
 	bool running_;
 };
