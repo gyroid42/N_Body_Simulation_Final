@@ -75,6 +75,7 @@ void BarnesHutCPU::CleanUp() {
 
 void BarnesHutCPU::TimeStep(float dt) {
 
+	Simulation::TimeStep(dt);
 
 	// Call the TimeStep method being used
 	(this->*timeStepFunc_)(dt);
@@ -156,6 +157,7 @@ void BarnesHutCPU::TimeStepSingle(float dt) {
 
 
 void BarnesHutCPU::TimeStepMulti(float dt) {
+
 
 
 #if BENCHMARKING
@@ -399,6 +401,7 @@ void BarnesHutCPU::TimeStepMulti(float dt) {
 	
 	//std::cout << OctreeNode::maxListSize << std::endl;
 	//std::cout << OctreeNode::totalCollisions << std::endl;
+
 }
 
 

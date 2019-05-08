@@ -31,6 +31,8 @@ void Simulation::Init() {
 
 	// set body count to number of random bodies
 	bodyCount_ = settings_.numRandBodies;
+
+	bodyModel_.GenerateSphere(20.0f, 20.0f, 20.0f);
 }
 
 void Simulation::CleanUp() {
@@ -358,7 +360,10 @@ void Simulation::Render(float alpha) {
 	// loop for each body and draw it
 	for (auto body : bodies_) {
 
-		body->Draw(alpha);
+		bodyModel_.setColour(body->Colour());
+		bodyModel_.setPos(body->InterpolateState(alpha).position_);
+		bodyModel_.render();
+		//body->Draw(alpha);
 		
 	}
 }

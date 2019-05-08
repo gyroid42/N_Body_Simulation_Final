@@ -133,6 +133,7 @@
     <ClCompile Include="BruteForce.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Channel.cpp" />
+    <ClCompile Include="Model.cpp" />
     <ClCompile Include="SortVector.cpp" />
     <ClCompile Include="TaskCollisionCheckNode.cpp" />
     <ClCompile Include="TaskCollisionCheckTree.cpp" />
@@ -164,6 +165,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Channel.h" />
     <ClInclude Include="CollisionEvent.h" />
+    <ClInclude Include="Model.h" />
     <ClInclude Include="SettingsEnums.h" />
     <ClInclude Include="SimulationSettings.h" />
     <ClInclude Include="SortVector.h" />

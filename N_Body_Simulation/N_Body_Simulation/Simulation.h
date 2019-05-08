@@ -6,6 +6,7 @@
 // my class includes
 #include "SETTINGS.h"
 #include "SimulationSettings.h"
+#include "Model.h"
 
 // forward declarations
 class Body;
@@ -76,6 +77,8 @@ protected:
 	std::vector<Body*> bodies_;
 
 	SimulationSettings settings_;
+
+	Model bodyModel_;
 
 #if BENCHMARKING
 
