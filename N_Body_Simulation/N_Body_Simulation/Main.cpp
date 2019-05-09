@@ -76,23 +76,23 @@ void MainLoop() {
 		frameTime = kTargetFrameTime;
 	}
 
-	
-	// add frametime to accumulator
-	accumulator += frameTime;
+	if (!app->GetPaused()) {
+		// add frametime to accumulator
+		accumulator += frameTime;
 
-	
-	// while the accumulator is larger than delta time a physics step needs to be calculated
-	while (accumulator >= dt) {
 
-		// perform a physics step
-		app->SimulationStep(t, dt * SIMULATION_SPEED);
+		// while the accumulator is larger than delta time a physics step needs to be calculated
+		while (accumulator >= dt) {
 
-		// reduce the accumulator by delta time and increase the total time
-		accumulator -= dt;
-		t += dt * SIMULATION_SPEED;
+			// perform a physics step
+			app->SimulationStep(t, dt * SIMULATION_SPEED);
+
+			// reduce the accumulator by delta time and increase the total time
+			accumulator -= dt;
+			t += dt * SIMULATION_SPEED;
+		}
+
 	}
-	
-
 	// Update the application
 	app->Update(frameTime);
 

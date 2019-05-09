@@ -8,6 +8,7 @@
 #include "BruteForce.h"
 #include "BarnesHutCPU.h"
 #include "Semaphore.h"
+#include "PhysicsUtil.h"
 
 #include <iostream>
 #include <chrono>
@@ -61,6 +62,7 @@ void Application::Init(Input* newInput) {
 	input_ = newInput;
 
 	running_ = true;
+	paused_ = false;
 
 	// OpenGL settings
 	glShadeModel(GL_SMOOTH);
@@ -78,14 +80,25 @@ void Application::Init(Input* newInput) {
 
 	SimulationSettings newSimSettings;
 	newSimSettings.collision = false;
-	newSimSettings.simMethod = Direct;
+	newSimSettings.simMethod = Barnes_Hut;
 	newSimSettings.integrationMethod = Semi_Implicit_Euler;
-	newSimSettings.simMode = Clustered_Distribution;
-	newSimSettings.bodyCount = 5000;
+	newSimSettings.simMode = Even_Distribution;
+	newSimSettings.bodyCount = 3000;
 	newSimSettings.dt = 1.0f / 20.0f;
 	newSimSettings.theta = 1.0f;
-	newSimSettings.orderBodies = false;
-	newSimSettings.threadCount = 1;
+	newSimSettings.orderBodies = true;
+	newSimSettings.threadCount = 8;
+
+	newSimSettings.planetMass = 1.0E+17f;
+	newSimSettings.satelliteMass = 100.0f;
+	newSimSettings.orbitStartPos = sf::Vector3f(0.0f, 100.0f, 0.0f);
+
+	float orbitDistance = PhysicsUtil::VectorLength(newSimSettings.orbitStartPos);
+
+	newSimSettings.orbitStartVel = sf::Vector3f(0.0f, 0.0f, sqrtf(PhysicsUtil::G * newSimSettings.planetMass / orbitDistance));
+
+	newSimSettings.numPeriods = 100;
+	newSimSettings.periodLength = 2.0f * PhysicsUtil::pi * orbitDistance * sqrtf(orbitDistance) / sqrtf(PhysicsUtil::G * newSimSettings.planetMass);
 
 	// Create and start simulation
 	switch (newSimSettings.simMethod) {
@@ -183,6 +196,11 @@ void Application::CheckInput(float frameTime) {
 	if (input_->OnKeyPressed('r')) {
 
 		simulation_->Reset();
+	}
+
+	if (input_->OnKeyPressed('p')) {
+
+		paused_ = !paused_;
 	}
 
 

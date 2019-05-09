@@ -51,8 +51,8 @@ constexpr auto INTERPOLATE_BETWEEN_FRAMES = true;
 #define DEFAULT_THETA		1.0f
 
 
-#define BENCHMARKING		false
+#define BENCHMARKING		true
 
 // 0 = performance, 1 = accuracy, 2 = barnes hut accuracy test
-#define TESTING_FOR			2
+#define TESTING_FOR			0
 

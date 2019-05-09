@@ -53,6 +53,8 @@ public:
 
 	void ReduceAccumulator(float dt);
 
+	inline bool GetPaused() { return paused_; }
+
 protected:
 
 	// Method to check user input
@@ -101,5 +103,6 @@ protected:
 	std::mutex accMutex_;
 
 	bool running_;
+	bool paused_;
 };
 

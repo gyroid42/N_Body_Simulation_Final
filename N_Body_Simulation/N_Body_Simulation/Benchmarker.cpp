@@ -69,9 +69,9 @@ void Benchmarker::CreateSimulationSettings() {
 
 	SimulationSettings varyIntegration1;
 
-	varyIntegration1.simName = "SemiEuler_Direct";
+	varyIntegration1.simName = "grad_direct";
 
-	varyIntegration1.collision = false;
+	varyIntegration1.collision = true;
 
 	varyIntegration1.integrationMethod = Semi_Implicit_Euler;
 
@@ -97,17 +97,18 @@ void Benchmarker::CreateSimulationSettings() {
 	varyIntegration1.partitionSize = 10000.0f;
 
 
-	//benchmarkSettingsList_.push_back(varyIntegration1);
+	benchmarkSettingsList_.push_back(varyIntegration1);
 
 	varyIntegration1.threadCount = 1;
 
 
 	SimulationSettings varyIntegration4 = varyIntegration1;
-	varyIntegration4.simName = "SemiEuler_Barnes";
+	varyIntegration4.simName = "grad_octree";
 	varyIntegration4.integrationMethod = Semi_Implicit_Euler;
 	varyIntegration4.simMethod = Barnes_Hut;
+	varyIntegration4.collision = true;
 
-	//benchmarkSettingsList_.push_back(varyIntegration4);
+	benchmarkSettingsList_.push_back(varyIntegration4);
 
 	SimulationSettings varyIntegration5 = varyIntegration1;
 	varyIntegration5.simName = "ExplicitEuler_Barnes";
@@ -161,7 +162,7 @@ void Benchmarker::CreateSimulationSettings() {
 	noSort.simMethod = Barnes_Hut;
 	noSort.orderBodies = false;
 
-	benchmarkSettingsList_.push_back(noSort);
+	//benchmarkSettingsList_.push_back(noSort);
 
 
 	// collision stuffs
@@ -170,7 +171,7 @@ void Benchmarker::CreateSimulationSettings() {
 	collisionDirect.collision = true;
 	collisionDirect.simMode = Even_Distribution;
 
-	benchmarkSettingsList_.push_back(collisionDirect);
+	//benchmarkSettingsList_.push_back(collisionDirect);
 
 	SimulationSettings collisionBarnes1 = varyIntegration1;
 	collisionBarnes1.simName = "Collision_Barnes_Even";
@@ -178,7 +179,7 @@ void Benchmarker::CreateSimulationSettings() {
 	collisionBarnes1.simMethod = Barnes_Hut;
 	collisionBarnes1.simMode = Even_Distribution;
 
-	benchmarkSettingsList_.push_back(collisionBarnes1);
+	//benchmarkSettingsList_.push_back(collisionBarnes1);
 
 	SimulationSettings collisionBarnes2 = varyIntegration1;
 	collisionBarnes2.simName = "Collision_Barnes_Cluster";
@@ -186,7 +187,7 @@ void Benchmarker::CreateSimulationSettings() {
 	collisionBarnes2.simMethod = Barnes_Hut;
 	collisionBarnes2.simMode = Clustered_Distribution;
 
-	benchmarkSettingsList_.push_back(collisionBarnes2);
+	//benchmarkSettingsList_.push_back(collisionBarnes2);
 
 	
 
@@ -294,7 +295,7 @@ void Benchmarker::MainLoop() {
 		int threadIndex = 0;
 
 		// loop for each thread count in range (1, 2, 4, 6, 8, 10, 12...)
-		for (; currentSettings.threadCount <= std::thread::hardware_concurrency(); (currentSettings.threadCount % 2) ? currentSettings.threadCount++ : currentSettings.threadCount += 2) {
+		for (; currentSettings.threadCount <= 8; (currentSettings.threadCount % 2) ? currentSettings.threadCount++ : currentSettings.threadCount += 2) {
 
 
 			std::string testName = currentSettings.simName

@@ -311,7 +311,7 @@ bool Simulation::GenerateAsteroidBelt() {
 		Body* asteroid = new Body();
 		asteroid->Init(sf::Vector3f(x, y, z), sf::Vector3f(sinf(angle + PhysicsUtil::pi / 2.0f), 0.0f, cosf(angle + PhysicsUtil::pi / 2.0f)) * velocity, asteroidMass, settings_.integrationMethod);
 		asteroid->SetColour(colour);
-		colour = { 0.0f, 0.0f, 1.0f };
+		colour = { (float)(rand() % 256) / 256.0f, (float)(rand() % 256) / 256.0f, (float)(rand() % 256) / 256.0f };
 		bodies_.push_back(asteroid);
 	}
 
@@ -325,12 +325,14 @@ bool Simulation::GenerateTwoBodyOrbit() {
 	// create planet
 	Body* planet = new Body();
 	planet->Init(sf::Vector3f(0.0f, 0.0f, 0.0f), sf::Vector3f(0.0f, 0.0f, 0.0f), settings_.planetMass, settings_.integrationMethod);
+	planet->SetColour(sf::Vector3f(1.0f, 0.0f, 0.0f));
 	planet->SetName("planet");
 	bodies_.push_back(planet);
 
 	// create satellite
 	Body* satellite = new Body();
 	satellite->Init(settings_.orbitStartPos, settings_.orbitStartVel, settings_.satelliteMass, settings_.integrationMethod);
+	satellite->SetColour(sf::Vector3f(0.0f, 0.0f, 1.0f));
 	satellite->SetName("satellite");
 	bodies_.push_back(satellite);
 
@@ -398,7 +400,7 @@ bool Simulation::Reset() {
 // Virtual method
 void Simulation::TimeStep(float dt) {
 
-
+	/*
 	{
 		//std::unique_lock<std::mutex> lock(bodyListMutex_);
 
@@ -416,7 +418,7 @@ void Simulation::TimeStep(float dt) {
 		}
 	}
 
-
+	*/
 }
 
 

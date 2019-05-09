@@ -167,7 +167,7 @@ void Body::Integrate_Verlet(float dt) {
 	prevStates_[0] = currentState_;
 
 	// get next position
-	currentState_.position_ = 2.0f * prevStates_[1].position_ - prevStates_[1].position_ + (force_ / mass_) * dt * dt;
+	currentState_.position_ = 2.0f * prevStates_[0].position_ - prevStates_[1].position_ + (force_ / mass_) * dt * dt;
 
 	// get next velocity
 	currentState_.velocity_ = (currentState_.position_ - prevStates_[1].position_) / (2.0f * dt);
@@ -251,7 +251,7 @@ void Body::SetMass(float newMass) {
 	mass_ = newMass;
 
 	// calculate new radius of body
-	modelRadius_ = 20.0f;// std::cbrtf(3.0f * mass_ / (4.0f * PhysicsUtil::pi));
+	modelRadius_ = 10.0f;// std::cbrtf(3.0f * mass_ / (4.0f * PhysicsUtil::pi));
 
 }
 

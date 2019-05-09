@@ -35,7 +35,7 @@ void Camera::Init(Input* newInput) {
 	
 	rotation_ = sf::Vector3f(270.0f, 0.0f, 0.0f);
 
-	speed_ = 100.0f;
+	speed_ = 500.0f;
 	rotSpeed_ = 60.0f;
 
 	// Update the view vectors
